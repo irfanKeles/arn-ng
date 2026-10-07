@@ -1,0 +1,193 @@
+---
+name: arn-ui-library
+description: "@arn-ng/ui Angular bileşen kütüphanesi için kurallar. Bu kütüphanede bir bileşen yazarken, değiştirirken, incelerken veya dokümantasyon sayfasını hazırlarken MUTLAKA kullan. Mimari kararları, kodlama kurallarını, yasakları, token/tema yapısını ve doküman sayfası standardını içerir."
+---
+
+# @arn-ng/ui — Kütüphane Kuralları
+
+Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği çelişirse DUR, çelişkiyi söyle, karar günlüğüne (en alttaki bölüm) yazılmadan kuralı çiğneme.
+
+## 1. Değişmez kararlar
+
+- Paket: `@arn-ng/ui`. Selector prefix: `arn`. Ücretsiz ve **açık kaynak** (npm'de public yayınlanır, lisans: MIT). Gerçek projelerde npm'den kurulup kullanılacak, bu yüzden public API kararlılığı ve semver baştan ciddiye alınır.
+- Minimum Angular: **19**. Sadece Angular 19'da KARARLI olan API'leri kullan. Daha yeni sürümde gelen veya 19'da deneysel olan API'ye bağımlı olma (örn. signal forms, `linkedSignal`, `resource` yok).
+- Headless katman: **Angular CDK**. Başka bir headless kütüphane (Spartan brain, ng-primitives vb.) EKLENMEZ. Eksik bileşenler CDK primitifleri (overlay, a11y, listbox, menu, dialog, bidi, scrolling) üzerine yazılır.
+- Görsel referans: **shadcn/ui** (renk paleti, dark mode dahil, görünüm). Angular'a çevrilir, kendi design token'larımızla.
+- Hedef: PrimeNG kadar profesyonel, kararlı, tutarlı; kullanıcıya ve geliştiriciye sorun çıkarmayan bir kütüphane. Hız değil sağlamlık önceliklidir.
+- Hedef tarayıcı: Angular'ın desteklediği güncel (evergreen) tarayıcılar, yaklaşık son 1 yıllık sürümler. `oklch` fallback'siz kullanılabilir.
+
+## 2. Bileşen mimarisi
+
+**Tek çekirdek, iki yüz.** Basit bileşenlerde davranış ve stil tek bir directive'de durur, element sarmalayıcı aynı directive'i kullanır. Davranış asla iki yerde ayrı yazılmaz.
+
+| Bileşen türü | Kullanım şekli |
+|---|---|
+| Basit, native elemanı olanlar (button, input) | Hem attribute (`<button arnButton>`) hem element (`<arn-button label="..." icon="...">`) |
+| Karmaşık (select, mask input, dialog, date picker, tooltip vb.) | SADECE element (`<arn-select>`) |
+
+- Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*`, `autofocus` vb. native davranış bedavaya çalışır).
+- Element sarmalayıcı içinde gerçek bir native eleman render eder (örn. `<arn-button>` içinde `<button>`). Dış `<arn-button>` etiketi tıklanabilir/odaklanabilir sahte bir kutu OLMAZ.
+- Sınıf adları: directive `ArnButtonDirective`, element `ArnButton`, aynı kalıp her bileşende.
+
+## 3. Paket ve import yapısı
+
+- Her bileşen kendi secondary entry point'inde: `@arn-ng/ui/button`, `@arn-ng/ui/input`, `@arn-ng/ui/select`.
+- Her entry point sadece bileşeni ve ona ait tipleri/token'ları export eder. Kullanıcı sadece kullandığını import eder (`import { ArnButton } from '@arn-ng/ui/button'`).
+- Tüm bileşenler standalone. NgModule YOK.
+- `package.json`: `sideEffects: false`, `peerDependencies` içinde `@angular/core`, `@angular/cdk` aralığı açıkça yazılı (>=19).
+- Public API küçük tutulur. Dışarı açılan her şey söz verilmiş sayılır. İç detaylar export edilmez. Export etmeden önce gerekçe sor.
+- Entry point'ler arası döngüsel bağımlılık YASAK. Ortak kod `@arn-ng/ui/core` altında.
+
+## 4. Angular kodlama kuralları
+
+- `input()`, `output()`, `model()`, `computed()`, `signal()` kullan. `@Input()/@Output()` decorator'ı YOK.
+- `ChangeDetectionStrategy.OnPush` her bileşende zorunlu. Zoneless ile çalışmalı (zone.js'e bağımlı kod yazma).
+- `inject()` kullan, constructor injection yok.
+- Host binding/listener: `host: { ... }` metadata'sı. `@HostBinding/@HostListener` YOK.
+- Şablonda yeni control flow: `@if`, `@for`, `@switch`. `*ngIf/*ngFor` YOK.
+- `ViewEncapsulation`: bileşen stilleri CSS değişkenlerine dayanır. `::ng-deep` YASAK. Kullanıcının stil geçersiz kılması token'larla yapılabilmeli.
+- `any` YASAK. Strict TypeScript. Public API'deki her tip export edilir.
+- Doğrudan `window`, `document`, `localStorage` kullanma. `DOCUMENT`, `inject(PLATFORM_ID)`, `afterNextRender` kullan (SSR güvenliği).
+- `innerHTML` ile kullanıcı verisi basma. Gerekirse sanitization açıkça yapılır.
+- Her `subscribe` temizlenir (`takeUntilDestroyed`) veya hiç kullanılmaz (signal tercih edilir).
+
+## 5. Token, tema, stil
+
+- Üç katman: **ham** (`--arn-blue-500`), **anlamlı** (`--arn-primary`, `--arn-border`, `--arn-radius`), **bileşen** (`--arn-button-bg`, `--arn-button-radius`). Bileşen token'ı anlamlı token'a bağlanır, kullanıcı ister global ister tek bileşen için değiştirir.
+- İsimlendirme: `--arn-<bileşen>-<özellik>[-<durum>]`. Tutarlı, istisnasız.
+- Renk formatı `oklch`. Palet shadcn'den alınır.
+- Dark mode: `.dark` class'ı ile zorlanabilir VE varsayılan olarak sistem ayarına uyar (`prefers-color-scheme`).
+- **Mantıksal CSS özellikleri zorunlu** (RTL için): `margin-inline-start`, `padding-inline-end`, `inset-inline-start`, `text-align: start`. `margin-left/right`, `padding-left/right`, `left/right`, `text-align: left/right` YASAK (istisna gerekçesi yazılı olmalı).
+- Boyutlar: `xs`, `sm`, `md`, `lg`, `xl` (5 boyut). Varsayılan `md`.
+- Yoğunluk: `comfortable` (varsayılan) ve `compact`. Container'a `data-density="compact"` verilince alttaki tüm bileşenlerin yükseklik/padding/font token'ları küçülür. Bileşenlere tek tek dokunmak gerekmez.
+- Font, border, radius, boşluk gibi değerler merkezi token'lardan beslenir. Bileşende sabit px/renk değeri YASAK (token yoksa önce token tanımla).
+- Animasyonlar `prefers-reduced-motion` ile kapatılabilir olmalı.
+- **Ripple:** `arnRipple` directive'i (`@arn-ng/ui/ripple`) olarak sunulur. Başka bir kütüphaneye (Angular Material) bağımlı olmadan kendimiz yazarız. Varsayılan kapalı, `provideArn({ ripple: true })` ile global, bileşende `[ripple]` input'u ile tek tek açılır/kapanır. `prefers-reduced-motion` altında otomatik devre dışı. SSR'da güvenli, animasyon bitince DOM'dan temizlenir, rengi token'dan gelir (`--arn-ripple-color`).
+
+## 6. Merkezi ayar
+
+- Davranışsal ayar: `provideArn({ size, density, locale, dir, animations })`.
+- Görsel ayar: CSS değişkenleri.
+- **Öncelik sırası (yukarıdan aşağıya güçlüden zayıfa):**
+  1. Bileşenin kendi input'u (`size="sm"`)
+  2. En yakın üst container/form (`<form arnForm size="sm">`, hiyerarşik DI)
+  3. Global `provideArn`
+  4. Kütüphane varsayılanı
+- Bu sıra her bileşen dokümanında "Yapılandırma" bölümünde kısaca belirtilir.
+
+## 7. Form uyumu
+
+- Form elemanları `ControlValueAccessor` ile çalışır: `ngModel`, `formControl`, `formControlName` üçü de test edilir.
+- Zorunlu durumlar: `disabled` (formdan ve input'tan), `invalid`, `touched`, `dirty`, `readonly`, `required`.
+- Hata görünümü `ng-invalid + ng-touched` ile ve `invalid` input'u ile tetiklenebilir.
+- `setDisabledState` doğru uygulanır.
+- Signal forms'a bağımlılık YOK (19'da kararlı değil). Gelecekte eklenecekse ayrı karar.
+
+## 8. Erişilebilirlik (a11y) — her bileşende zorunlu
+
+- Tam klavye kullanımı: Tab/Shift+Tab, ok tuşları, Enter, Space, Escape, Home/End (bileşen türüne göre WAI-ARIA Authoring Practices kalıbına uy).
+- Doğru `role` ve `aria-*` nitelikleri (`aria-expanded`, `aria-invalid`, `aria-describedby`, `aria-disabled`...).
+- Focus yönetimi: overlay açılınca focus içeri, kapanınca tetikleyiciye döner. Focus trap (dialog). Görünür focus halkası.
+- Sadece renkle bilgi verme. Kontrast yeterli.
+- Ekran okuyucu için gizli metin/label mekanizması.
+- A11y bir "sonra yaparız" değildir. A11y eksikse bileşen BİTMİŞ sayılmaz.
+- CDK'nın a11y araçları (`FocusTrap`, `FocusMonitor`, `ListKeyManager`, `LiveAnnouncer`) tercih edilir, elle yazılmaz.
+
+## 9. i18n ve RTL
+
+- Bileşen içindeki tüm sabit metinler (örn. "Seç", "Temizle", "Sonuç yok", aria-label'lar) dışarıdan verilebilir bir locale/mesaj sistemiyle gelir. Metin koda gömülmez.
+- Her bileşen RTL'de test edilir (`dir="rtl"`). Yön için `cdk/bidi` kullan.
+- İkon ve ok yönleri RTL'de aynalanır.
+- Tarih/sayı formatı locale'e göre.
+
+## 10. Overlay
+
+- Dropdown, popover, tooltip, dialog, menu hep tek ortak overlay altyapısından geçer (`@arn-ng/ui/core`, CDK Overlay üstünde). Her bileşen kendi z-index/portal çözümünü yazmaz.
+- z-index değerleri token'lardan gelir (`--arn-z-dropdown`, `--arn-z-dialog`...).
+
+## 11. İsimlendirme tutarlılığı
+
+Ortak input isimleri tüm bileşenlerde aynıdır: `size`, `variant`, `disabled`, `invalid`, `readonly`, `required`, `label`, `icon`. Aynı kavram için farklı isim icat etme. Yeni ortak kavram gerekiyorsa önce karar günlüğüne yaz.
+
+## 12. Bileşen "Bitti" tanımı (Definition of Done)
+
+Bir bileşen ancak hepsi tamamsa bitmiştir:
+
+- [ ] Selector ve import kuralları (bölüm 2-3) uygulandı
+- [ ] Token'lar tanımlı, hardcode değer yok, mantıksal CSS kullanıldı
+- [ ] 5 boyut + iki yoğunluk çalışıyor
+- [ ] Light + dark çalışıyor
+- [ ] `ngModel` ve reactive forms ile çalışıyor (form elemanıysa), tüm durumlar test edildi
+- [ ] Klavye + ekran okuyucu + focus yönetimi tamam, axe testi temiz
+- [ ] RTL kontrol edildi, i18n metinleri dışarıdan
+- [ ] SSR'da kırılmıyor
+- [ ] Birim testleri yazıldı
+- [ ] Doküman sayfası yazıldı (bölüm 13) ve örnekler çalışıyor
+- [ ] Public API gözden geçirildi, gereksiz export yok
+
+## 13. Doküman sayfası standardı (PrimeNG tarzı)
+
+Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüphaneyi gerçek bir kullanıcı gibi tüketir (böylece her örnek aynı zamanda gerçek kullanım testidir). Yeni bileşen, doküman sayfası olmadan merge edilmez.
+
+**Site yapısı**
+- Solda sidebar: bileşenler kategori başlıkları altında gruplanır (Form, Button, Overlay, Data...). Altında arama.
+- Sağda sayfa içi başlık gezintisi ("bu sayfada").
+- Üstte tema (light/dark), yön (LTR/RTL), yoğunluk (comfortable/compact) ve dil değiştiriciler. Bunlar tüm örnekleri anlık etkiler.
+- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik.
+
+**Her bileşen sayfasının bölümleri (bu sırayla)**
+1. Kısa açıklama
+2. **Import** (kopyalanabilir kod)
+3. **Basic** (en basit kullanım)
+4. **ngModel ile kullanım** (form elemanıysa)
+5. **Reactive Forms ile kullanım** (form elemanıysa)
+6. **Disabled**
+7. **Invalid / Validation**
+8. **Sizes** (xs-xl)
+9. **Label, Icon varken / yokken** ve bileşene özgü tüm varyantlar
+10. **Density** (gerekliyse)
+11. Bileşene özgü örnekler (olay yönetimi, template ile özelleştirme...)
+12. **Accessibility** (klavye tuşları tablosu, aria nitelikleri)
+13. **API tabloları:** Inputs, Outputs, Templates/Slots, Methods
+14. **Styling:** bu bileşenin tüm CSS token'ları (isim, varsayılan, açıklama)
+
+**Her örneğin biçimi**
+- Canlı çalışan demo, altında "Kodu göster" ile HTML + TS sekmeleri, kopyala düğmesi.
+- Örnek kodu kopyalanıp yapıştırıldığında çalışmalı (import'lar dahil tam kod).
+- API tabloları kod/yorumdan türetilir veya elle yazılıyorsa bileşen değişince aynı PR'da güncellenir. Eski doküman YASAK.
+- Yalnızca gerçek, anlamlı örnekler. Dolgu örneği yok.
+
+## 14. Yapılmaması gerekenler (özet)
+
+- `::ng-deep`, `!important` ile stil zorlamak
+- `@Input/@Output/@HostBinding` decorator'ları, `*ngIf/*ngFor`, NgModule
+- `margin-left/right` gibi yön-bağımlı CSS
+- Sabit renk/px/metin (token ve i18n dışında)
+- CDK dışında ikinci bir headless kütüphane
+- Doküman sayfası, test veya a11y olmadan bileşeni "bitti" saymak
+- Native davranışı bozan sarmalayıcı (tıklanamayan buton, form'a bağlanmayan input)
+- Aynı kavrama farklı isim vermek (`disabled` vs `isDisabled`)
+- Angular 19'da kararlı olmayan API'ye bağımlı olmak
+- Gereksiz public export, belirsiz kırıcı değişiklik (breaking change) yapmak. Kırıcı değişiklik gerekiyorsa önce söyle, versiyon ve migration notunu hazırla.
+
+## 15. Sürümleme ve kalite
+
+- Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider.
+- CI: lint, birim test, axe a11y testi, build; Angular 19 ve en güncel sürümde derleme kontrolü.
+- Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
+
+## 16. Karar günlüğü
+
+Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'in önüne geçmez, onları günceller.
+
+- 2026-10: Angular 19+, CDK, shadcn referansı, `@arn-ng/ui`, prefix `arn`, basit bileşenlerde attribute+element, karmaşıklarda sadece element, boyutlar xs-xl, density comfortable/compact, dark mode class + sistem.
+- 2026-10: `@arn` npm kapsamı alınmış çıktı. Paket adı `@arn-ng/ui` oldu (npm org: `arn-ng`). Selector prefix (`arn`) ve CSS token öneki (`--arn-*`) değişmedi.
+- 2026-10: Kütüphane açık kaynak olacak (MIT, public npm), monorepo kullanılacak, ripple isteğe bağlı directive olarak eklenecek.
+- İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
+
+## 17. Henüz açık kararlar
+
+- Doküman sitesi için araç (özel Angular uygulaması önerilir) ve kod örneği vurgulama yöntemi
+- Mesaj/i18n sisteminin tam API'si
+- Monorepo aracı (Angular workspace veya Nx)
+- Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
