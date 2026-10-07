@@ -20,13 +20,13 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 
 ## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
 - [x] Token yapısı (ham / anlamlı), shadcn neutral paleti, `oklch`, dark mode (`light-dark()` + `.dark` / `.light`): `@arn-ng/ui/theme.css`. Bileşen katmanı ilk bileşenle gelir (Faz 4)
-- [ ] Boyutlar xs-xl, density (comfortable / compact)
+- [x] Boyutlar xs-xl, density (comfortable / compact): CSS token'ları (`--arn-control-*`, `--arn-density`, `--arn-control-min-size`) `theme.css`'te. `size` / `density` TS tipleri ve DI `provideArn` maddesinde
 - [ ] `provideArn()` ve hiyerarşik ayar öncelik sırası
 - [ ] i18n mesaj sistemi, RTL (`cdk/bidi`)
 - [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
 - [ ] `arnRipple` directive'i
 - [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
-- [ ] Token kataloğuna boyut ve density bölümü (boyut/density maddesiyle birlikte)
+- [x] Token kataloğuna boyut ve density bölümü (`components/tokens-sizes.md`)
 
 ## Faz 3 — Doküman sitesi iskeleti
 - [ ] Sidebar (kategorili), sayfa içi gezinti, arama

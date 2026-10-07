@@ -1,6 +1,6 @@
 # tokens (tema ve global token'lar)
 
-<!-- En fazla 150 satır. Boyut (xs-xl) ve density bölümü Faz 2 adım (b) ile eklenecek; sığmazsa tokens-<konu>.md olarak bölünür. -->
+<!-- En fazla 150 satır. Boyut (xs-xl) ve density token'ları ayrı dosyada: tokens-sizes.md -->
 
 ## 1. Özet
 
@@ -64,7 +64,7 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 |---|---|---|
 | `--arn-radius` | `0.625rem` | Taban |
 | `--arn-radius-sm` / `-md` / `-lg` | taban × 0.6 / 0.8 / 1 | shadcn çarpanları |
-| `--arn-radius-xl` / `-2xl` / `-3xl` / `-4xl` | taban × 1.4 / 1.8 / 2.2 / 2.6 | |
+| `--arn-radius-xl` / `-2xl` / `-3xl` / `-4xl` | taban × 1.4 / 1.8 / 2.2 / 2.6 | Adımlar yalnızca global (`:root`) değişir; tüketici CSS'i için yardımcı, bileşenler kullanmaz |
 | `--arn-font-sans` | `ui-sans-serif, system-ui, sans-serif` + emoji fontları | shadcn font dayatmaz |
 | `--arn-font-mono` | `ui-monospace, 'SFMono-Regular', 'Menlo'…` | |
 | `--arn-text-xs` / `-sm` / `-base` / `-lg` / `-xl` | 0.75 / 0.875 / 1 / 1.125 / 1.25rem | Her biri için `--arn-text-<adım>-line-height` var |
@@ -73,7 +73,7 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 | `--arn-border-width` | `1px` | |
 | `--arn-ring-width` | `3px` | shadcn focus ring kalınlığı |
 
-`--arn-radius-sm` ve `--arn-text-sm` ölçeğin adımıdır; bileşen boyutu (`size="sm"`) DEĞİLDİR. Boyut → ölçek eşlemesi adım (b)'de gelir.
+`--arn-radius-sm` ve `--arn-text-sm` ölçeğin adımıdır; bileşen boyutu (`size="sm"`) DEĞİLDİR. Boyut (`--arn-control-*`) ve density (`--arn-density`) token'ları: [tokens-sizes.md](tokens-sizes.md).
 
 ## 4. Override rehberi
 
@@ -85,7 +85,7 @@ Tüketicinin kuralı `theme.css` import'undan SONRA gelmelidir (aynı özgüllü
 - **Tek örnek:** bileşen token'ı ile (bileşenin referans dosyasına bak).
 - **Sayfayı boyamak:** `body { background: var(--arn-background); color: var(--arn-foreground); font-family: var(--arn-font-sans); }` (örnek: `projects/docs/src/styles.css`).
 
-**Tuzak (türetilmiş token'lar):** `var()` tanımlandığı elemanda (`:root`) çözülür. Bu yüzden bir container'da `--arn-radius` veya `--arn-neutral-900` değiştirmek, ondan türeyen `--arn-radius-sm` veya `--arn-primary`'yi DEĞİŞTİRMEZ. Tabanı `:root`'ta değiştir ya da container'da türetilmiş token'ı doğrudan yaz. (`light-dark()` bu kuralın dışındadır; kullanıldığı elemanda çözülür.) Spec bu davranışı sabitler.
+**Tuzak (türetilmiş token'lar):** `var()` tanımlandığı elemanda (`:root`) çözülür. Bu yüzden bir container'da `--arn-radius` veya `--arn-neutral-900` değiştirmek, ondan türeyen `--arn-radius-sm` veya `--arn-primary`'yi DEĞİŞTİRMEZ. Tabanı `:root`'ta değiştir ya da container'da türetilmiş token'ı doğrudan yaz. (`light-dark()` bu kuralın dışındadır; kullanıldığı elemanda çözülür.) Spec bu davranışı sabitler. Bileşenler bu tuzağa düşmesin diye kendi token'larını kendi host'unda hesaplar (SKILL §5, örüntü: [tokens-sizes.md](tokens-sizes.md) §2); container'da `--arn-radius` değiştirmek bileşenleri etkiler.
 
 ## 5. Davranış ve a11y
 
@@ -106,10 +106,11 @@ Yok.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
 
 ## 9. Bağlantılar
 
 - Kod: `projects/ui/theme.css`, `projects/ui/ng-package.json`, `projects/ui/package.json`
+- Devamı: [tokens-sizes.md](tokens-sizes.md) (boyut ve density)
 - Kaynaklar: https://ui.shadcn.com/docs/theming , https://ui.shadcn.com/r/colors/neutral.json , Tailwind `packages/tailwindcss/theme.css`
 - Doküman sayfası: Faz 3 (Tema ve token'lar)

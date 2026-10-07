@@ -5,6 +5,7 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | Bileşen | Tür | Entry point | Dosya |
 |---|---|---|---|
 | tokens (tema, global token'lar) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens.md](tokens.md) |
+| tokens-sizes (boyut xs-xl, density) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens-sizes.md](tokens-sizes.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
