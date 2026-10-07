@@ -12,7 +12,8 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Monorepo aracı kararı: Angular workspace (Nx yok), paket yöneticisi npm, geliştirme Angular 19 / CLI 19
 - [x] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
 - [x] Secondary entry point yapısı (`projects/ui/<ad>/`; pilotlar: `@arn-ng/ui/core`, `@arn-ng/ui/button`, ikisi de boş)
-- [ ] Lint, strict TypeScript, birim test altyapısı
+- [x] Lint, format, strict TypeScript (ESLint + angular-eslint, Stylelint, Prettier, Node 22)
+- [ ] Birim test altyapısı
 - [ ] CI (build + test + lint, Angular 19 ve en güncel sürümde derleme)
 - [ ] Changesets + sürüm/changelog akışı
 - [ ] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi

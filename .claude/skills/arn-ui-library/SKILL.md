@@ -175,7 +175,11 @@ Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüph
 ## 15. Sürümleme ve kalite
 
 - Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider.
-- CI: lint, birim test, axe a11y testi, build; Angular 19 ve en güncel sürümde derleme kontrolü.
+- Node: 22 LTS (`.nvmrc`, `engines`). `engine-strict` kapalı.
+- Lint: `npm run lint` = ESLint (flat config, `eslint.config.mjs`: angular-eslint + typescript-eslint `strictTypeChecked`, şablon a11y kuralları) + Stylelint (`.stylelintrc.json`: `::ng-deep`, `!important` ve yön-bağımlı CSS yasak, ui'da token adı `--arn-*`). Bölüm 4-5 kurallarının çoğu burada hata olarak zorlanır. Kural kapatmak veya `eslint-disable` yazmak karar günlüğüne gerekçe ister.
+- Format: Prettier (`npm run format`, `npm run format:check`). Markdown ve `.claude/` kapsam dışı. Satır sonu LF (`.gitattributes`).
+- Lint ile zorlanamayan, incelemede elle bakılan kurallar: `subscribe` temizliği, `innerHTML`, zoneless uyumu, entry point'ler arası döngüsel bağımlılık, sabit renk/px.
+- CI: lint, format kontrolü, birim test, axe a11y testi, build; Angular 19 ve en güncel sürümde derleme kontrolü.
 - Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
 
 ## 16. Karar günlüğü
@@ -187,6 +191,9 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: Kütüphane açık kaynak olacak (MIT, public npm), monorepo kullanılacak, ripple isteğe bağlı directive olarak eklenecek.
 - 2026-10: Monorepo aracı Angular workspace (Nx yok). Paket yöneticisi npm. Geliştirme Angular 19 / CLI 19 ile. Yapı: `projects/ui` (kütüphane, ng-packagr), `projects/docs` (standalone doküman uygulaması).
 - 2026-10: Secondary entry point yapısı: `projects/ui/<ad>/` (`ng-package.json` + `src/public-api.ts`). Kök entry point (`@arn-ng/ui`) bileşen export etmez. Pilotlar: `core`, `button` (boş).
+- 2026-10: Kalite araçları: ESLint 9 flat config + angular-eslint 19 + typescript-eslint (`strictTypeChecked`), Stylelint 17 + `stylelint-use-logical`, Prettier 3 (Markdown hariç). ESLint doğrudan çalışır, `angular.json`'da lint target'ı yok. Node 22 (`.nvmrc`, `engines: ^22.0.0`), satır sonu LF (`.gitattributes`).
+- 2026-10: ui projesinde `@angular-eslint/component-class-suffix` kapalı (element sınıfı `ArnButton`, bölüm 2). Inline `styles` yasak (`component-max-inline-declarations`), stiller Stylelint'in görebildiği ayrı dosyada durur.
+- 2026-10: tsconfig'e `noUncheckedIndexedAccess`, `strictStandalone`, `extendedDiagnostics.defaultCategory: error` eklendi. `exactOptionalPropertyTypes` ve `noUnusedLocals/Parameters` bilinçli olarak eklenmedi.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

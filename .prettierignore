@@ -1,0 +1,10 @@
+/dist
+/.angular
+/coverage
+/out-tsc
+package-lock.json
+
+# Elle yazılan dokümanlar: Prettier tabloları ve listeleri yeniden yazmasın
+/.claude
+*.md
+LICENSE
