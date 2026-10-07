@@ -32,6 +32,8 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 ## 3. Paket ve import yapısı
 
 - Her bileşen kendi secondary entry point'inde: `@arn-ng/ui/button`, `@arn-ng/ui/input`, `@arn-ng/ui/select`.
+- Kök entry point (`@arn-ng/ui`) bileşen export etmez. Her şey secondary entry point'lerden import edilir.
+- Klasör yapısı: her entry point `projects/ui/<ad>/` altında, kendi `ng-package.json` ve `src/public-api.ts` dosyasıyla.
 - Her entry point sadece bileşeni ve ona ait tipleri/token'ları export eder. Kullanıcı sadece kullandığını import eder (`import { ArnButton } from '@arn-ng/ui/button'`).
 - Tüm bileşenler standalone. NgModule YOK.
 - `package.json`: `sideEffects: false`, `peerDependencies` içinde `@angular/core`, `@angular/cdk` aralığı açıkça yazılı (>=19).
@@ -184,6 +186,7 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: `@arn` npm kapsamı alınmış çıktı. Paket adı `@arn-ng/ui` oldu (npm org: `arn-ng`). Selector prefix (`arn`) ve CSS token öneki (`--arn-*`) değişmedi.
 - 2026-10: Kütüphane açık kaynak olacak (MIT, public npm), monorepo kullanılacak, ripple isteğe bağlı directive olarak eklenecek.
 - 2026-10: Monorepo aracı Angular workspace (Nx yok). Paket yöneticisi npm. Geliştirme Angular 19 / CLI 19 ile. Yapı: `projects/ui` (kütüphane, ng-packagr), `projects/docs` (standalone doküman uygulaması).
+- 2026-10: Secondary entry point yapısı: `projects/ui/<ad>/` (`ng-package.json` + `src/public-api.ts`). Kök entry point (`@arn-ng/ui`) bileşen export etmez. Pilotlar: `core`, `button` (boş).
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

@@ -11,7 +11,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 ## Faz 1 — Altyapı
 - [x] Monorepo aracı kararı: Angular workspace (Nx yok), paket yöneticisi npm, geliştirme Angular 19 / CLI 19
 - [x] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
-- [ ] Secondary entry point yapısı (`@arn-ng/ui/core`, `@arn-ng/ui/button` ...)
+- [x] Secondary entry point yapısı (`projects/ui/<ad>/`; pilotlar: `@arn-ng/ui/core`, `@arn-ng/ui/button`, ikisi de boş)
 - [ ] Lint, strict TypeScript, birim test altyapısı
 - [ ] CI (build + test + lint, Angular 19 ve en güncel sürümde derleme)
 - [ ] Changesets + sürüm/changelog akışı
