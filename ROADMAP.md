@@ -13,7 +13,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
 - [x] Secondary entry point yapısı (`projects/ui/<ad>/`; pilotlar: `@arn-ng/ui/core`, `@arn-ng/ui/button`, ikisi de boş)
 - [x] Lint, format, strict TypeScript (ESLint + angular-eslint, Stylelint, Prettier, Node 22)
-- [ ] Birim test altyapısı
+- [x] Birim test altyapısı (Karma + Jasmine, zoneless testler, axe yardımcısı, `test:ci`)
 - [ ] CI (build + test + lint, Angular 19 ve en güncel sürümde derleme)
 - [ ] Changesets + sürüm/changelog akışı
 - [ ] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi

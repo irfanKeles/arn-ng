@@ -3,6 +3,42 @@ import eslint from '@eslint/js';
 import angular from 'angular-eslint';
 import tseslint from 'typescript-eslint';
 
+// §4: decorator tabanlı API ve NgModule yasak
+const restrictedAngularImports = [
+  {
+    name: '@angular/core',
+    importNames: ['Input', 'Output'],
+    message: 'input(), output(), model() kullan (SKILL §4).',
+  },
+  {
+    name: '@angular/core',
+    importNames: ['HostBinding', 'HostListener'],
+    message: 'host: { ... } metadata kullan (SKILL §4).',
+  },
+  {
+    name: '@angular/core',
+    importNames: ['NgModule'],
+    message: 'NgModule yok, tüm bileşenler standalone (SKILL §3).',
+  },
+];
+
+// §15: testler Jasmine'e özgü API kullanmaz (Vitest'e geçişi kolaylaştırmak için)
+const jasmineOnlyMessage =
+  "Jasmine'e özgü API; describe/it/beforeEach/afterEach/expect ile yetin (SKILL §15).";
+const jasmineOnlyGlobals = [
+  'jasmine',
+  'spyOn',
+  'spyOnProperty',
+  'spyOnAllFunctions',
+  'expectAsync',
+  'fail',
+  'pending',
+  'fdescribe',
+  'fit',
+  'xdescribe',
+  'xit',
+];
+
 // Kurallar .claude/skills/arn-ui-library/SKILL.md ile eşleşir; bölüm numaraları oraya atıftır.
 export default tseslint.config(
   {
@@ -28,29 +64,7 @@ export default tseslint.config(
     },
     processor: angular.processInlineTemplates,
     rules: {
-      // §4: decorator tabanlı API ve NgModule yasak
-      'no-restricted-imports': [
-        'error',
-        {
-          paths: [
-            {
-              name: '@angular/core',
-              importNames: ['Input', 'Output'],
-              message: 'input(), output(), model() kullan (SKILL §4).',
-            },
-            {
-              name: '@angular/core',
-              importNames: ['HostBinding', 'HostListener'],
-              message: 'host: { ... } metadata kullan (SKILL §4).',
-            },
-            {
-              name: '@angular/core',
-              importNames: ['NgModule'],
-              message: 'NgModule yok, tüm bileşenler standalone (SKILL §3).',
-            },
-          ],
-        },
-      ],
+      'no-restricted-imports': ['error', { paths: restrictedAngularImports }],
       // §4: SSR güvenliği
       'no-restricted-globals': [
         'error',
@@ -107,7 +121,24 @@ export default tseslint.config(
   {
     files: ['**/*.spec.ts'],
     rules: {
-      'no-restricted-globals': 'off',
+      // Spec'lerde document/window serbest; yasak olan Jasmine'e özgü global'ler
+      'no-restricted-globals': [
+        'error',
+        ...jasmineOnlyGlobals.map((name) => ({ name, message: jasmineOnlyMessage })),
+      ],
+      'no-restricted-imports': [
+        'error',
+        {
+          paths: [
+            ...restrictedAngularImports,
+            {
+              name: '@angular/core/testing',
+              importNames: ['fakeAsync', 'waitForAsync', 'tick', 'flush', 'flushMicrotasks'],
+              message: 'zone.js gerektirir; testler zoneless koşar (SKILL §15).',
+            },
+          ],
+        },
+      ],
     },
   },
   {

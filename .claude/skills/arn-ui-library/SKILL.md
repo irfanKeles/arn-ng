@@ -25,7 +25,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 | Basit, native elemanı olanlar (button, input) | Hem attribute (`<button arnButton>`) hem element (`<arn-button label="..." icon="...">`) |
 | Karmaşık (select, mask input, dialog, date picker, tooltip vb.) | SADECE element (`<arn-select>`) |
 
-- Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*`, `autofocus` vb. native davranış bedavaya çalışır).
+- Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*` vb. native davranış bedavaya çalışır).
 - Element sarmalayıcı içinde gerçek bir native eleman render eder (örn. `<arn-button>` içinde `<button>`). Dış `<arn-button>` etiketi tıklanabilir/odaklanabilir sahte bir kutu OLMAZ.
 - Sınıf adları: directive `ArnButtonDirective`, element `ArnButton`, aynı kalıp her bileşende.
 
@@ -178,7 +178,12 @@ Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüph
 - Node: 22 LTS (`.nvmrc`, `engines`). `engine-strict` kapalı.
 - Lint: `npm run lint` = ESLint (flat config, `eslint.config.mjs`: angular-eslint + typescript-eslint `strictTypeChecked`, şablon a11y kuralları) + Stylelint (`.stylelintrc.json`: `::ng-deep`, `!important` ve yön-bağımlı CSS yasak, ui'da token adı `--arn-*`). Bölüm 4-5 kurallarının çoğu burada hata olarak zorlanır. Kural kapatmak veya `eslint-disable` yazmak karar günlüğüne gerekçe ister.
 - Format: Prettier (`npm run format`, `npm run format:check`). Markdown ve `.claude/` kapsam dışı. Satır sonu LF (`.gitattributes`).
-- Lint ile zorlanamayan, incelemede elle bakılan kurallar: `subscribe` temizliği, `innerHTML`, zoneless uyumu, entry point'ler arası döngüsel bağımlılık, sabit renk/px.
+- Lint ile zorlanamayan, incelemede elle bakılan kurallar: `subscribe` temizliği, `innerHTML`, entry point'ler arası döngüsel bağımlılık, sabit renk/px.
+- Birim test: Karma + Jasmine, Chrome. `npm test` (ui, izleme modu), `npm run test:docs`, `npm run test:ci` (tüm projeler, tek sefer, `ChromeHeadlessCI`, coverage → `coverage/`).
+- Testler **zoneless** koşar: kurulum dosyası (`projects/ui/testing/test-setup.ts`) her teste `provideExperimentalZonelessChangeDetection()` verir ve zone.js test ortamına hiç yüklenmez. Zone'a yaslanan kod testte kırılır. Bu deneysel API yalnızca test kurulumunda kullanılır, kütüphane koduna girmez.
+- **Her bileşen spec'inde axe testi zorunlu:** `await expectNoA11yViolations(fixture.nativeElement)` (`projects/ui/testing/a11y.ts`). Yardımcı public API'nin parçası değildir, entry point'lerden export edilmez; spec'ler göreli yolla import eder.
+- Testler Jasmine'e özgü API kullanmaz (ileride Vitest'e geçiş için): yalnızca `describe/it/beforeEach/afterEach/expect` ve ortak matcher'lar. `jasmine.*`, `spyOn`, `expectAsync`, `fail`, `fit/fdescribe/xit/xdescribe`, `fakeAsync/waitForAsync/tick/flush` ESLint'te hatadır. Sahte fonksiyon gerekiyorsa elle yazılır.
+- Spec dosyaları kaynağın yanında durur (`*.spec.ts`); `projects/ui` altındaki her klasör taranır.
 - CI: lint, format kontrolü, birim test, axe a11y testi, build; Angular 19 ve en güncel sürümde derleme kontrolü.
 - Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
 
@@ -194,6 +199,8 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: Kalite araçları: ESLint 9 flat config + angular-eslint 19 + typescript-eslint (`strictTypeChecked`), Stylelint 17 + `stylelint-use-logical`, Prettier 3 (Markdown hariç). ESLint doğrudan çalışır, `angular.json`'da lint target'ı yok. Node 22 (`.nvmrc`, `engines: ^22.0.0`), satır sonu LF (`.gitattributes`).
 - 2026-10: ui projesinde `@angular-eslint/component-class-suffix` kapalı (element sınıfı `ArnButton`, bölüm 2). Inline `styles` yasak (`component-max-inline-declarations`), stiller Stylelint'in görebildiği ayrı dosyada durur.
 - 2026-10: tsconfig'e `noUncheckedIndexedAccess`, `strictStandalone`, `extendedDiagnostics.defaultCategory: error` eklendi. `exactOptionalPropertyTypes` ve `noUnusedLocals/Parameters` bilinçli olarak eklenmedi.
+- 2026-10: Test altyapısı: Karma + Jasmine (CLI 19 varsayılanı), Chrome, CI için `ChromeHeadlessCI` (`--no-sandbox`). Testler zoneless koşar, zone.js test ortamına yüklenmez (`provideExperimentalZonelessChangeDetection` deneysel; yalnızca test kurulumunda, "zoneless uyumlu" kuralını zorlamak için). axe-core yardımcısı `projects/ui/testing/` altında, public API dışı. Jasmine'e özgü API yasak (Vitest'e geçişi kolaylaştırmak için). ui projesinin `sourceRoot`'u `projects/ui` (secondary entry point ve `testing/` altındaki spec'ler bulunsun diye).
+- 2026-10: `no-autofocus` ve `no-input-rename` ESLint kuralları açık kalıyor. Gerekçe: `autofocus` erişilebilirlik için sakıncalı, odak yönetimi kodla yapılır; `no-input-rename` directive selector'ıyla aynı alias'a izin verir, `arnRipple` gibi durumlar sorunsuz.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

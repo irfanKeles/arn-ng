@@ -9,7 +9,7 @@
     "ui": {
       "projectType": "library",
       "root": "projects/ui",
-      "sourceRoot": "projects/ui/src",
+      "sourceRoot": "projects/ui",
       "prefix": "arn",
       "architect": {
         "build": {
@@ -31,7 +31,8 @@
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
-            "polyfills": ["zone.js", "zone.js/testing"]
+            "main": "projects/ui/testing/test-setup.ts",
+            "karmaConfig": "projects/ui/karma.conf.js"
           }
         }
       }
@@ -102,7 +103,7 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": ["zone.js", "zone.js/testing"],
+            "main": "projects/docs/src/test-setup.ts",
             "tsConfig": "projects/docs/tsconfig.spec.json",
             "assets": [
               {
@@ -111,7 +112,8 @@
               }
             ],
             "styles": ["projects/docs/src/styles.css"],
-            "scripts": []
+            "scripts": [],
+            "karmaConfig": "projects/docs/karma.conf.js"
           }
         }
       }
