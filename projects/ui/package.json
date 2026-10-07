@@ -1,6 +1,30 @@
 {
   "name": "@arn-ng/ui",
   "version": "0.0.0",
+  "description": "Angular UI component library built on Angular CDK.",
+  "keywords": [
+    "angular",
+    "ui",
+    "components",
+    "component-library",
+    "angular-cdk",
+    "a11y",
+    "accessibility"
+  ],
+  "license": "MIT",
+  "author": "İrfan Keleş",
+  "homepage": "https://github.com/irfanKeles/arn-ng#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/irfanKeles/arn-ng.git",
+    "directory": "projects/ui"
+  },
+  "bugs": {
+    "url": "https://github.com/irfanKeles/arn-ng/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "peerDependencies": {
     "@angular/common": ">=19.0.0",
     "@angular/core": ">=19.0.0"

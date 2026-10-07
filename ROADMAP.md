@@ -16,7 +16,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Birim test altyapısı (Karma + Jasmine, zoneless testler, axe yardımcısı, `test:ci`)
 - [x] CI (GitHub Actions: lint + format + build + test) ve Dependabot. En güncel Angular'da derleme kontrolü Faz 4'teki tüketici uyumluluk testine taşındı
 - [x] Changesets + sürüm/changelog akışı (sürüm kaynağı `projects/ui/package.json`, npm workspaces)
-- [ ] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi
+- [x] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi. Yayın metadata'sı ve `LICENSE` paketlemesi de bu maddede yapıldı
 
 ## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
 - [ ] Token yapısı (ham / anlamlı / bileşen), shadcn paleti, `oklch`, dark mode
@@ -42,11 +42,11 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] select
 - [ ] dialog
 - [ ] tooltip
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit)
 
 ## Faz 5 — İlk yayın
-- [ ] README, kurulum rehberi
+- [ ] README, kurulum rehberi (`projects/ui/README.md` hâlâ CLI'ın jenerik metni ve pakete giriyor)
 - [ ] `0.1.0` npm'e yayın
   - Yayın "trusted publishing (OIDC)" ile yapılacak, saklı npm token kullanılmayacak. Gerekçe: npm 31 Temmuz 2026'dan itibaren hassas işlemlerde etkileşimli 2FA istiyor, Ocak 2027'de 2FA-bypass token'lar doğrudan yayın yetkisini kaybedecek.
 - [ ] PR'larda changeset kontrolünü CI'a ekle (0.1.0'dan sonra)
