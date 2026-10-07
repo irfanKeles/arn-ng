@@ -1,16 +1,16 @@
 /*
- * @arn-ng/ui tema dosyası. Tüketici bir kez ekler: @import '@arn-ng/ui/theme.css';
- * Yalnızca token ve color-scheme içerir, hiçbir elemanı boyamaz.
- * Katmanlar: ham (palet) → anlamlı. Bileşen katmanı (--arn-<bileşen>-<özellik>) bileşenin kendi stilinde durur.
- * Boyut (xs-xl) kontrol token'ları ve density çarpanı da buradadır; bileşen kendi token'ını host'unda hesaplar.
- * Değerler shadcn/ui neutral temasıdır; token kataloğu: .claude/skills/arn-ui-library/components/tokens.md
+ * @arn-ng/ui theme file. The consumer adds it once: @import '@arn-ng/ui/theme.css';
+ * Contains only tokens and color-scheme; it paints no element.
+ * Layers: raw (palette) → semantic. The component layer (--arn-<component>-<property>) lives in the component's own styles.
+ * The size (xs-xl) control tokens and the density factor are here too; a component computes its own token on its host.
+ * Values are the shadcn/ui neutral theme; token catalog: .claude/skills/arn-ui-library/components/tokens.md
  */
 
 :root {
-  /* Sınıf yoksa sistem tercihi (prefers-color-scheme) geçerlidir */
+  /* Without a class the system preference (prefers-color-scheme) applies */
   color-scheme: light dark;
 
-  /* Ham: palet */
+  /* Raw: palette */
   --arn-white: oklch(100% 0 0deg);
   --arn-neutral-50: oklch(98.5% 0 0deg);
   --arn-neutral-100: oklch(97% 0 0deg);
@@ -26,7 +26,7 @@
   --arn-red-400: oklch(70.4% 0.191 22.216deg);
   --arn-red-600: oklch(57.7% 0.245 27.325deg);
 
-  /* Anlamlı: renk — light-dark(açık, koyu) */
+  /* Semantic: color — light-dark(light, dark) */
   --arn-background: light-dark(var(--arn-white), var(--arn-neutral-950));
   --arn-foreground: light-dark(var(--arn-neutral-950), var(--arn-neutral-50));
   --arn-card: light-dark(var(--arn-white), var(--arn-neutral-900));
@@ -43,15 +43,15 @@
   --arn-accent-foreground: light-dark(var(--arn-neutral-900), var(--arn-neutral-50));
   --arn-destructive: light-dark(var(--arn-red-600), var(--arn-red-400));
 
-  /* Koyu border ve input shadcn'de alfa'lı beyazdır, palette karşılığı yok */
+  /* Dark border and input are white with alpha in shadcn; the palette has no equivalent */
   --arn-border: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%));
   --arn-input: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 15%));
   --arn-ring: light-dark(var(--arn-neutral-400), var(--arn-neutral-500));
 
   /*
-   * Radius: -sm…-4xl ölçeğin adımıdır, bileşen boyutu (xs-xl) değildir.
-   * Adımlar burada türetilir, yalnızca :root'ta taban değişince güncellenir (container'da değil).
-   * Tüketicinin kendi CSS'i için yardımcıdır; bileşenler adımı kendi host'unda --arn-radius'tan hesaplar.
+   * Radius: -sm…-4xl are steps of the scale, not component sizes (xs-xl).
+   * The steps are derived here and update only when the base changes on :root (not in a container).
+   * They are helpers for the consumer's own CSS; components compute the step on their host from --arn-radius.
    */
   --arn-radius: 0.625rem;
   --arn-radius-sm: calc(var(--arn-radius) * 0.6);
@@ -62,7 +62,7 @@
   --arn-radius-3xl: calc(var(--arn-radius) * 2.2);
   --arn-radius-4xl: calc(var(--arn-radius) * 2.6);
 
-  /* Yazı */
+  /* Typography */
   --arn-font-sans:
     ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
@@ -83,17 +83,17 @@
   --arn-font-weight-medium: 500;
   --arn-font-weight-semibold: 600;
 
-  /* Boşluk tabanı: bileşen calc(var(--arn-spacing) * n) yazar */
+  /* Spacing base: components write calc(var(--arn-spacing) * n) */
   --arn-spacing: 0.25rem;
 
-  /* Çizgi */
+  /* Lines */
   --arn-border-width: 1px;
   --arn-ring-width: 3px;
 
   /*
-   * Kontrol: boyuta (xs-xl) göre ölçüler, varsayılan md. xs-lg shadcn button değerleri, xl bizim ekimiz.
-   * Değerler sabittir (var() içermez), container'da değiştirilebilir. Density burada uygulanmaz:
-   * bileşen host'unda max(min-size, calc(height * density)) ve calc(padding-inline * density) yazar.
+   * Control: dimensions per size (xs-xl), default md. xs-lg are the shadcn button values, xl is our addition.
+   * Values are fixed (no var()) and can be changed in a container. Density is not applied here:
+   * a component writes max(min-size, calc(height * density)) and calc(padding-inline * density) on its host.
    */
   --arn-control-height-xs: 1.5rem;
   --arn-control-height-sm: 2rem;
@@ -121,14 +121,14 @@
   --arn-control-gap-lg: 0.5rem;
   --arn-control-gap-xl: 0.5rem;
 
-  /* Density sonrası yükseklik tabanı: 24 CSS px (WCAG 2.2 SC 2.5.8) */
+  /* Height floor after density: 24 CSS px (WCAG 2.2 SC 2.5.8) */
   --arn-control-min-size: 1.5rem;
 
-  /* Density çarpanı: yalnızca yükseklik ve yatay padding'i etkiler, yazı boyutunu etkilemez */
+  /* Density factor: affects only height and inline padding, not font size */
   --arn-density: 1;
 }
 
-/* Zorlama: sınıf sistem tercihini ezer, iç içe kullanılabilir */
+/* Forcing: the class overrides the system preference and can be nested */
 .dark {
   color-scheme: dark;
 }
@@ -138,8 +138,8 @@
 }
 
 /*
- * Density: en yakın data-density geçerlidir, iç içe kullanılabilir.
- * :root ile aynı özgüllükte olduğu için :root bloğundan SONRA durmalıdır (<html data-density="compact">).
+ * Density: the nearest data-density applies and it can be nested.
+ * It has the same specificity as :root, so it must come AFTER the :root block (<html data-density="compact">).
  */
 [data-density='comfortable'] {
   --arn-density: 1;

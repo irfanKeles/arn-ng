@@ -31,7 +31,7 @@ module.exports = function (config) {
     reporters: ['progress', 'kjhtml'],
     browsers: ['Chrome'],
     customLaunchers: {
-      // CI konteynerlerinde Chrome sandbox'ı çalışmaz
+      // The Chrome sandbox does not work in CI containers
       ChromeHeadlessCI: {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox'],

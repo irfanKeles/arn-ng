@@ -10,7 +10,7 @@ getTestBed().initTestEnvironment(BrowserDynamicTestingModule, platformBrowserDyn
   errorOnUnknownProperties: true,
 });
 
-// Tüm testler zoneless koşar: zone.js test ortamına yüklenmez (SKILL §4).
+// All tests run zoneless: zone.js is not loaded into the test environment (SKILL §4).
 beforeEach(() => {
   TestBed.configureTestingModule({
     providers: [provideExperimentalZonelessChangeDetection()],

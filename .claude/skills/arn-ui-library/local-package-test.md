@@ -66,3 +66,7 @@ $env:npm_config_cache      = "$root\npm-cache"
 ## İkinci çalıştırma (2026-10, tema)
 
 `exports`'a `./theme.css` eklenince yapıldı. Kanıtlanan: `theme.css` tarball'da (16 dosya), tüketicide CSS `@import '@arn-ng/ui/theme.css'` çözülüyor ve `ng build` çıktısına `light-dark()` bozulmadan giriyor. Denenmeyen: `angular.json` `styles` dizisinden ekleme.
+
+## Üçüncü çalıştırma (2026-10, `provideArn` ve ayar sistemi)
+
+`@arn-ng/ui/core` ilk gerçek export'larını alınca yapıldı (27 dosya). Kanıtlanan: tüketicide `provideArn`, `ArnConfigService`, `ArnConfigDirective`, `injectArnConfig`, `ArnConfig`, `ArnSize` `@arn-ng/ui/core`'dan çözülüyor; partial-Ivy direktif (`<div arnConfig density="compact" [size]="'lg'">`) linklenip derleniyor ve koda giriyor; tipler denetleniyor (`provideArn({ size: 'huge' })` → TS2322, şablonda `density="dense"` → NG2, ikisinde de build düştü). Kanıtlanmayan: çalışma zamanı davranışı (tarayıcıda açılmadı), SSR, en güncel Angular.

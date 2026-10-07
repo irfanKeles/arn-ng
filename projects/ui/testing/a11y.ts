@@ -1,10 +1,10 @@
 import axe from 'axe-core';
 
-// Yalnızca testlerde kullanılır; hiçbir entry point'ten export edilmez.
+// Used in tests only; not exported from any entry point.
 
 /**
- * Verilen DOM parçasını axe ile tarar ve ihlalleri okunabilir satırlar olarak döndürür.
- * Parça `document`'e eklenmiş olmalıdır.
+ * Scans the given DOM fragment with axe and returns the violations as readable lines.
+ * The fragment must be attached to the `document`.
  */
 export async function a11yViolations(
   element: Element,
@@ -13,7 +13,7 @@ export async function a11yViolations(
   const results = await axe.run(element, {
     ...options,
     rules: {
-      // Sayfa düzeyinde kural, tek başına taranan bir parçada anlamsız
+      // Page-level rule; meaningless for a fragment scanned on its own
       region: { enabled: false },
       ...options.rules,
     },
@@ -24,7 +24,7 @@ export async function a11yViolations(
   );
 }
 
-/** İhlal varsa hepsini listeleyen bir hata fırlatır, böylece test düşer. */
+/** Throws an error listing every violation, if any, so the test fails. */
 export async function expectNoA11yViolations(
   element: Element,
   options?: axe.RunOptions,
@@ -32,6 +32,8 @@ export async function expectNoA11yViolations(
   const violations = await a11yViolations(element, options);
 
   if (violations.length > 0) {
-    throw new Error(`axe ${String(violations.length)} ihlal buldu:\n${violations.join('\n')}`);
+    throw new Error(
+      `axe found ${String(violations.length)} violation(s):\n${violations.join('\n')}`,
+    );
   }
 }

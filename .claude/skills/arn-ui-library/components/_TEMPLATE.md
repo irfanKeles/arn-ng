@@ -15,6 +15,7 @@
 ## 2. Mimari ve CDK
 
 <!-- Neyden extend ediyor, hangi CDK parçalarını kullanıyor, neyi neden genişletti, hostDirectives. -->
+<!-- Config entegrasyonu: hangi alanlar injectArnConfig ile okunuyor (size, ripple…), hangi messages alt başlığı kullanılıyor (config.md §2, config-messages.md §5). -->
 
 ## 3. Token'lar
 

@@ -1,6 +1,6 @@
 import { a11yViolations, expectNoA11yViolations } from './a11y';
 
-describe('a11y test yardımcısı', () => {
+describe('a11y test helper', () => {
   let host: HTMLElement;
 
   function render(html: string): HTMLElement {
@@ -17,17 +17,17 @@ describe('a11y test yardımcısı', () => {
     host.remove();
   });
 
-  describe('alt metni olmayan <img>', () => {
+  describe('<img> without alt text', () => {
     const html = '<img src="data:," />';
 
-    it('ihlal olarak raporlanır', async () => {
+    it('is reported as a violation', async () => {
       const violations = await a11yViolations(render(html));
 
       expect(violations.length).toBe(1);
       expect(violations[0]).toContain('image-alt');
     });
 
-    it('expectNoA11yViolations hata fırlatır', async () => {
+    it('expectNoA11yViolations throws', async () => {
       let error: unknown;
 
       try {
@@ -41,14 +41,14 @@ describe('a11y test yardımcısı', () => {
     });
   });
 
-  describe('erişilebilir parça', () => {
-    const html = '<img src="data:," alt="Logo" /><button type="button">Kaydet</button>';
+  describe('accessible fragment', () => {
+    const html = '<img src="data:," alt="Logo" /><button type="button">Save</button>';
 
-    it('ihlal içermez', async () => {
+    it('has no violations', async () => {
       expect(await a11yViolations(render(html))).toEqual([]);
     });
 
-    it('expectNoA11yViolations hata fırlatmaz', async () => {
+    it('expectNoA11yViolations does not throw', async () => {
       let error: unknown;
 
       try {

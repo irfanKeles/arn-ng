@@ -6,10 +6,12 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 |---|---|---|---|
 | tokens (tema, global token'lar) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens.md](tokens.md) |
 | tokens-sizes (boyut xs-xl, density) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens-sizes.md](tokens-sizes.md) |
+| config (`provideArn`, `[arnConfig]`, `ArnConfigService`, `injectArnConfig`) | ortak yapı | `@arn-ng/ui/core` | [config.md](config.md) |
+| config-messages (mesaj şeması, Intl gün/ay adları) | ortak yapı | `@arn-ng/ui/core` | [config-messages.md](config-messages.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
 ## Notlar
 
-- `@arn-ng/ui/core` ve `@arn-ng/ui/button` entry point'leri şu an boş pilot (`export {};`). İçerik geldiğinde referans dosyaları yazılıp tabloya eklenecek. Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
+- `@arn-ng/ui/core` şu an yalnızca ayar sistemini içerir (overlay, ripple, i18n paketleri sonraki adımlar). `@arn-ng/ui/button` hâlâ boş pilot (`export {};`). Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
 - Bu dosya en fazla 150 satır. Aşarsa kategori indekslerine (Form, Button, Overlay, Data...) bölünür ve buradan bağlanır.

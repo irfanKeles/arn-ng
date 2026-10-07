@@ -55,6 +55,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 - Doğrudan `window`, `document`, `localStorage` kullanma. `DOCUMENT`, `inject(PLATFORM_ID)`, `afterNextRender` kullan (SSR güvenliği).
 - `innerHTML` ile kullanıcı verisi basma. Gerekirse sanitization açıkça yapılır.
 - Her `subscribe` temizlenir (`takeUntilDestroyed`) veya hiç kullanılmaz (signal tercih edilir).
+- Kaynak kodda JSDoc, yorum, test adı ve konsol mesajları İngilizce; `.claude/` ve `ROADMAP.md` Türkçe.
 
 ## 5. Token, tema, stil
 
@@ -73,20 +74,23 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 ## 6. Merkezi ayar
 
-- Davranışsal ayar: `provideArn({ size, density, locale, dir, animations })`.
-- Görsel ayar: CSS değişkenleri.
+- Davranışsal ayar tek arayüzdür: `ArnConfig` (`@arn-ng/ui/core`). Alanlar: `size`, `density`, `colorScheme`, `direction`, `ripple`, `locale`, `messages`, `forms`. Hepsi opsiyonel, literal union tipli, index signature YOK. Yeni alan ancak karar günlüğüyle eklenir.
+- Görsel ayar (renk, font, kenarlık, radius): CSS değişkenleri. `ArnConfig`'e taşınmaz.
 - **Öncelik sırası (yukarıdan aşağıya güçlüden zayıfa):**
   1. Bileşenin kendi input'u (`size="sm"`)
-  2. En yakın üst container/form (`<form arnForm size="sm">`, hiyerarşik DI)
-  3. Global `provideArn`
+  2. En yakın `[arnConfig]` bölümü (`<div arnConfig size="sm" density="compact">`, hiyerarşik DI, iç içe olabilir)
+  3. Global `provideArn()` (çalışma zamanında `ArnConfigService`)
   4. Kütüphane varsayılanı
-- Bu sıra her bileşen dokümanında "Yapılandırma" bölümünde kısaca belirtilir.
+- Üç seviye de signal'dir ve çalışma zamanında değişebilir. `undefined` "bir alttakini kullan" demektir.
+- Bileşen ayarı YALNIZCA `injectArnConfig` ile okur (`injectArnConfig('size', this.size)`); servisi veya token'ı doğrudan inject etmez, önceliği kendi yazmaz. Bu yüzden devralınan input'un varsayılanı `undefined`'dır (`input<ArnSize>()`).
+- DOM'a yazma otomatik değildir: `<html>` yalnızca `applyToDocument()` veya `provideArn({ applyToDocument: true })` ile güncellenir. `[arnConfig]` yalnızca kendi elemanına ve yalnızca verilen `density` / `colorScheme` için yazar.
+- Bu sıra her bileşen dokümanında "Yapılandırma" bölümünde kısaca belirtilir. Ayrıntı: [components/config.md](components/config.md).
 
 ## 7. Form uyumu
 
 - Form elemanları `ControlValueAccessor` ile çalışır: `ngModel`, `formControl`, `formControlName` üçü de test edilir.
 - Zorunlu durumlar: `disabled` (formdan ve input'tan), `invalid`, `touched`, `dirty`, `readonly`, `required`.
-- Hata görünümü `ng-invalid + ng-touched` ile ve `invalid` input'u ile tetiklenebilir.
+- Hata görünümü `ng-invalid` + `forms.showErrorsOn` (`touched` varsayılan, `dirty`, `submitted`; `ArnConfig`'ten) ile ve `invalid` input'u ile tetiklenebilir.
 - `setDisabledState` doğru uygulanır.
 - Signal forms'a bağımlılık YOK (19'da kararlı değil). Gelecekte eklenecekse ayrı karar.
 
@@ -103,6 +107,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 ## 9. i18n ve RTL
 
 - Bileşen içindeki tüm sabit metinler (örn. "Seç", "Temizle", "Sonuç yok", aria-label'lar) dışarıdan verilebilir bir locale/mesaj sistemiyle gelir. Metin koda gömülmez.
+- Metinler `ArnConfig.messages`'tadır (`ArnMessages`, varsayılan İngilizce). Her bileşen kendi alt başlığını core'a İngilizce varsayılanıyla ekler; tüketici ve çeviri paketi yalnızca `ArnDeepPartial<ArnMessages>` verir, bu yüzden anahtar eklemek kırıcı değildir, silmek/yeniden adlandırmak kırıcıdır. Gün/ay adları `Intl` ile `locale`'den üretilir, override edilebilir. Şema: [components/config-messages.md](components/config-messages.md).
 - Her bileşen RTL'de test edilir (`dir="rtl"`). Yön için `cdk/bidi` kullan.
 - İkon ve ok yönleri RTL'de aynalanır.
 - Tarih/sayı formatı locale'e göre.
@@ -114,7 +119,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 ## 11. İsimlendirme tutarlılığı
 
-Ortak input isimleri tüm bileşenlerde aynıdır: `size`, `variant`, `disabled`, `invalid`, `readonly`, `required`, `label`, `icon`. Aynı kavram için farklı isim icat etme. Yeni ortak kavram gerekiyorsa önce karar günlüğüne yaz.
+Ortak input isimleri tüm bileşenlerde aynıdır: `size`, `variant`, `disabled`, `invalid`, `readonly`, `required`, `label`, `icon`; ayar adları `ArnConfig` alanlarıdır (`density`, `colorScheme`, `direction`, `ripple`, `locale`). Aynı kavram için farklı isim icat etme. Yeni ortak kavram gerekiyorsa önce karar günlüğüne yaz.
 
 ## 12. Bileşen "Bitti" tanımı (Definition of Done)
 
@@ -222,12 +227,14 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: shadcn uyumu genişletildi: yalnızca palet değil bileşen kataloğu, varyant/boyut adları ve ölçüler de shadcn'i izler; sapmalar bileşen referans dosyasına gerekçeyle yazılır (bölüm 1).
 - 2026-10: Tema (Faz 2 adım a): tek dosya `@arn-ng/ui/theme.css`, kaynağı `projects/ui/theme.css` (core altı değil: workspace symlink'i ve `dist` aynı göreli yolu görsün diye). Temel renk neutral; değerler `ui.shadcn.com/r/colors/neutral.json` ile doğrulandı. Dark mode `light-dark()` + `color-scheme` ile (shadcn'in `.dark` bloğunu yeniden tanımlama tekniğinden sapma; tüketici API'si aynı, değerler tek yerde). `.light` sınıfı eklendi, `data-theme` yok. oklch yazımı Stylelint'e uyar, kural kapatılmadı. `chart-*`, `sidebar-*` ve `success/warning/info` token'ları EKLENMEDİ (ihtiyaç duyan bileşenle ayrı karar). `--arn-destructive-foreground` yok (güncel shadcn'de kaldırılmış). Font yığını `system-ui` tabanlı.
 - 2026-10: Boyut ve density (Faz 2 adım b, yalnızca CSS; `theme.css` içinde, ayrı dosya reddedildi, paket yapısı değişmedi). (1) Bileşen token'ı host'ta hesaplanır; `:root`'taki türetilmiş adımlar yalnızca global değişir ve bileşende kullanılmaz. (2) Kontrol token'ları `--arn-control-{height,padding-inline,font-size,icon-size,gap}-{xs…xl}`, sabit değer (`var()` yok), varsayılan `md`. xs-lg shadcn button değerleri (`button.tsx`, new-york-v4, web'den doğrulandı; shadcn'de artık `xs` var, `default` bizde `md`); `xl` bizim ekimiz (3rem / 2rem / 1rem / 1.25rem / 0.5rem). (3) Density `--arn-density` çarpanı (1 / 0.875), `[data-density]` ile; yalnızca yükseklik ve yatay padding. (4) `--arn-control-min-size: 1.5rem` ve host'ta `max()`: density sonrası yükseklik tabanı (SC 2.5.8); compact xs 24px kalır. (5) Compact'ta yuvarlama yok (md 31.5px).
+- 2026-10: Ayar sistemi (Faz 2 adım c, `@arn-ng/ui/core`; ayrıntı `components/config.md`). (1) Tek `ArnConfig`; §6'daki eski `dir` → `direction`, `animations` alanı çıkarıldı, `colorScheme` / `ripple` / `messages` / `forms` eklendi; ripple varsayılanı `false` kaldı. (2) Bölüm ayarı `arnForm` değil `[arnConfig]` direktifi. (3) Öncelik tek fonksiyonda (`createScope`); bileşen `injectArnConfig` kullanır; token'lar dışa açılmaz. (4) `effect()` KULLANILMAZ (19'da developer preview): `applyToDocument` sonrası DOM yazımı servis `update`'inde senkrondur. (5) DOM'a yazma yalnızca açık çağrıyla; `[arnConfig]` kendi host'una `data-density` ve `.dark` / `.light` yansıtır, `dir` adım (d)'de. (6) Tip dışı alan/değer her modda atılır, geliştirme modunda `console.warn`. (7) Mesaj şeması v1: `common`, `dialog`, `toast`, `datePicker`; gün/ay adları `Intl` + override. (8) `forms.showErrorsOn`: `touched` | `dirty` | `submitted`.
+- 2026-10: Kaynak kod dili İngilizce (§4): `projects/ui/` altındaki JSDoc, yorum, test adı ve konsol mesajları çevrildi (paket public, JSDoc tüketicinin IDE'sinde görünür). `.claude/` ve `ROADMAP.md` Türkçe kalır; testlerdeki Türkçe çeviri verisi (`'Tamam'`, `tr-TR` adları) test verisidir.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar
 
 - Doküman sitesi için araç (özel Angular uygulaması önerilir) ve kod örneği vurgulama yöntemi
-- Mesaj/i18n sisteminin tam API'si
+- i18n çeviri paketlerinin biçimi ve dağıtımı, RTL entegrasyonu (`cdk/bidi`, `direction`'ın DOM'a yansıması): Faz 2 adım (d). Mesaj şeması ve `messages` API'si kararlaştırıldı
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
 
 ## 18. Bileşen referans dosyaları (`components/`)

@@ -21,8 +21,8 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 ## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
 - [x] Token yapısı (ham / anlamlı), shadcn neutral paleti, `oklch`, dark mode (`light-dark()` + `.dark` / `.light`): `@arn-ng/ui/theme.css`. Bileşen katmanı ilk bileşenle gelir (Faz 4)
 - [x] Boyutlar xs-xl, density (comfortable / compact): CSS token'ları (`--arn-control-*`, `--arn-density`, `--arn-control-min-size`) `theme.css`'te. `size` / `density` TS tipleri ve DI `provideArn` maddesinde
-- [ ] `provideArn()` ve hiyerarşik ayar öncelik sırası
-- [ ] i18n mesaj sistemi, RTL (`cdk/bidi`)
+- [x] `provideArn()` ve hiyerarşik ayar öncelik sırası: `ArnConfig`, `[arnConfig]`, `ArnConfigService` (`applyToDocument`), `injectArnConfig` (`components/config.md`)
+- [ ] i18n mesaj sistemi, RTL (`cdk/bidi`). Mesaj şeması, derin birleşme ve Intl gün/ay adları `provideArn` adımında tanımlandı (`components/config-messages.md`); kalan: çeviri paketleri, `direction`'ın DOM'a yansıması, bidi
 - [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
 - [ ] `arnRipple` directive'i
 - [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
@@ -58,6 +58,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] mask input, date picker, table, toast ve diğerleri (önceliği ihtiyaçla belirle)
 
 ## Açık kararlar
-- i18n mesaj sisteminin tam API'si
+- i18n çeviri paketlerinin biçimi ve dağıtımı (mesaj şeması ve `messages` API'si kararlaştırıldı)
 - Doküman sitesinde kod vurgulama yöntemi
 - `chart-*`, `sidebar-*` ve `success` / `warning` / `info` token'ları: şimdilik yok, ihtiyaç duyan ilk bileşenle karar verilecek
+- `ArnConfigService` ile verilen bir alanı "varsayılana dön" diye silme yolu (reset) yok; ilk ihtiyaçta karar ver.

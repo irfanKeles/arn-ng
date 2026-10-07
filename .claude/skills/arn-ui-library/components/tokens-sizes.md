@@ -12,7 +12,7 @@
 | Sınıf adları | Yok |
 | Dosya yolları | `projects/ui/theme.css`, `projects/ui/testing/theme.spec.ts` |
 
-Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri, input'ları ve DI `provideArn` ile gelir (ROADMAP Faz 2).
+Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri (`ArnSize`, `ArnDensity`) ve DI: [config.md](config.md). `[arnConfig]` ve `applyToDocument` buradaki `data-density`'yi yazar.
 
 ## 2. Mimari
 

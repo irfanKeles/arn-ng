@@ -1,0 +1,19 @@
+<arn-probe #rootProbe />
+<div
+  #outer
+  arnConfig
+  [size]="outerSize()"
+  [density]="outerDensity()"
+  [colorScheme]="outerColorScheme()"
+  [locale]="outerLocale()"
+  [messages]="outerMessages()"
+  [forms]="outerForms()"
+>
+  <arn-probe #outerProbe />
+  <div #middle arnConfig ripple [messages]="{ common: { no: 'Hayır' } }">
+    <arn-probe #middleProbe />
+    <div #inner arnConfig [size]="innerSize()" class="dark">
+      <arn-probe #innerProbe [size]="ownSize()" />
+    </div>
+  </div>
+</div>

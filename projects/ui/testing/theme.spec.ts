@@ -1,4 +1,4 @@
-// theme.css, angular.json'daki ui test hedefinin `styles` seçeneğiyle yüklenir.
+// theme.css is loaded through the `styles` option of the ui test target in angular.json.
 
 const semanticColorTokens = [
   'background',
@@ -41,7 +41,7 @@ const scaleTokens = [
 const sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
 type Size = (typeof sizes)[number];
 
-/** Boyuta göre kontrol ölçüleri, rem cinsinden (density uygulanmamış). */
+/** Control dimensions per size, in rem (density not applied). */
 const controlRem = {
   height: { xs: 1.5, sm: 2, md: 2.25, lg: 2.5, xl: 3 },
   'padding-inline': { xs: 0.5, sm: 0.75, md: 1, lg: 1.5, xl: 2 },
@@ -65,7 +65,7 @@ describe('theme.css', () => {
   let host: HTMLElement;
   let rem: number;
 
-  /** `className` taşıyan bir kutu ekler; arka planı verilen değerdir. */
+  /** Appends a box with `className`; its background is the given value. */
   function box(parent: HTMLElement, className: string, background: string): HTMLElement {
     const element = document.createElement('div');
     element.className = className;
@@ -78,22 +78,22 @@ describe('theme.css', () => {
     return getComputedStyle(element).backgroundColor;
   }
 
-  /** Ham token'ın tarayıcıdaki hesaplanmış rengi (karşılaştırma referansı). */
+  /** The computed color of a raw token in the browser (comparison reference). */
   function resolved(token: string): string {
     return backgroundOf(box(host, '', `var(--arn-${token})`));
   }
 
-  /** `data-density` taşıyan bir container ekler. */
+  /** Appends a container with `data-density`. */
   function density(parent: HTMLElement, value: 'comfortable' | 'compact'): HTMLElement {
     const element = box(parent, '', 'none');
     element.setAttribute('data-density', value);
     return element;
   }
 
-  /** Kesirli px karşılaştırması için üç basamağa yuvarlar. */
+  /** Rounds to three decimals for fractional px comparison. */
   const round = (value: number): number => Math.round(value * 1000) / 1000;
 
-  /** Verilen uzunluk değerinin elemandaki hesaplanmış px karşılığı. */
+  /** The computed px value of the given length on the element. */
   function lengthOf(element: HTMLElement, value: string): number {
     element.style.inlineSize = value;
     return round(parseFloat(getComputedStyle(element).inlineSize));
@@ -103,14 +103,14 @@ describe('theme.css', () => {
     return Object.fromEntries(sizes.map((size) => [size, read(size)])) as Record<Size, T>;
   }
 
-  /** Kontrol token'ının boyuta göre beklenen px değeri, isteğe bağlı çarpanla. */
+  /** The expected px value of a control token per size, with an optional factor. */
   function expected(property: ControlProperty, factor = 1): Record<Size, number> {
     return bySize((size) => round(controlRem[property][size] * rem * factor));
   }
 
   /**
-   * Bileşen host'unu taklit eden geçici deneme elemanı: kendi token'larını kendi üstünde hesaplar
-   * (SKILL §5). Henüz bileşen yok; örüntü components/_TEMPLATE.md'dekiyle aynıdır.
+   * Temporary probe element that mimics a component host: it computes its own tokens on itself
+   * (SKILL §5). There is no component yet; the pattern is the same as in components/_TEMPLATE.md.
    */
   function probe(parent: HTMLElement, size: Size): HTMLElement {
     const element = box(parent, '', 'none');
@@ -141,7 +141,7 @@ describe('theme.css', () => {
     host.remove();
   });
 
-  it('anlamlı renk ve ölçek token’ları :root’ta tanımlıdır', () => {
+  it('semantic color and scale tokens are defined on :root', () => {
     const rootStyle = getComputedStyle(document.documentElement);
     const missing = [...semanticColorTokens, ...scaleTokens, ...controlTokens].filter(
       (token) => rootStyle.getPropertyValue(`--arn-${token}`).trim() === '',
@@ -150,27 +150,27 @@ describe('theme.css', () => {
     expect(missing).toEqual([]);
   });
 
-  it('sınıf yokken sistem tercihine uyar', () => {
+  it('follows the system preference without a class', () => {
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
     const element = box(host, '', 'var(--arn-background)');
 
     expect(backgroundOf(element)).toBe(resolved(prefersDark ? 'neutral-950' : 'white'));
   });
 
-  it('.dark koyu değerleri zorlar', () => {
+  it('.dark forces the dark values', () => {
     const element = box(host, 'dark', 'var(--arn-background)');
 
     expect(backgroundOf(element)).toBe(resolved('neutral-950'));
     expect(backgroundOf(element)).not.toBe(resolved('white'));
   });
 
-  it('.light açık değerleri zorlar', () => {
+  it('.light forces the light values', () => {
     const element = box(host, 'light', 'var(--arn-background)');
 
     expect(backgroundOf(element)).toBe(resolved('white'));
   });
 
-  it('iç içe sınıflarda en yakın olan geçerlidir', () => {
+  it('with nested classes the nearest one applies', () => {
     const dark = box(host, 'dark', 'var(--arn-primary)');
     const lightInDark = box(dark, 'light', 'var(--arn-primary)');
 
@@ -178,7 +178,7 @@ describe('theme.css', () => {
     expect(backgroundOf(lightInDark)).toBe(resolved('neutral-900'));
   });
 
-  it('radius ölçeği --arn-radius’tan türer', () => {
+  it('the radius scale derives from --arn-radius', () => {
     const element = box(host, '', 'none');
     const radiusOf = (value: string): number => {
       element.style.borderRadius = value;
@@ -192,8 +192,8 @@ describe('theme.css', () => {
     expect(radiusOf('var(--arn-radius-4xl)')).toBeCloseTo(base * 2.6, 3);
   });
 
-  // Türetilmiş adımlar :root'ta hesaplanır: taban yalnızca :root'ta değiştirilince ölçek yeniden türer
-  it('--arn-radius :root’ta değişince ölçek onu izler, container’da değişince izlemez', () => {
+  // Derived steps are computed on :root: the scale re-derives only when the base changes on :root
+  it('the scale follows --arn-radius changed on :root, not changed in a container', () => {
     const element = box(host, '', 'none');
     const smallRadius = (): number => {
       element.style.borderRadius = 'var(--arn-radius-sm)';
@@ -214,19 +214,19 @@ describe('theme.css', () => {
     }
   });
 
-  it('kontrol token’ları her boyutta beklenen değere çözülür', () => {
+  it('control tokens resolve to the expected value at every size', () => {
     const element = box(host, '', 'none');
 
     for (const property of controlProperties) {
       const actual = bySize((size) => lengthOf(element, `var(--arn-control-${property}-${size})`));
 
-      // Özellik adı beklentiye eklenir ki hata mesajı hangi token grubunun tutmadığını söylesin
+      // The property name is added to the expectation so the failure says which token group is off
       expect([property, actual]).toEqual([property, expected(property)]);
     }
     expect(lengthOf(element, 'var(--arn-control-min-size)')).toBeCloseTo(1.5 * rem, 3);
   });
 
-  it('kontrol yüksekliği xs’ten xl’e artar', () => {
+  it('control height increases from xs to xl', () => {
     const element = box(host, '', 'none');
     const heights = sizes.map((size) => lengthOf(element, `var(--arn-control-height-${size})`));
 
@@ -234,18 +234,18 @@ describe('theme.css', () => {
     expect(new Set(heights).size).toBe(sizes.length);
   });
 
-  it('data-density yokken yükseklik ve padding kontrol token’ına eşittir', () => {
+  it('without data-density, height and padding equal the control token', () => {
     const probes = bySize((size) => probe(host, size));
 
     expect(bySize((size) => heightOf(probes[size]))).toEqual(expected('height'));
     expect(bySize((size) => paddingOf(probes[size]))).toEqual(expected('padding-inline'));
   });
 
-  it('compact yüksekliği ve padding’i çarpanla küçültür, yazı ve ikonu küçültmez', () => {
+  it('compact scales height and padding by the factor, not font and icon', () => {
     const container = density(host, 'compact');
     const probes = bySize((size) => probe(container, size));
 
-    // xs çarpanlı değerde değil, tabanda kalır (aşağıdaki test)
+    // xs stays at the floor, not at the scaled value (see the test below)
     expect(bySize((size) => heightOf(probes[size]))).toEqual({
       ...expected('height', compact),
       xs: round(1.5 * rem),
@@ -259,22 +259,22 @@ describe('theme.css', () => {
     ).toEqual(expected('icon-size'));
   });
 
-  // WCAG 2.2 SC 2.5.8: xs çarpanla 21px olurdu, taban 24px'te tutar
-  it('compact xs yüksekliği --arn-control-min-size’ın altına düşmez', () => {
+  // WCAG 2.2 SC 2.5.8: xs would be 21px with the factor; the floor keeps it at 24px
+  it('compact xs height does not drop below --arn-control-min-size', () => {
     const element = probe(density(host, 'compact'), 'xs');
 
     expect(heightOf(element)).toBeCloseTo(1.5 * rem, 3);
     expect(heightOf(element)).toBeGreaterThan(controlRem.height.xs * rem * compact);
   });
 
-  it('--arn-control-min-size container’da değiştirilebilir', () => {
+  it('--arn-control-min-size can be changed in a container', () => {
     const container = density(host, 'compact');
     container.style.setProperty('--arn-control-min-size', '2rem');
 
     expect(heightOf(probe(container, 'sm'))).toBeCloseTo(2 * rem, 3);
   });
 
-  it('iç içe density’de en yakın olan geçerlidir', () => {
+  it('with nested density the nearest one applies', () => {
     const outer = density(host, 'compact');
     const comfortableInCompact = density(outer, 'comfortable');
     const compactAgain = density(comfortableInCompact, 'compact');
@@ -285,8 +285,8 @@ describe('theme.css', () => {
     expect(heightOf(probe(compactAgain, 'md'))).toBeCloseTo(md * compact, 3);
   });
 
-  // [data-density] kuralı :root bloğundan sonra durduğu için kökte de kazanır
-  it('data-density kök elemanda da çalışır', () => {
+  // The [data-density] rule comes after the :root block, so it also wins on the root element
+  it('data-density also works on the root element', () => {
     const root = document.documentElement;
     const element = probe(host, 'md');
 
@@ -298,8 +298,8 @@ describe('theme.css', () => {
     }
   });
 
-  // SKILL §5: host'ta hesaplanan token container'daki tabanı izler, :root'ta türetilen adım izlemez
-  it('container’da taban değişince host’ta hesaplanan token güncellenir', () => {
+  // SKILL §5: a token computed on the host follows the container's base; a step derived on :root does not
+  it('a token computed on the host updates when the base changes in a container', () => {
     const container = box(host, '', 'none');
     const element = probe(container, 'md');
     const rootStep = lengthOf(element, 'var(--arn-radius-md)');
@@ -310,7 +310,7 @@ describe('theme.css', () => {
     expect(lengthOf(element, 'var(--arn-radius-md)')).toBeCloseTo(rootStep, 3);
   });
 
-  it('container’da kontrol token’ı değişince host’taki yükseklik onu izler', () => {
+  it('the host height follows a control token changed in a container', () => {
     const container = density(host, 'compact');
     container.style.setProperty('--arn-control-height-md', '3rem');
 
