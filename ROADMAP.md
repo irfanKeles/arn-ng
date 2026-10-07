@@ -9,8 +9,8 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] npm hesabında 2FA aç, npm'in yayın politikası duyurusunu oku (Ağu 2026 / Oca 2027 değişiklikleri CI'dan yayını etkileyebilir)
 
 ## Faz 1 — Altyapı
-- [ ] Monorepo aracı kararı (Angular workspace mi Nx mi)
-- [ ] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
+- [x] Monorepo aracı kararı: Angular workspace (Nx yok), paket yöneticisi npm, geliştirme Angular 19 / CLI 19
+- [x] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
 - [ ] Secondary entry point yapısı (`@arn-ng/ui/core`, `@arn-ng/ui/button` ...)
 - [ ] Lint, strict TypeScript, birim test altyapısı
 - [ ] CI (build + test + lint, Angular 19 ve en güncel sürümde derleme)
@@ -50,6 +50,5 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] mask input, date picker, table, toast ve diğerleri (önceliği ihtiyaçla belirle)
 
 ## Açık kararlar
-- Monorepo aracı (Angular workspace / Nx)
 - i18n mesaj sisteminin tam API'si
 - Doküman sitesinde kod vurgulama yöntemi

@@ -183,11 +183,11 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: Angular 19+, CDK, shadcn referansı, `@arn-ng/ui`, prefix `arn`, basit bileşenlerde attribute+element, karmaşıklarda sadece element, boyutlar xs-xl, density comfortable/compact, dark mode class + sistem.
 - 2026-10: `@arn` npm kapsamı alınmış çıktı. Paket adı `@arn-ng/ui` oldu (npm org: `arn-ng`). Selector prefix (`arn`) ve CSS token öneki (`--arn-*`) değişmedi.
 - 2026-10: Kütüphane açık kaynak olacak (MIT, public npm), monorepo kullanılacak, ripple isteğe bağlı directive olarak eklenecek.
+- 2026-10: Monorepo aracı Angular workspace (Nx yok). Paket yöneticisi npm. Geliştirme Angular 19 / CLI 19 ile. Yapı: `projects/ui` (kütüphane, ng-packagr), `projects/docs` (standalone doküman uygulaması).
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar
 
 - Doküman sitesi için araç (özel Angular uygulaması önerilir) ve kod örneği vurgulama yöntemi
 - Mesaj/i18n sisteminin tam API'si
-- Monorepo aracı (Angular workspace veya Nx)
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
