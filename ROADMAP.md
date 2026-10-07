@@ -19,13 +19,14 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi. Yayın metadata'sı ve `LICENSE` paketlemesi de bu maddede yapıldı
 
 ## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
-- [ ] Token yapısı (ham / anlamlı / bileşen), shadcn paleti, `oklch`, dark mode
+- [x] Token yapısı (ham / anlamlı), shadcn neutral paleti, `oklch`, dark mode (`light-dark()` + `.dark` / `.light`): `@arn-ng/ui/theme.css`. Bileşen katmanı ilk bileşenle gelir (Faz 4)
 - [ ] Boyutlar xs-xl, density (comfortable / compact)
 - [ ] `provideArn()` ve hiyerarşik ayar öncelik sırası
 - [ ] i18n mesaj sistemi, RTL (`cdk/bidi`)
 - [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
 - [ ] `arnRipple` directive'i
-- [ ] Token kataloğu referans dosyası (global token'lar, tema, density)
+- [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
+- [ ] Token kataloğuna boyut ve density bölümü (boyut/density maddesiyle birlikte)
 
 ## Faz 3 — Doküman sitesi iskeleti
 - [ ] Sidebar (kategorili), sayfa içi gezinti, arama
@@ -59,3 +60,4 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 ## Açık kararlar
 - i18n mesaj sisteminin tam API'si
 - Doküman sitesinde kod vurgulama yöntemi
+- `chart-*`, `sidebar-*` ve `success` / `warning` / `info` token'ları: şimdilik yok, ihtiyaç duyan ilk bileşenle karar verilecek

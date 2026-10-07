@@ -1,0 +1,96 @@
+/*
+ * @arn-ng/ui tema dosyası. Tüketici bir kez ekler: @import '@arn-ng/ui/theme.css';
+ * Yalnızca token ve color-scheme içerir, hiçbir elemanı boyamaz.
+ * Katmanlar: ham (palet) → anlamlı. Bileşen katmanı (--arn-<bileşen>-<özellik>) bileşenin kendi stilinde durur.
+ * Değerler shadcn/ui neutral temasıdır; token kataloğu: .claude/skills/arn-ui-library/components/tokens.md
+ */
+
+:root {
+  /* Sınıf yoksa sistem tercihi (prefers-color-scheme) geçerlidir */
+  color-scheme: light dark;
+
+  /* Ham: palet */
+  --arn-white: oklch(100% 0 0deg);
+  --arn-neutral-50: oklch(98.5% 0 0deg);
+  --arn-neutral-100: oklch(97% 0 0deg);
+  --arn-neutral-200: oklch(92.2% 0 0deg);
+  --arn-neutral-300: oklch(87% 0 0deg);
+  --arn-neutral-400: oklch(70.8% 0 0deg);
+  --arn-neutral-500: oklch(55.6% 0 0deg);
+  --arn-neutral-600: oklch(43.9% 0 0deg);
+  --arn-neutral-700: oklch(37.1% 0 0deg);
+  --arn-neutral-800: oklch(26.9% 0 0deg);
+  --arn-neutral-900: oklch(20.5% 0 0deg);
+  --arn-neutral-950: oklch(14.5% 0 0deg);
+  --arn-red-400: oklch(70.4% 0.191 22.216deg);
+  --arn-red-600: oklch(57.7% 0.245 27.325deg);
+
+  /* Anlamlı: renk — light-dark(açık, koyu) */
+  --arn-background: light-dark(var(--arn-white), var(--arn-neutral-950));
+  --arn-foreground: light-dark(var(--arn-neutral-950), var(--arn-neutral-50));
+  --arn-card: light-dark(var(--arn-white), var(--arn-neutral-900));
+  --arn-card-foreground: light-dark(var(--arn-neutral-950), var(--arn-neutral-50));
+  --arn-popover: light-dark(var(--arn-white), var(--arn-neutral-900));
+  --arn-popover-foreground: light-dark(var(--arn-neutral-950), var(--arn-neutral-50));
+  --arn-primary: light-dark(var(--arn-neutral-900), var(--arn-neutral-200));
+  --arn-primary-foreground: light-dark(var(--arn-neutral-50), var(--arn-neutral-900));
+  --arn-secondary: light-dark(var(--arn-neutral-100), var(--arn-neutral-800));
+  --arn-secondary-foreground: light-dark(var(--arn-neutral-900), var(--arn-neutral-50));
+  --arn-muted: light-dark(var(--arn-neutral-100), var(--arn-neutral-800));
+  --arn-muted-foreground: light-dark(var(--arn-neutral-500), var(--arn-neutral-400));
+  --arn-accent: light-dark(var(--arn-neutral-100), var(--arn-neutral-800));
+  --arn-accent-foreground: light-dark(var(--arn-neutral-900), var(--arn-neutral-50));
+  --arn-destructive: light-dark(var(--arn-red-600), var(--arn-red-400));
+
+  /* Koyu border ve input shadcn'de alfa'lı beyazdır, palette karşılığı yok */
+  --arn-border: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%));
+  --arn-input: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 15%));
+  --arn-ring: light-dark(var(--arn-neutral-400), var(--arn-neutral-500));
+
+  /* Radius: -sm…-4xl ölçeğin adımıdır, bileşen boyutu (xs-xl) değildir */
+  --arn-radius: 0.625rem;
+  --arn-radius-sm: calc(var(--arn-radius) * 0.6);
+  --arn-radius-md: calc(var(--arn-radius) * 0.8);
+  --arn-radius-lg: var(--arn-radius);
+  --arn-radius-xl: calc(var(--arn-radius) * 1.4);
+  --arn-radius-2xl: calc(var(--arn-radius) * 1.8);
+  --arn-radius-3xl: calc(var(--arn-radius) * 2.2);
+  --arn-radius-4xl: calc(var(--arn-radius) * 2.6);
+
+  /* Yazı */
+  --arn-font-sans:
+    ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  --arn-font-mono:
+    ui-monospace, 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New',
+    monospace;
+  --arn-text-xs: 0.75rem;
+  --arn-text-xs-line-height: calc(1 / 0.75);
+  --arn-text-sm: 0.875rem;
+  --arn-text-sm-line-height: calc(1.25 / 0.875);
+  --arn-text-base: 1rem;
+  --arn-text-base-line-height: calc(1.5 / 1);
+  --arn-text-lg: 1.125rem;
+  --arn-text-lg-line-height: calc(1.75 / 1.125);
+  --arn-text-xl: 1.25rem;
+  --arn-text-xl-line-height: calc(1.75 / 1.25);
+  --arn-font-weight-normal: 400;
+  --arn-font-weight-medium: 500;
+  --arn-font-weight-semibold: 600;
+
+  /* Boşluk tabanı: bileşen calc(var(--arn-spacing) * n) yazar */
+  --arn-spacing: 0.25rem;
+
+  /* Çizgi */
+  --arn-border-width: 1px;
+  --arn-ring-width: 3px;
+}
+
+/* Zorlama: sınıf sistem tercihini ezer, iç içe kullanılabilir */
+.dark {
+  color-scheme: dark;
+}
+
+.light {
+  color-scheme: light;
+}

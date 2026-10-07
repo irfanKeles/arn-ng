@@ -12,7 +12,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 - Paket: `@arn-ng/ui`. Selector prefix: `arn`. Ücretsiz ve **açık kaynak** (npm'de public yayınlanır, lisans: MIT). Gerçek projelerde npm'den kurulup kullanılacak, bu yüzden public API kararlılığı ve semver baştan ciddiye alınır.
 - Minimum Angular: **19**. Sadece Angular 19'da KARARLI olan API'leri kullan. Daha yeni sürümde gelen veya 19'da deneysel olan API'ye bağımlı olma (örn. signal forms, `linkedSignal`, `resource` yok).
 - Headless katman: **Angular CDK**. Başka bir headless kütüphane (Spartan brain, ng-primitives vb.) EKLENMEZ. Eksik bileşenler CDK primitifleri (overlay, a11y, listbox, menu, dialog, bidi, scrolling) üzerine yazılır.
-- Görsel referans: **shadcn/ui** (renk paleti, dark mode dahil, görünüm). Angular'a çevrilir, kendi design token'larımızla.
+- Görsel ve bileşen dili referansı: **shadcn/ui** (Spartan UI gibi: headless taban CDK, üstüne stil). Yalnızca renk değil; bileşen kataloğu, varyant adları (button: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`), boyut adları ve ölçüler (radius, boşluk, focus ring) shadcn'i izler. Kod kopyalanmaz, referans alınır; kendi token'larımızla Angular'a çevrilir. Her sapma bileşenin referans dosyasına (bölüm 18) gerekçesiyle yazılır. Bizim eklerimiz: boyutlar xs-xl, density, ileride mask vb.
 - Hedef: PrimeNG kadar profesyonel, kararlı, tutarlı; kullanıcıya ve geliştiriciye sorun çıkarmayan bir kütüphane. Hız değil sağlamlık önceliklidir.
 - Hedef tarayıcı: Angular'ın desteklediği güncel (evergreen) tarayıcılar, yaklaşık son 1 yıllık sürümler. `oklch` fallback'siz kullanılabilir.
 
@@ -39,6 +39,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 - Tüm bileşenler standalone. NgModule YOK.
 - `package.json`: `sideEffects: false`, `peerDependencies` içinde `@angular/core`, `@angular/cdk` aralığı açıkça yazılı (>=19).
 - Yayın metadata'sı `projects/ui/package.json`'da durur (`description`, `keywords`, `license`, `author`, `homepage`, `repository`, `bugs`, `publishConfig.access: public`). `projects/ui/LICENSE` kök `LICENSE`'ın kopyasıdır (ng-packagr proje dışından dosya almaz); biri değişirse diğeri de güncellenir.
+- Tema tek dosya: kaynak `projects/ui/theme.css`, ng-packagr `assets` ile `dist/ui/theme.css`'e kopyalanır, `projects/ui/package.json` `exports`'unda `./theme.css` olarak açılır (ng-packagr elle yazılan `exports`'u üretilenlerle birleştirir). Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css'`.
 - Public API küçük tutulur. Dışarı açılan her şey söz verilmiş sayılır. İç detaylar export edilmez. Export etmeden önce gerekçe sor.
 - Entry point'ler arası döngüsel bağımlılık YASAK. Ortak kod `@arn-ng/ui/core` altında.
 
@@ -57,10 +58,10 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 ## 5. Token, tema, stil
 
-- Üç katman: **ham** (`--arn-blue-500`), **anlamlı** (`--arn-primary`, `--arn-border`, `--arn-radius`), **bileşen** (`--arn-button-bg`, `--arn-button-radius`). Bileşen token'ı anlamlı token'a bağlanır, kullanıcı ister global ister tek bileşen için değiştirir.
-- İsimlendirme: `--arn-<bileşen>-<özellik>[-<durum>]`. Tutarlı, istisnasız.
-- Renk formatı `oklch`. Palet shadcn'den alınır.
-- Dark mode: `.dark` class'ı ile zorlanabilir VE varsayılan olarak sistem ayarına uyar (`prefers-color-scheme`).
+- Üç katman: **ham** (`--arn-neutral-500`), **anlamlı** (`--arn-primary`, `--arn-border`, `--arn-radius`), **bileşen** (`--arn-button-bg`, `--arn-button-radius`). Bileşen token'ı anlamlı token'a bağlanır, kullanıcı ister global ister tek bileşen için değiştirir. Ham ve anlamlı katman `theme.css`'te, bileşen katmanı bileşenin kendi stilinde durur. Bileşen yalnızca token'a bakar, kendi renk değerini taşımaz. Tam liste: [components/tokens.md](components/tokens.md).
+- İsimlendirme: `--arn-<bileşen>-<özellik>[-<durum>]`. Tutarlı, istisnasız. Anlamlı token adları shadcn adlarıdır (`--arn-background`, `--arn-muted-foreground`...).
+- Renk formatı `oklch`, Stylelint'in istediği yazımla (`oklch(98.5% 0 0deg)`). Temel renk shadcn **neutral**.
+- Dark mode: anlamlı renkler `light-dark(açık, koyu)` ile tek yerde tanımlanır. `:root` `color-scheme: light dark` taşır (sistem ayarına uyar); `.dark` / `.light` sınıfı zorlar, sistem tercihini ezer ve iç içe kullanılabilir. `theme.css` hiçbir elemanı boyamaz.
 - **Mantıksal CSS özellikleri zorunlu** (RTL için): `margin-inline-start`, `padding-inline-end`, `inset-inline-start`, `text-align: start`. `margin-left/right`, `padding-left/right`, `left/right`, `text-align: left/right` YASAK (istisna gerekçesi yazılı olmalı).
 - Boyutlar: `xs`, `sm`, `md`, `lg`, `xl` (5 boyut). Varsayılan `md`.
 - Yoğunluk: `comfortable` (varsayılan) ve `compact`. Container'a `data-density="compact"` verilince alttaki tüm bileşenlerin yükseklik/padding/font token'ları küçülür. Bileşenlere tek tek dokunmak gerekmez.
@@ -216,6 +217,8 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: CI: GitHub Actions, tek job (`ubuntu-latest`, imajdaki Chrome), `actions/checkout@v7` + `actions/setup-node@v7`, izin `contents: read`, aynı ref'te eski çalışma iptal. Dependabot haftalık; `@angular/*`, `@angular-devkit/*`, `ng-packagr`, `typescript` (minor dahil), `zone.js`, `rxjs`, `eslint`, `@eslint/js`, `angular-eslint` majörleri yoksayılır. Yayın trusted publishing (OIDC) ile yapılacak, saklı npm token yok.
 - 2026-10: Sürümleme: Changesets 3 (`.changeset/config.json`: `baseBranch: main`, `access: public`, varsayılan changelog formatı). Changesets paketi bulabilsin diye kök `package.json`'da npm `workspaces: ["projects/ui"]` (yan etki: `node_modules/@arn-ng/ui` kaynağa bağlanır; derleme `tsconfig` `paths` ile `dist/ui`'yi kullanmaya devam eder). `projects/ui` sürümü `0.0.0`, ilk yayın 0.1.0. PR'larda changeset kontrolü CI'a 0.1.0'dan sonra eklenecek.
 - 2026-10: Yerel paket testi Verdaccio ile (repoya bağımlılık eklenmeden, geçici klasörde; akış `local-package-test.md`). İlk çalıştırma geçti. Yayın metadata'sı ve `projects/ui/LICENSE` eklendi; lisans MIT, `publishConfig.access: public`.
+- 2026-10: shadcn uyumu genişletildi: yalnızca palet değil bileşen kataloğu, varyant/boyut adları ve ölçüler de shadcn'i izler; sapmalar bileşen referans dosyasına gerekçeyle yazılır (bölüm 1).
+- 2026-10: Tema (Faz 2 adım a): tek dosya `@arn-ng/ui/theme.css`, kaynağı `projects/ui/theme.css` (core altı değil: workspace symlink'i ve `dist` aynı göreli yolu görsün diye). Temel renk neutral; değerler `ui.shadcn.com/r/colors/neutral.json` ile doğrulandı. Dark mode `light-dark()` + `color-scheme` ile (shadcn'in `.dark` bloğunu yeniden tanımlama tekniğinden sapma; tüketici API'si aynı, değerler tek yerde). `.light` sınıfı eklendi, `data-theme` yok. oklch yazımı Stylelint'e uyar, kural kapatılmadı. `chart-*`, `sidebar-*` ve `success/warning/info` token'ları EKLENMEDİ (ihtiyaç duyan bileşenle ayrı karar). `--arn-destructive-foreground` yok (güncel shadcn'de kaldırılmış). Font yığını `system-ui` tabanlı.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

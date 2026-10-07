@@ -1,1 +1,7 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('@arn-ng/ui/theme.css');
+
+body {
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  font-family: var(--arn-font-sans);
+}

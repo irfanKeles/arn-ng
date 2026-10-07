@@ -32,6 +32,7 @@
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
             "main": "projects/ui/testing/test-setup.ts",
+            "styles": ["projects/ui/theme.css"],
             "karmaConfig": "projects/ui/karma.conf.js"
           }
         }

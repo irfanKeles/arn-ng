@@ -40,7 +40,7 @@
 
 ## 7. Kısıtlar ve kararlar
 
-<!-- Bilinen sınırlar, reddedilen alternatifler ve gerekçeleri. -->
+<!-- Bilinen sınırlar, reddedilen alternatifler ve gerekçeleri. shadcn/ui'den her sapma (varyant, boyut, ölçü, davranış) burada gerekçesiyle yazılır (SKILL §1). -->
 
 ## 8. Testler
 

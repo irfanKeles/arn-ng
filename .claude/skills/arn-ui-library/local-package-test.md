@@ -35,7 +35,7 @@ $env:npm_config_cache      = "$root\npm-cache"
    npm run build:ui
    Copy-Item -Recurse dist/ui "$root\pkg"; Set-Location "$root\pkg"
    npm pkg set version=0.0.0-local.1
-   npm pack --dry-run                      # dosya listesi: LICENSE, README.md, *.d.ts, fesm2022, entry point klasörleri
+   npm pack --dry-run                      # dosya listesi: LICENSE, README.md, theme.css, *.d.ts, fesm2022, entry point klasörleri
    npm config get "@arn-ng:registry"       # $reg olmalı, değilse DUR
    npm publish --registry $reg --tag local
    ```
@@ -46,7 +46,7 @@ $env:npm_config_cache      = "$root\npm-cache"
    Set-Location consumer
    npm install @arn-ng/ui@0.0.0-local.1
    ```
-   `src/app/app.component.ts` içinde sınanacak entry point'leri import et, bileşenleri `imports`'a ekleyip şablonda kullan, sonra `npx ng build`. Tiplerin gerçekten denetlendiğini görmek için bir input'a bilerek yanlış tip ver; build düşmeli.
+   `src/app/app.component.ts` içinde sınanacak entry point'leri import et, bileşenleri `imports`'a ekleyip şablonda kullan, `src/styles.css`'e `@import '@arn-ng/ui/theme.css';` ekle, sonra `npx ng build` (çıktıdaki `styles-*.css` içinde `--arn-background` olmalı). Tiplerin gerçekten denetlendiğini görmek için bir input'a bilerek yanlış tip ver; build düşmeli.
 5. **Temizlik**
    - Verdaccio'yu durdur (Ctrl+C veya `Stop-Process -Id (Get-NetTCPConnection -LocalPort 4873 -State Listen).OwningProcess`).
    - `Remove-Item -Recurse -Force $root` (önce `$root`'un doğru klasör olduğuna bak).
@@ -61,4 +61,8 @@ $env:npm_config_cache      = "$root\npm-cache"
 
 ## İlk çalıştırma (2026-10)
 
-`core` ve `button` boşken, geçici bir `probe-tmp` entry point'i (tek standalone bileşen) ile yapıldı; sonra silindi. Kanıtlanan: tarball kurulumu, Angular 19.2 ile peer çözümü, `@arn-ng/ui`, `/core`, `/button` import çözümlemesi (tip + bundler), partial-Ivy bileşenin tüketicide linklenip derlenmesi, input tip denetimi, `LICENSE` ve metadata'nın tarball'da olması. Kanıtlanmayan: gerçek bileşen davranışı, stil/token paketlemesi, `@angular/cdk` peer'ı, en güncel Angular, SSR, çalışma zamanı.
+`core` ve `button` boşken, geçici bir `probe-tmp` entry point'i (tek standalone bileşen) ile yapıldı; sonra silindi. Kanıtlanan: tarball kurulumu, Angular 19.2 ile peer çözümü, `@arn-ng/ui`, `/core`, `/button` import çözümlemesi (tip + bundler), partial-Ivy bileşenin tüketicide linklenip derlenmesi, input tip denetimi, `LICENSE` ve metadata'nın tarball'da olması. Kanıtlanmayan: gerçek bileşen davranışı, `@angular/cdk` peer'ı, en güncel Angular, SSR, çalışma zamanı.
+
+## İkinci çalıştırma (2026-10, tema)
+
+`exports`'a `./theme.css` eklenince yapıldı. Kanıtlanan: `theme.css` tarball'da (16 dosya), tüketicide CSS `@import '@arn-ng/ui/theme.css'` çözülüyor ve `ng build` çıktısına `light-dark()` bozulmadan giriyor. Denenmeyen: `angular.json` `styles` dizisinden ekleme.

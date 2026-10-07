@@ -25,6 +25,12 @@
   "publishConfig": {
     "access": "public"
   },
+  "exports": {
+    "./theme.css": {
+      "style": "./theme.css",
+      "default": "./theme.css"
+    }
+  },
   "peerDependencies": {
     "@angular/common": ">=19.0.0",
     "@angular/core": ">=19.0.0"
