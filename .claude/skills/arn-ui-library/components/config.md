@@ -1,6 +1,6 @@
 # config (`provideArn`, `[arnConfig]`, `ArnConfigService`, `injectArnConfig`)
 
-<!-- En fazla 150 satır. Mesaj şeması ve Intl ayrı dosyada: config-messages.md -->
+<!-- En fazla 150 satır. Ayrı dosyalar: mesaj şeması ve Intl config-messages.md, yön/RTL config-direction.md, dil paketleri locales.md -->
 
 ## 1. Özet
 
@@ -21,17 +21,17 @@ Dışa açılan tipler: `ArnConfig`, `ArnRootConfig`, `ArnResolvedConfig`, `ArnC
 | `size` | `'xs' \| 'sm' \| 'md' \| 'lg' \| 'xl'` | `md` |
 | `density` | `'comfortable' \| 'compact'` | `comfortable` |
 | `colorScheme` | `'light' \| 'dark' \| 'system'` | `system` |
-| `direction` | `'ltr' \| 'rtl' \| 'auto'` | `auto` |
+| `direction` | `'ltr' \| 'rtl' \| 'auto'` | `auto`; okunurken hep `ltr` / `rtl` ([config-direction.md](config-direction.md)) |
 | `ripple` | `boolean` | `false` (SKILL §5) |
 | `locale` | `string` (BCP 47) | Angular `LOCALE_ID` (`en-US`) |
-| `messages` | `ArnDeepPartial<ArnMessages>` | İngilizce + Intl ([config-messages.md](config-messages.md)) |
+| `messages` | `ArnDeepPartial<ArnMessages>` | İngilizce + Intl ([config-messages.md](config-messages.md)); diller [locales.md](locales.md) |
 | `forms` | `{ showErrorsOn?: 'touched' \| 'dirty' \| 'submitted' }` | `touched` |
 
 `ArnRootConfig` = `ArnConfig` + `applyToDocument?: boolean` (yalnızca `provideArn`). Görsel ayar (renk, font, kenarlık) buraya girmez, CSS token'ıdır.
 
 ## 2. Mimari ve CDK
 
-CDK kullanılmaz; yalnızca `@angular/core` ve `@angular/common` (`DOCUMENT`).
+`@angular/core`, `@angular/common` (`DOCUMENT`) ve yön için `@angular/cdk/bidi` (`Directionality`).
 
 ### Öncelik sırası ve nerede uygulandığı
 
@@ -42,7 +42,7 @@ CDK kullanılmaz; yalnızca `@angular/core` ve `@angular/common` (`DOCUMENT`).
 | 3 | `provideArn()` / `ArnConfigService` | `createScope(overrides, varsayılanlar)` (kök factory) |
 | 4 | Kütüphane varsayılanı | `config.defaults.ts` (`DEFAULT_CONFIG`, tek yer) |
 
-`undefined` her seviyede "bir alttakini kullan" demektir.
+`undefined` her seviyede "bir alttakini kullan" demektir. İki alanın varsayılanı sabit değil ortamdır: `locale` → `LOCALE_ID` (kök factory'de `parent.locale`), `direction` → en yakın `Directionality`.
 
 ### DI zinciri (`config.scope.ts`)
 
@@ -50,14 +50,14 @@ CDK kullanılmaz; yalnızca `@angular/core` ve `@angular/common` (`DOCUMENT`).
 - `ARN_ROOT_CONFIG`: `provideArn`'ın verdiği başlangıç objesi.
 - `ARN_ROOT_OVERRIDES` (`providedIn: 'root'`): `WritableSignal<ArnConfig>`; servis çalışma zamanında bunu günceller.
 - `ARN_CONFIG_SCOPE` (`providedIn: 'root'`): kök düğüm. Factory'si olduğu için `provideArn` çağrılmasa da vardır, `optional` gerekmez.
-- `ArnConfigDirective` kendi elemanında `ARN_CONFIG_SCOPE`'u yeniden sağlar: `useFactory: () => createScope(inject(ArnConfigDirective), inject(ARN_CONFIG_SCOPE, { skipSelf: true }))`. Direktifin input signal'leri doğrudan `own` olur; direktifte gizli/iç üye yoktur. `skipSelf` üst bölümü ya da kökü bulur; iç içe bölümler bu zincirle çalışır.
+- `ArnConfigDirective` kendi elemanında `ARN_CONFIG_SCOPE`'u yeniden sağlar: `useFactory: () => createScope(inject(ArnConfigDirective), inject(ARN_CONFIG_SCOPE, { skipSelf: true }))`. Direktifin input signal'leri doğrudan `own` olur. `skipSelf` üst bölümü ya da kökü bulur; iç içe bölümler bu zincirle çalışır. Direktif ayrıca `Directionality`'yi sağlar ([config-direction.md](config-direction.md)).
 - `ArnConfigService` kök scope'un signal'lerini aynen dışarı verir; ayrı bir hesap yapmaz.
 
 ### Parçalar
 
 | Parça | Görev |
 |---|---|
-| `provideArn(config)` | `sanitizeConfig` → `ARN_ROOT_CONFIG`; `applyToDocument: true` ise `provideEnvironmentInitializer` ile servis çağrısı |
+| `provideArn(config)` | `sanitizeConfig` → `ARN_ROOT_CONFIG`; kök `Directionality`'yi `ArnRootDirectionality` ile değiştirir; `applyToDocument: true` ise `provideEnvironmentInitializer` ile servis çağrısı |
 | `ArnConfigService` | Okunur signal'ler; `setSize`, `setDensity`, `setColorScheme`, `setDirection`, `setRipple`, `setLocale`, `setMessages`, `setForms`, `update`, `applyToDocument`. Hepsi `update` üzerinden geçer |
 | `ArnConfigDirective` | Input'lar: 8 alanın hepsi, `input<T \| undefined>()`. `ripple` özel transform'lu (`booleanAttribute(undefined)` `false` verirdi, miras bozulurdu) |
 | `injectArnConfig()` | `ArnConfigRef` döner; `injectArnConfig('size', this.size)` → `Signal<ArnSize>`. Anahtarlı biçim yalnızca skaler alanlar için |
@@ -72,7 +72,7 @@ protected readonly messages = injectArnConfig().messages;           // messages(
 
 ### Direktifin host yansıması
 
-Yalnızca input verilmişse yazar: `[attr.data-density]`, `[class.dark]`, `[class.light]`. Sınıf binding'i `false` yerine `null` verir, böylece verilmediğinde elemandaki statik `class="dark"` yerinde kalır (spec sabitler). `system` sınıf yazmaz. `direction` yansıtılmaz (adım d, `cdk/bidi`).
+Yalnızca input verilmişse yazar: `[attr.data-density]`, `[class.dark]`, `[class.light]`. Sınıf binding'i `false` yerine `null` verir, böylece verilmediğinde elemandaki statik `class="dark"` yerinde kalır (spec sabitler). `system` sınıf yazmaz. Açık `direction` (`ltr` / `rtl`) host'a `dir` olarak yazılır (binding ile değil `Renderer2` ile; statik `dir` korunur).
 
 ## 3. Token'lar
 
@@ -89,12 +89,12 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 ### `applyToDocument`
 
 - DOM'a yazma OTOMATİK DEĞİL. Yalnızca `service.applyToDocument()` ya da `provideArn({ applyToDocument: true })` ile.
-- `<html>`'e yazar: `.dark` / `.light` (`system` → ikisi de kalkar), `data-density` (her zaman), `dir` (`auto` → dokunmaz; daha önce kendi yazdıysa kaldırır).
+- `<html>`'e yazar: `.dark` / `.light` (`system` → ikisi de kalkar), `data-density` (her zaman), `dir` (`auto` → dokunmaz; daha önce kendi yazdıysa kaldırır). `lang` YAZILMAZ (karar: `locale` içerik dili olmayabilir; tüketici verir).
 - Çağrıldıktan sonra her `set*` / `update` sonunda senkron yeniden yazar. Birden çok kez çağrılabilir.
 - `<html>` üzerindeki `.dark` / `.light` ve `data-density`'yi sahiplenir (tüketicinin elle yazdığını ezer).
 - SSR: `window`, `matchMedia`, global `document` yok; `system` CSS `color-scheme` ile çözülür. Sunucuda yazılan sınıf HTML'e serileşir.
 
-**Tuzak:** density ve tema yalnızca CSS ile çalışır. `provideArn({ density: 'compact' })` ya da `{ colorScheme: 'dark' }`, `applyToDocument` olmadan GÖRSEL ETKİ YAPMAZ (yalnızca signal değeri değişir). `size` böyle değildir, bileşen kendi host'una uygular.
+**Tuzak:** density ve tema yalnızca CSS ile çalışır. `provideArn({ density: 'compact' })` ya da `{ colorScheme: 'dark' }`, `applyToDocument` olmadan GÖRSEL ETKİ YAPMAZ (yalnızca signal değeri değişir). `size` böyle değildir, bileşen kendi host'una uygular. Kök `direction` de aynı tuzağa sahiptir ([config-direction.md](config-direction.md) §4).
 
 ## 6. Form uyumu
 
@@ -119,13 +119,16 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 | `config.merge.spec.ts` | Derin birleşme, dizi bütün değişir, `undefined` atlanır, mutasyon yok, `__proto__`; uyarı ve atma |
 | `config.service.spec.ts` | Varsayılanlar, kısmi config, `set*` / `update`, `setMessages` derin birleşir; `applyToDocument` çağrılmadan `<html>` değişmez, çağrılınca yazar ve izler |
 | `config.directive.spec.ts` | Dört basamaklı öncelik, üç seviye iç içe bölüm, `undefined`'a dönüş, servis değişimini izleme, host yansıması, `theme.css` ile `--arn-density`, axe; `injectArnConfig` context dışı hata |
+| `config.direction.spec.ts` | Yön ve locale zinciri: [config-direction.md](config-direction.md) §8 |
 | `messages.spec.ts` | [config-messages.md](config-messages.md) §8 |
-| `config.types.spec.ts` | Derleme zamanı: 10 `@ts-expect-error` (Karma derlemesi kullanılmayan direktifte düşer; doğrulandı) |
+| `config.types.spec.ts` | Derleme zamanı: 11 `@ts-expect-error` (Karma derlemesi kullanılmayan direktifte düşer; doğrulandı) |
 
-Boşluklar: SSR'da çalıştırma yok; gerçek bileşenle sınama Faz 4; `dir` yansıması adım (d).
+Boşluklar: SSR'da çalıştırma yok; gerçek bileşenle sınama Faz 4.
+
+Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.
 
 ## 9. Bağlantılar
 
 - Kod: `projects/ui/core/src/config/`, `projects/ui/core/src/public-api.ts`
-- Devamı: [config-messages.md](config-messages.md)
+- Devamı: [config-messages.md](config-messages.md), [config-direction.md](config-direction.md), [locales.md](locales.md)
 - Doküman sayfası: Faz 3 (Yapılandırma)

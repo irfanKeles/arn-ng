@@ -12,13 +12,14 @@
 | Sınıf adları | Tipler: `ArnMessages`, `ArnCommonMessages`, `ArnDialogMessages`, `ArnToastMessages`, `ArnDatePickerMessages` |
 | Dosya yolları | `projects/ui/core/src/config/messages.ts`, `date-names.ts` |
 
-Bu adımda yalnızca ŞEKİL ve varsayılanlar var. Çeviri paketleri ve RTL adım (d)'dedir.
+Burada ŞEKİL ve varsayılanlar var. Çeviri paketleri: [locales.md](locales.md); yön/RTL: [config-direction.md](config-direction.md).
 
 ## 2. Mimari ve CDK
 
 - Varsayılan dil İngilizce: `DEFAULT_MESSAGES` (`messages.ts`, dışa açılmaz). Gün/ay adları burada DEĞİL.
 - `resolveMessages(locale, overrides)` = `deepMerge({ ...DEFAULT_MESSAGES, datePicker: dateNames(locale) }, overrides)`.
 - **Scope'lar override taşır, çözülmüş mesaj taşımaz.** Her düğüm `messageOverrides = deepMerge(üst.messageOverrides, kendi messages)` hesaplar, sonra kendi `locale`'i ile çözer. Çözülmüş mesaj devralınsaydı yalnızca `locale` değiştiren alt bölüm, üstün Intl ile üretilmiş İngilizce adlarını "açık override" sanıp korurdu. Spec sabitler.
+- **`locale` zinciri:** bileşen input'u (`injectArnConfig('locale', own)`) > en yakın `[arnConfig] locale` > `provideArn({ locale })` / `setLocale` > Angular `LOCALE_ID` (kök factory, `config.scope.ts`). Geçersiz etikette `dateNames` `en-US`'e düşer. `LOCALE_ID` signal değildir; çalışma zamanında `setLocale` kullanılır. Yalnız `Intl` adlarını etkiler: `LOCALE_ID: 'tr'` Türkçe metinleri GETİRMEZ, paket açıkça verilir.
 - Kısmi override her seviyede derin birleşir: `provideArn` → dıştaki `[arnConfig]` → içteki `[arnConfig]`. Diziler bütün olarak değişir.
 
 ## 3. Token'lar
@@ -27,6 +28,7 @@ Yok.
 
 ## 4. Override rehberi
 
+- **Dil paketi:** `provideArn({ locale: 'tr-TR', messages: ARN_MESSAGES_TR })` ([locales.md](locales.md)).
 - **Global:** `provideArn({ messages: { common: { ok: 'Tamam' } } })`; çalışma zamanında `ArnConfigService.setMessages(…)` (öncekiyle derin birleşir).
 - **Container:** `<div arnConfig [messages]="…" locale="tr-TR">`.
 - **Tek örnek:** bileşenin kendi metin input'u varsa o (bileşenin referans dosyasına bak).
@@ -72,10 +74,10 @@ Yok.
 
 ## 8. Testler
 
-`messages.spec.ts`: İngilizce varsayılanlar; `en-US` ve `tr-TR` adları (uzunluk, ilk/son eleman, indeks 0 Pazar); kısmi override derin birleşir; verilen dizi Intl'i ezer; önbellek; geçersiz locale. Hiyerarşideki birleşme ve locale değişimi `config.directive.spec.ts`'te.
+`messages.spec.ts`: İngilizce varsayılanlar; `en-US` ve `tr-TR` adları (uzunluk, ilk/son eleman, indeks 0 Pazar); kısmi override derin birleşir; verilen dizi Intl'i ezer; önbellek; geçersiz locale. Hiyerarşideki birleşme ve locale değişimi `config.directive.spec.ts`'te; `LOCALE_ID` varsayılanı ve locale zinciri `config.service.spec.ts` ve `config.direction.spec.ts`'te.
 
 ## 9. Bağlantılar
 
 - Kod: `projects/ui/core/src/config/messages.ts`, `date-names.ts`, `config.scope.ts` (`messageOverrides`)
 - Ana dosya: [config.md](config.md)
-- Devamı: çeviri paketleri ve RTL, ROADMAP Faz 2 (i18n maddesi)
+- Devamı: [locales.md](locales.md) (çeviri paketleri), [config-direction.md](config-direction.md) (RTL)

@@ -33,11 +33,12 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 - Her bileşen kendi secondary entry point'inde: `@arn-ng/ui/button`, `@arn-ng/ui/input`, `@arn-ng/ui/select`.
 - Kök entry point (`@arn-ng/ui`) bileşen export etmez. Her şey secondary entry point'lerden import edilir.
-- Klasör yapısı: her entry point `projects/ui/<ad>/` altında, kendi `ng-package.json` ve `src/public-api.ts` dosyasıyla.
+- Klasör yapısı: her entry point `projects/ui/<ad>/` altında, kendi `ng-package.json` ve `src/public-api.ts` dosyasıyla. Dil paketleri bir kat içeridedir: `projects/ui/locales/<dil>/` → `@arn-ng/ui/locales/<dil>`.
+- Entry point'ler birbirini paket adıyla import eder (`@arn-ng/ui/core`), göreli yolla değil. Spec ve ESLint bu adları `projects/ui/tsconfig.json` ile kaynağa çözer (`dist` gerekmez); spec'ler göreli import kullanabilir.
 - `angular.json`'da ui projesinin `sourceRoot`'u `projects/ui` (Karma spec'leri bulsun diye). Bileşen dosyaları `projects/ui/<entry-point>/src/` altında durur; `ng generate` kullanılırsa `--path` verilmeli.
 - Her entry point sadece bileşeni ve ona ait tipleri/token'ları export eder. Kullanıcı sadece kullandığını import eder (`import { ArnButton } from '@arn-ng/ui/button'`).
 - Tüm bileşenler standalone. NgModule YOK.
-- `package.json`: `sideEffects: false`, `peerDependencies` içinde `@angular/core`, `@angular/cdk` aralığı açıkça yazılı (>=19).
+- `package.json`: `sideEffects: false`. `peerDependencies` (`@angular/core`, `@angular/common`, `@angular/cdk`) yalnızca test edilmiş majörleri taşır, üstten açık BIRAKILMAZ (`>=19` yasak; şu an üçü de `^19.0.0`). Yeni majör, tüketici uyumluluk testi (ROADMAP Faz 4) o majörde geçince üç pakete birlikte eklenir (`^19.0.0 || ^20.0.0`). Gerekçe: üstten açık aralıkta npm en yeni CDK'yı seçer ve eski Angular'da kurulum `ERESOLVE` ile düşer.
 - Yayın metadata'sı `projects/ui/package.json`'da durur (`description`, `keywords`, `license`, `author`, `homepage`, `repository`, `bugs`, `publishConfig.access: public`). `projects/ui/LICENSE` kök `LICENSE`'ın kopyasıdır (ng-packagr proje dışından dosya almaz); biri değişirse diğeri de güncellenir.
 - Tema tek dosya: kaynak `projects/ui/theme.css`, ng-packagr `assets` ile `dist/ui/theme.css`'e kopyalanır, `projects/ui/package.json` `exports`'unda `./theme.css` olarak açılır (ng-packagr elle yazılan `exports`'u üretilenlerle birleştirir). Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css'`.
 - Public API küçük tutulur. Dışarı açılan her şey söz verilmiş sayılır. İç detaylar export edilmez. Export etmeden önce gerekçe sor.
@@ -83,7 +84,8 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
   4. Kütüphane varsayılanı
 - Üç seviye de signal'dir ve çalışma zamanında değişebilir. `undefined` "bir alttakini kullan" demektir.
 - Bileşen ayarı YALNIZCA `injectArnConfig` ile okur (`injectArnConfig('size', this.size)`); servisi veya token'ı doğrudan inject etmez, önceliği kendi yazmaz. Bu yüzden devralınan input'un varsayılanı `undefined`'dır (`input<ArnSize>()`).
-- DOM'a yazma otomatik değildir: `<html>` yalnızca `applyToDocument()` veya `provideArn({ applyToDocument: true })` ile güncellenir. `[arnConfig]` yalnızca kendi elemanına ve yalnızca verilen `density` / `colorScheme` için yazar.
+- DOM'a yazma otomatik değildir: `<html>` yalnızca `applyToDocument()` veya `provideArn({ applyToDocument: true })` ile güncellenir. `[arnConfig]` yalnızca kendi elemanına ve yalnızca verilen `density` / `colorScheme` / açık `direction` (`dir`) için yazar. `<html lang>` hiç yazılmaz.
+- İki alanın varsayılanı ortamdan gelir: `locale` → Angular `LOCALE_ID`; `direction` → en yakın CDK `Directionality` (`auto` = verilmemiş). `direction` okunurken her zaman `ltr` / `rtl`'dir. `[arnConfig]` ve `provideArn` `Directionality`'yi sağlar; CDK tabanlı parçalar aynı yönü görür. Ayrıntı: [components/config-direction.md](components/config-direction.md).
 - Bu sıra her bileşen dokümanında "Yapılandırma" bölümünde kısaca belirtilir. Ayrıntı: [components/config.md](components/config.md).
 
 ## 7. Form uyumu
@@ -108,8 +110,9 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 - Bileşen içindeki tüm sabit metinler (örn. "Seç", "Temizle", "Sonuç yok", aria-label'lar) dışarıdan verilebilir bir locale/mesaj sistemiyle gelir. Metin koda gömülmez.
 - Metinler `ArnConfig.messages`'tadır (`ArnMessages`, varsayılan İngilizce). Her bileşen kendi alt başlığını core'a İngilizce varsayılanıyla ekler; tüketici ve çeviri paketi yalnızca `ArnDeepPartial<ArnMessages>` verir, bu yüzden anahtar eklemek kırıcı değildir, silmek/yeniden adlandırmak kırıcıdır. Gün/ay adları `Intl` ile `locale`'den üretilir, override edilebilir. Şema: [components/config-messages.md](components/config-messages.md).
-- Her bileşen RTL'de test edilir (`dir="rtl"`). Yön için `cdk/bidi` kullan.
-- İkon ve ok yönleri RTL'de aynalanır.
+- Çeviri paketi dil başına ayrı entry point'tir (`@arn-ng/ui/locales/tr` → `ARN_MESSAGES_TR`); İngilizce çekirdekte yerleşiktir. Paket otomatik yüklenmez, `provideArn({ locale, messages })` ile açıkça verilir. Yalnızca anadili konuşanın yazdığı/gözden geçirdiği çeviri yayınlanır; çeviri UYDURULMAZ, yeni anahtarın Türkçesi kullanıcıya sorulur. Rehber: [components/locales.md](components/locales.md).
+- Her bileşen RTL'de test edilir (`<div arnConfig direction="rtl">`). Yön `injectArnConfig().direction` ile okunur; CDK parçasına `Directionality` kendiliğinden ulaşır.
+- İkon ve ok yönleri RTL'de aynalanır: yön bildiren ikona `arn-rtl-mirror` sınıfı (`theme.css`, `:dir(rtl)` + `scale: -1 1`). Bileşen kendi aynalama kuralını yazmaz.
 - Tarih/sayı formatı locale'e göre.
 
 ## 10. Overlay
@@ -229,12 +232,13 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: Boyut ve density (Faz 2 adım b, yalnızca CSS; `theme.css` içinde, ayrı dosya reddedildi, paket yapısı değişmedi). (1) Bileşen token'ı host'ta hesaplanır; `:root`'taki türetilmiş adımlar yalnızca global değişir ve bileşende kullanılmaz. (2) Kontrol token'ları `--arn-control-{height,padding-inline,font-size,icon-size,gap}-{xs…xl}`, sabit değer (`var()` yok), varsayılan `md`. xs-lg shadcn button değerleri (`button.tsx`, new-york-v4, web'den doğrulandı; shadcn'de artık `xs` var, `default` bizde `md`); `xl` bizim ekimiz (3rem / 2rem / 1rem / 1.25rem / 0.5rem). (3) Density `--arn-density` çarpanı (1 / 0.875), `[data-density]` ile; yalnızca yükseklik ve yatay padding. (4) `--arn-control-min-size: 1.5rem` ve host'ta `max()`: density sonrası yükseklik tabanı (SC 2.5.8); compact xs 24px kalır. (5) Compact'ta yuvarlama yok (md 31.5px).
 - 2026-10: Ayar sistemi (Faz 2 adım c, `@arn-ng/ui/core`; ayrıntı `components/config.md`). (1) Tek `ArnConfig`; §6'daki eski `dir` → `direction`, `animations` alanı çıkarıldı, `colorScheme` / `ripple` / `messages` / `forms` eklendi; ripple varsayılanı `false` kaldı. (2) Bölüm ayarı `arnForm` değil `[arnConfig]` direktifi. (3) Öncelik tek fonksiyonda (`createScope`); bileşen `injectArnConfig` kullanır; token'lar dışa açılmaz. (4) `effect()` KULLANILMAZ (19'da developer preview): `applyToDocument` sonrası DOM yazımı servis `update`'inde senkrondur. (5) DOM'a yazma yalnızca açık çağrıyla; `[arnConfig]` kendi host'una `data-density` ve `.dark` / `.light` yansıtır, `dir` adım (d)'de. (6) Tip dışı alan/değer her modda atılır, geliştirme modunda `console.warn`. (7) Mesaj şeması v1: `common`, `dialog`, `toast`, `datePicker`; gün/ay adları `Intl` + override. (8) `forms.showErrorsOn`: `touched` | `dirty` | `submitted`.
 - 2026-10: Kaynak kod dili İngilizce (§4): `projects/ui/` altındaki JSDoc, yorum, test adı ve konsol mesajları çevrildi (paket public, JSDoc tüketicinin IDE'sinde görünür). `.claude/` ve `ROADMAP.md` Türkçe kalır; testlerdeki Türkçe çeviri verisi (`'Tamam'`, `tr-TR` adları) test verisidir.
+- 2026-10: Çeviri paketleri ve RTL (Faz 2 adım d; ayrıntı `components/locales.md`, `components/config-direction.md`). (1) Dil paketi iç içe secondary entry point: `@arn-ng/ui/locales/<dil>`, yalnız `ARN_MESSAGES_<DİL>` (`ArnDeepPartial<ArnMessages>`), `datePicker` içermez; ilk sürümde yalnız Türkçe, anadili olmayan çeviri yayınlanmaz. (2) `ARN_CONFIG_TR` gibi `{ locale, messages }` paketi EKLENMEDİ. (3) `<html lang>` YAZILMAZ. (4) `ArnResolvedConfig.direction` `'ltr' | 'rtl'` oldu (`auto` çözülür; adım c'deki tipten sapma, paket yayınlanmamıştı). (5) Yönün kaynağı en yakın CDK `Directionality`; `[arnConfig]` ve `provideArn` onu kendi nesneleriyle sağlar, `hostDirectives: [Dir]` reddedildi (verilmeyen yönü `ltr` sayar). (6) `rxjs-interop` kullanılmaz (19'da developer preview); değişim `ngOnChanges` ve servis `update`'i ile yayılır. (7) `.arn-rtl-mirror` `theme.css`'teki tek token dışı kuraldır. (8) `@angular/cdk` kök bağımlılık ve ui peer'ı olarak eklendi. (9) `projects/ui/tsconfig.json`: spec ve ESLint entry point adlarını kaynağa çözer.
+- 2026-10: Peer aralıkları daraltıldı: `@angular/core`, `@angular/common`, `@angular/cdk` `>=19.0.0` → `^19.0.0` (§3). Gerekçe: Verdaccio dördüncü çalıştırmada üstten açık aralık Angular 19 tüketicide CDK 22'yi seçip kurulumu `ERESOLVE` ile düşürdü. Majörler test edildikçe eklenir; minimum Angular hâlâ 19 (§1).
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar
 
 - Doküman sitesi için araç (özel Angular uygulaması önerilir) ve kod örneği vurgulama yöntemi
-- i18n çeviri paketlerinin biçimi ve dağıtımı, RTL entegrasyonu (`cdk/bidi`, `direction`'ın DOM'a yansıması): Faz 2 adım (d). Mesaj şeması ve `messages` API'si kararlaştırıldı
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
 
 ## 18. Bileşen referans dosyaları (`components/`)

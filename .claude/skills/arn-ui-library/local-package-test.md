@@ -44,7 +44,7 @@ $env:npm_config_cache      = "$root\npm-cache"
    Set-Location $root
    npx -y @angular/cli@19 new consumer --skip-git --skip-tests --style=css --ssr=false --package-manager=npm
    Set-Location consumer
-   npm install @arn-ng/ui@0.0.0-local.1
+   npm install @arn-ng/ui@0.0.0-local.1    # CDK peer olarak kendiliğinden kurulur; elle verme
    ```
    `src/app/app.component.ts` içinde sınanacak entry point'leri import et, bileşenleri `imports`'a ekleyip şablonda kullan, `src/styles.css`'e `@import '@arn-ng/ui/theme.css';` ekle, sonra `npx ng build` (çıktıdaki `styles-*.css` içinde `--arn-background` olmalı). Tiplerin gerçekten denetlendiğini görmek için bir input'a bilerek yanlış tip ver; build düşmeli.
 5. **Temizlik**
@@ -57,6 +57,8 @@ $env:npm_config_cache      = "$root\npm-cache"
 - Geçici `npmrc` etkinken `npm view @arn-ng/ui --registry https://registry.npmjs.org/` de Verdaccio'ya gider. Gerçek npm'i kontrol etmek için: `Invoke-WebRequest https://registry.npmjs.org/@arn-ng%2fui` (yayından önce 404 beklenir).
 - Boş registry'de ilk yayın `--tag local` verilse bile `latest` etiketini de alır; yalnızca yerelde olduğu için önemsiz.
 - Angular CLI 19, Node 24'te "Unsupported" uyarısı verir; derlemeyi engellemez.
+- Kurulum `ERESOLVE` verirse peer aralığı tüketicinin Angular majörünü kapsamıyordur ya da üstten açık bırakılmıştır (`>=19.0.0` iken npm CDK 22'yi seçmişti; dördüncü çalıştırma). Aralık yalnız test edilmiş majörleri taşır (SKILL §3).
+- `dist/ui` içindeki iç `package.json`'lar (`core/package.json`, `locales/tr/package.json`) tarball'a GİRMEZ (ng-packagr `.npmignore`); yalnız workspace içi çözümleme içindir. Tüketici `exports`'tan çözer.
 - Henüz export'u olmayan entry point yalnızca "import çözülüyor"u kanıtlar. Bileşen derlemesi/linklemesi gerçek bir bileşenle sınanır.
 
 ## İlk çalıştırma (2026-10)
@@ -70,3 +72,11 @@ $env:npm_config_cache      = "$root\npm-cache"
 ## Üçüncü çalıştırma (2026-10, `provideArn` ve ayar sistemi)
 
 `@arn-ng/ui/core` ilk gerçek export'larını alınca yapıldı (27 dosya). Kanıtlanan: tüketicide `provideArn`, `ArnConfigService`, `ArnConfigDirective`, `injectArnConfig`, `ArnConfig`, `ArnSize` `@arn-ng/ui/core`'dan çözülüyor; partial-Ivy direktif (`<div arnConfig density="compact" [size]="'lg'">`) linklenip derleniyor ve koda giriyor; tipler denetleniyor (`provideArn({ size: 'huge' })` → TS2322, şablonda `density="dense"` → NG2, ikisinde de build düştü). Kanıtlanmayan: çalışma zamanı davranışı (tarayıcıda açılmadı), SSR, en güncel Angular.
+
+## Dördüncü çalıştırma (2026-10, `locales/tr`, CDK peer'ı, RTL)
+
+Yeni entry point (`@arn-ng/ui/locales/tr`) ve `@angular/cdk` peer'ı eklenince yapıldı (34 dosya, sürüm `0.0.0-local.4`). Kanıtlanan: `exports["./locales/tr"]` tarball'da; tüketicide (Angular 19.2.25 + CDK 19.2.19) `import { ARN_MESSAGES_TR } from '@arn-ng/ui/locales/tr'` ve `provideArn({ locale: 'tr-TR', messages: ARN_MESSAGES_TR })` ile `ng build` geçiyor, çıktı JS'inde "Vazgeç" var; `<div arnConfig direction="rtl">` derleniyor, `inject(Directionality)` `@angular/cdk/bidi`'den çözülüyor; çıktı CSS'inde `.arn-rtl-mirror:dir(rtl){scale:-1 1}` var. Build'i düşürenler (üçü de denendi): `@arn-ng/ui/locales/xx` ve `@arn-ng/ui/locales` (TS2307 + "Could not resolve"), `messages: { common: { okay: 'x' } }` (TS2353). Bulgu: CDK sürümü verilmeden kurulum `ERESOLVE` (tuzaklara ve ROADMAP açık kararlarına yazıldı). Kanıtlanmayan: çalışma zamanı davranışı (tarayıcıda açılmadı), SSR, en güncel Angular / CDK 20+.
+
+## Beşinci çalıştırma (2026-10, daraltılmış peer aralığı)
+
+Peer'lar `>=19.0.0` → `^19.0.0` olunca yapıldı (sürüm `0.0.0-local.5`). Kanıtlanan: Angular 19.2.25 tüketicide CDK elle kurulmadan yalnız `npm install @arn-ng/ui@0.0.0-local.5` `ERESOLVE` vermeden bitiyor ve `@angular/cdk@19.2.19`'u kendiliğinden kuruyor; dördüncü çalıştırmadaki aynı tüketici koduyla `ng build` geçiyor (JS'te "Vazgeç", CSS'te `.arn-rtl-mirror`). Kanıtlanmayan: Angular 20+ tüketici (aralık dışında, kurulum reddedilmeli; Faz 4 uyumluluk testinde bakılacak), çalışma zamanı, SSR.

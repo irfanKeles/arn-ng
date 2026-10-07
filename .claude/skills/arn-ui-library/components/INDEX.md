@@ -7,11 +7,13 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | tokens (tema, global token'lar) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens.md](tokens.md) |
 | tokens-sizes (boyut xs-xl, density) | ortak yapı | `@arn-ng/ui/theme.css` | [tokens-sizes.md](tokens-sizes.md) |
 | config (`provideArn`, `[arnConfig]`, `ArnConfigService`, `injectArnConfig`) | ortak yapı | `@arn-ng/ui/core` | [config.md](config.md) |
-| config-messages (mesaj şeması, Intl gün/ay adları) | ortak yapı | `@arn-ng/ui/core` | [config-messages.md](config-messages.md) |
+| config-messages (mesaj şeması, Intl gün/ay adları, `locale` zinciri) | ortak yapı | `@arn-ng/ui/core` | [config-messages.md](config-messages.md) |
+| config-direction (yön, RTL, `Directionality`, `.arn-rtl-mirror`) | ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [config-direction.md](config-direction.md) |
+| locales (çeviri paketleri, `ARN_MESSAGES_TR`, yeni dil ekleme rehberi) | ortak yapı | `@arn-ng/ui/locales/<dil>` | [locales.md](locales.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
 ## Notlar
 
-- `@arn-ng/ui/core` şu an yalnızca ayar sistemini içerir (overlay, ripple, i18n paketleri sonraki adımlar). `@arn-ng/ui/button` hâlâ boş pilot (`export {};`). Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
+- `@arn-ng/ui/core` şu an yalnızca ayar sistemini içerir (overlay ve ripple sonraki adımlar). Dil paketleri core'da değil, dil başına ayrı entry point'tedir (`@arn-ng/ui/locales/tr`). `@arn-ng/ui/button` hâlâ boş pilot (`export {};`). Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
 - Bu dosya en fazla 150 satır. Aşarsa kategori indekslerine (Form, Button, Overlay, Data...) bölünür ve buradan bağlanır.

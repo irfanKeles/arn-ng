@@ -9,10 +9,10 @@
 | Selector | Yok (CSS dosyası) |
 | Entry point | `@arn-ng/ui/theme.css` (JS entry point değil; `exports`'ta `style` + `default` koşulu) |
 | Tür | ortak yapı |
-| Sınıf adları | CSS: `.dark`, `.light` |
+| Sınıf adları | CSS: `.dark`, `.light`, `.arn-rtl-mirror` |
 | Dosya yolları | `projects/ui/theme.css`, `projects/ui/testing/theme.spec.ts` |
 
-Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya yalnızca token ve `color-scheme` içerir; `body` dahil hiçbir elemanı boyamaz.
+Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya yalnızca token, `color-scheme` ve tek bir isteğe bağlı yardımcı sınıf içerir (`.arn-rtl-mirror:dir(rtl) { scale: -1 1; }`, yön bildiren ikonları RTL'de aynalar: [config-direction.md](config-direction.md)); `body` dahil hiçbir elemanı boyamaz.
 
 ## 2. Mimari
 

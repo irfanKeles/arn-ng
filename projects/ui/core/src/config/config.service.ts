@@ -11,7 +11,10 @@ import type {
   ArnFormsConfig,
   ArnSize,
 } from './config.types';
+import { devWarn } from './dev-mode';
+import { explicitDirection } from './direction';
 import type { ArnMessages } from './messages';
+import { ArnRootDirectionality } from './root-directionality';
 
 /**
  * Application-wide config (the `provideArn` level): read-only signals and methods that change it
@@ -24,12 +27,15 @@ export class ArnConfigService implements ArnConfigRef {
   private readonly document = inject(DOCUMENT);
   private readonly overrides = inject(ARN_ROOT_OVERRIDES);
   private readonly scope = inject(ARN_CONFIG_SCOPE);
+  // Present only with `provideArn()`. Injected up front so it reads the document before we write.
+  private readonly rootDirectionality = inject(ArnRootDirectionality, { optional: true });
   private applied = false;
   private wroteDir = false;
 
   readonly size = this.scope.size;
   readonly density = this.scope.density;
   readonly colorScheme = this.scope.colorScheme;
+  /** The direction in effect application-wide; `auto` is resolved to the document's direction. */
   readonly direction = this.scope.direction;
   readonly ripple = this.scope.ripple;
   readonly locale = this.scope.locale;
@@ -78,6 +84,14 @@ export class ArnConfigService implements ArnConfigRef {
     if (this.applied) {
       this.writeToDocument();
     }
+
+    if (this.rootDirectionality) {
+      this.rootDirectionality.sync();
+    } else if (patch.direction !== undefined) {
+      devWarn(
+        'ArnConfigService: "direction" was set without provideArn(); sections and CDK-based parts will not follow it.',
+      );
+    }
   }
 
   /**
@@ -95,13 +109,13 @@ export class ArnConfigService implements ArnConfigRef {
   private writeToDocument(): void {
     const root = this.document.documentElement;
     const colorScheme = this.colorScheme();
-    const direction = this.direction();
+    const direction = explicitDirection(this.overrides().direction);
 
     root.classList.toggle('dark', colorScheme === 'dark');
     root.classList.toggle('light', colorScheme === 'light');
     root.setAttribute('data-density', this.density());
 
-    if (direction !== 'auto') {
+    if (direction) {
       root.setAttribute('dir', direction);
       this.wroteDir = true;
     } else if (this.wroteDir) {

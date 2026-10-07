@@ -1,0 +1,9 @@
+/* Used by the editor, ESLint and the spec build: entry points resolve to source, not to dist. The library build uses tsconfig.lib.json. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@arn-ng/ui/*": ["./*/src/public-api.ts"]
+    }
+  }
+}

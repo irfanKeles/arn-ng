@@ -1,3 +1,4 @@
+import { Directionality } from '@angular/cdk/bidi';
 import {
   computed,
   inject,
@@ -10,6 +11,7 @@ import {
 import { DEFAULT_CONFIG } from './config.defaults';
 import { deepMerge } from './config.merge';
 import type { ArnConfig, ArnDeepPartial, ArnResolvedConfig } from './config.types';
+import { ambientDirection, explicitDirection } from './direction';
 import { resolveMessages, type ArnMessages } from './messages';
 
 /** Read-only signals of the resolved config: each field gives the value in effect at its level. */
@@ -33,7 +35,10 @@ type ScopeParent = {
   readonly [K in Exclude<keyof ArnResolvedConfig, 'messages'>]: () => ArnResolvedConfig[K];
 } & { readonly messageOverrides: () => ArnDeepPartial<ArnMessages> };
 
-/** The single place where precedence is applied: the node's own value, else its parent's. */
+/**
+ * The single place where precedence is applied: the node's own value, else its parent's.
+ * For `direction` the parent is the nearest `Directionality`; `auto` counts as not given.
+ */
 export function createScope(own: ScopeInput, parent: ScopeParent): ConfigScope {
   const locale = computed(() => own.locale() ?? parent.locale());
   const messageOverrides = computed(() => deepMerge(parent.messageOverrides(), own.messages()));
@@ -42,7 +47,7 @@ export function createScope(own: ScopeInput, parent: ScopeParent): ConfigScope {
     size: computed(() => own.size() ?? parent.size()),
     density: computed(() => own.density() ?? parent.density()),
     colorScheme: computed(() => own.colorScheme() ?? parent.colorScheme()),
-    direction: computed(() => own.direction() ?? parent.direction()),
+    direction: computed(() => explicitDirection(own.direction()) ?? parent.direction()),
     ripple: computed(() => own.ripple() ?? parent.ripple()),
     locale,
     messageOverrides,
@@ -65,7 +70,8 @@ export const ARN_ROOT_OVERRIDES = new InjectionToken<WritableSignal<ArnConfig>>(
 
 /**
  * The nearest node. At the root it is `provideArn` merged over the defaults (it exists even when
- * `provideArn` is not called); `[arnConfig]` provides it again on its own element.
+ * `provideArn` is not called; `locale` then comes from `LOCALE_ID` and `direction` from the
+ * application-wide `Directionality`); `[arnConfig]` provides it again on its own element.
  */
 export const ARN_CONFIG_SCOPE = new InjectionToken<ConfigScope>('ARN_CONFIG_SCOPE', {
   providedIn: 'root',
@@ -89,7 +95,7 @@ export const ARN_CONFIG_SCOPE = new InjectionToken<ConfigScope>('ARN_CONFIG_SCOP
         size: () => DEFAULT_CONFIG.size,
         density: () => DEFAULT_CONFIG.density,
         colorScheme: () => DEFAULT_CONFIG.colorScheme,
-        direction: () => DEFAULT_CONFIG.direction,
+        direction: ambientDirection(inject(Directionality)),
         ripple: () => DEFAULT_CONFIG.ripple,
         locale: () => defaultLocale,
         messageOverrides: () => empty,

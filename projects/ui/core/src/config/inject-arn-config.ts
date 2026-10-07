@@ -4,6 +4,7 @@ import type { ArnResolvedConfig } from './config.types';
 
 /**
  * Returns the config in effect here (nearest `[arnConfig]` section > `provideArn` > default).
+ * `direction` is always `ltr` or `rtl`: `auto` is resolved from the nearest `Directionality`.
  * Must be called in an injection context.
  */
 export function injectArnConfig(): ArnConfigRef;

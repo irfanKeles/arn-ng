@@ -1,0 +1,11 @@
+<arn-direction-probe #rootProbe />
+<div #outer arnConfig [direction]="outerDirection()" [locale]="outerLocale()">
+  <arn-direction-probe #outerProbe />
+  <div #inner arnConfig [direction]="innerDirection()">
+    <arn-direction-probe #innerProbe />
+    <div #leaf arnConfig size="sm">
+      <arn-direction-probe #leafProbe [locale]="ownLocale()" />
+    </div>
+  </div>
+</div>
+<div #fixed arnConfig dir="rtl" [direction]="fixedDirection()"></div>

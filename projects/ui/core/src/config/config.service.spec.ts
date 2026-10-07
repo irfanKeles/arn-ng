@@ -1,3 +1,5 @@
+import { Directionality } from '@angular/cdk/bidi';
+import { LOCALE_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { captureWarnings } from '../../../testing/console';
 import { ArnConfigService } from './config.service';
@@ -44,7 +46,8 @@ describe('ArnConfigService', () => {
       expect(config.size()).toBe('md');
       expect(config.density()).toBe('comfortable');
       expect(config.colorScheme()).toBe('system');
-      expect(config.direction()).toBe('auto');
+      // `auto` is resolved: the direction of the document
+      expect(config.direction()).toBe('ltr');
       expect(config.ripple()).toBe(false);
       expect(config.locale()).toBe('en-US');
       expect(config.forms()).toEqual({ showErrorsOn: 'touched' });
@@ -72,6 +75,31 @@ describe('ArnConfigService', () => {
       expect(config.messages().common.yes).toBe('Evet');
       expect(config.messages().common.no).toBe('No');
       expect(config.messages().datePicker.monthNames[0]).toBe('Ocak');
+    });
+
+    it('locale defaults to LOCALE_ID: day and month names follow it, other texts do not', () => {
+      TestBed.configureTestingModule({ providers: [{ provide: LOCALE_ID, useValue: 'tr-TR' }] });
+      const config = setup();
+
+      expect(config.locale()).toBe('tr-TR');
+      expect(config.messages().datePicker.monthNames[0]).toBe('Ocak');
+      expect(config.messages().common.yes).toBe('Yes');
+    });
+
+    it('locale in provideArn wins over LOCALE_ID', () => {
+      TestBed.configureTestingModule({ providers: [{ provide: LOCALE_ID, useValue: 'tr-TR' }] });
+      const config = setup({ locale: 'de-DE' });
+
+      expect(config.locale()).toBe('de-DE');
+      expect(config.messages().datePicker.monthNames[0]).toBe('Januar');
+    });
+
+    it('direction auto resolves to the dir attribute of the document', () => {
+      root.setAttribute('dir', 'rtl');
+      const config = setup({ direction: 'auto' });
+
+      expect(config.direction()).toBe('rtl');
+      expect(TestBed.inject(Directionality).value).toBe('rtl');
     });
 
     it('provideArn ignores fields outside the types and warns', () => {
@@ -134,6 +162,36 @@ describe('ArnConfigService', () => {
       expect(config.messages().dialog.closeLabel).toBe('Kapat');
     });
 
+    it('the application-wide Directionality follows setDirection and emits the change', () => {
+      const config = setup({});
+      const directionality = TestBed.inject(Directionality);
+      const emitted: string[] = [];
+      directionality.change.subscribe((direction) => emitted.push(direction));
+
+      config.setDirection('rtl');
+      config.setDirection('rtl');
+      config.setSize('lg');
+      config.setDirection('auto');
+
+      expect(emitted).toEqual(['rtl', 'ltr']);
+      expect(directionality.value).toBe('ltr');
+      expect(config.direction()).toBe('ltr');
+    });
+
+    it('warns when direction is set without provideArn, where nothing else can follow it', () => {
+      const config = setup();
+
+      const warnings = captureWarnings(() => {
+        config.setSize('lg');
+        config.setDirection('rtl');
+      });
+
+      expect(warnings.length).toBe(1);
+      expect(warnings[0]).toContain('provideArn');
+      expect(config.direction()).toBe('rtl');
+      expect(TestBed.inject(Directionality).value).toBe('ltr');
+    });
+
     it('update ignores a value outside the types and warns', () => {
       const config = setup({ size: 'sm' });
       const untyped: object = { size: 'huge' };
@@ -169,7 +227,7 @@ describe('ArnConfigService', () => {
     });
 
     it('follows changes made after the call', () => {
-      const config = setup();
+      const config = setup({});
       config.applyToDocument();
 
       expect(documentState()).toEqual({
@@ -208,6 +266,15 @@ describe('ArnConfigService', () => {
       config.setSize('lg');
 
       expect(root.getAttribute('dir')).toBe('rtl');
+      expect(config.direction()).toBe('rtl');
+    });
+
+    it('never writes lang: the document language belongs to the application', () => {
+      const config = setup({ locale: 'tr-TR', applyToDocument: true });
+
+      config.setLocale('de-DE');
+
+      expect(root.hasAttribute('lang')).toBe(false);
     });
 
     it('can be called more than once', () => {

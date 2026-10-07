@@ -310,6 +310,54 @@ describe('theme.css', () => {
     expect(lengthOf(element, 'var(--arn-radius-md)')).toBeCloseTo(rootStep, 3);
   });
 
+  describe('.arn-rtl-mirror', () => {
+    /** Appends an element with the given `dir` (none when omitted). */
+    function section(parent: HTMLElement, dir?: 'ltr' | 'rtl'): HTMLElement {
+      const element = box(parent, '', 'none');
+      if (dir) {
+        element.setAttribute('dir', dir);
+      }
+      return element;
+    }
+
+    const scaleOf = (element: HTMLElement): string => getComputedStyle(element).scale;
+
+    it('mirrors the element horizontally in rtl', () => {
+      const icon = box(section(host, 'rtl'), 'arn-rtl-mirror', 'none');
+
+      expect(scaleOf(icon)).toBe('-1 1');
+    });
+
+    it('leaves the element alone in ltr', () => {
+      const withoutDir = box(host, 'arn-rtl-mirror', 'none');
+      const inLtr = box(section(host, 'ltr'), 'arn-rtl-mirror', 'none');
+
+      expect(scaleOf(withoutDir)).toBe('none');
+      expect(scaleOf(inLtr)).toBe('none');
+    });
+
+    it('with nested directions the nearest dir applies', () => {
+      const rtl = section(host, 'rtl');
+      const ltrInRtl = section(rtl, 'ltr');
+      const rtlAgain = section(ltrInRtl, 'rtl');
+
+      expect(scaleOf(box(ltrInRtl, 'arn-rtl-mirror', 'none'))).toBe('none');
+      expect(scaleOf(box(rtlAgain, 'arn-rtl-mirror', 'none'))).toBe('-1 1');
+    });
+
+    it('does not touch elements without the class', () => {
+      expect(scaleOf(box(section(host, 'rtl'), '', 'none'))).toBe('none');
+    });
+
+    it('keeps the own transform of the element', () => {
+      const icon = box(section(host, 'rtl'), 'arn-rtl-mirror', 'none');
+      icon.style.transform = 'rotate(90deg)';
+
+      expect(scaleOf(icon)).toBe('-1 1');
+      expect(getComputedStyle(icon).transform).not.toBe('none');
+    });
+  });
+
   it('the host height follows a control token changed in a container', () => {
     const container = density(host, 'compact');
     container.style.setProperty('--arn-control-height-md', '3rem');

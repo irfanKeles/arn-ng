@@ -1,6 +1,6 @@
 /*
  * @arn-ng/ui theme file. The consumer adds it once: @import '@arn-ng/ui/theme.css';
- * Contains only tokens and color-scheme; it paints no element.
+ * Contains only tokens, color-scheme and one opt-in helper class (.arn-rtl-mirror); it paints no element.
  * Layers: raw (palette) → semantic. The component layer (--arn-<component>-<property>) lives in the component's own styles.
  * The size (xs-xl) control tokens and the density factor are here too; a component computes its own token on its host.
  * Values are the shadcn/ui neutral theme; token catalog: .claude/skills/arn-ui-library/components/tokens.md
@@ -147,4 +147,12 @@
 
 [data-density='compact'] {
   --arn-density: 0.875;
+}
+
+/*
+ * Opt-in helper, the only rule here that is not a token: mirrors a directional icon (arrow, chevron) in RTL.
+ * :dir() follows the nearest dir attribute, so it works per section. scale leaves the element's own transform alone.
+ */
+.arn-rtl-mirror:dir(rtl) {
+  scale: -1 1;
 }

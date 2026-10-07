@@ -1,4 +1,4 @@
-import type { ArnConfig, ArnRootConfig } from './config.types';
+import type { ArnConfig, ArnResolvedConfig, ArnRootConfig } from './config.types';
 
 /*
  * Compile-time test: each `@ts-expect-error` line expects the expression below it to be a type
@@ -49,5 +49,16 @@ describe('ArnConfig type', () => {
     ];
 
     expect(rejected.length).toBe(10);
+  });
+
+  it('the resolved direction is never auto', () => {
+    const resolved: ArnResolvedConfig['direction'][] = [
+      'ltr',
+      'rtl',
+      // @ts-expect-error auto is an input value only; the resolved direction is ltr | rtl
+      'auto',
+    ];
+
+    expect(resolved.length).toBe(3);
   });
 });

@@ -22,7 +22,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Token yapısı (ham / anlamlı), shadcn neutral paleti, `oklch`, dark mode (`light-dark()` + `.dark` / `.light`): `@arn-ng/ui/theme.css`. Bileşen katmanı ilk bileşenle gelir (Faz 4)
 - [x] Boyutlar xs-xl, density (comfortable / compact): CSS token'ları (`--arn-control-*`, `--arn-density`, `--arn-control-min-size`) `theme.css`'te. `size` / `density` TS tipleri ve DI `provideArn` maddesinde
 - [x] `provideArn()` ve hiyerarşik ayar öncelik sırası: `ArnConfig`, `[arnConfig]`, `ArnConfigService` (`applyToDocument`), `injectArnConfig` (`components/config.md`)
-- [ ] i18n mesaj sistemi, RTL (`cdk/bidi`). Mesaj şeması, derin birleşme ve Intl gün/ay adları `provideArn` adımında tanımlandı (`components/config-messages.md`); kalan: çeviri paketleri, `direction`'ın DOM'a yansıması, bidi
+- [x] i18n mesaj sistemi, RTL (`cdk/bidi`): mesaj şeması ve Intl gün/ay adları (`components/config-messages.md`), Türkçe çeviri paketi `@arn-ng/ui/locales/tr` (`components/locales.md`), `direction` → CDK `Directionality` ve bölüm bazında `dir`, `.arn-rtl-mirror` (`components/config-direction.md`)
 - [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
 - [ ] `arnRipple` directive'i
 - [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
@@ -43,7 +43,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] select
 - [ ] dialog
 - [ ] tooltip
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an yalnız `^19.0.0`; SKILL §3)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit)
 
 ## Faz 5 — İlk yayın
@@ -58,7 +58,6 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] mask input, date picker, table, toast ve diğerleri (önceliği ihtiyaçla belirle)
 
 ## Açık kararlar
-- i18n çeviri paketlerinin biçimi ve dağıtımı (mesaj şeması ve `messages` API'si kararlaştırıldı)
 - Doküman sitesinde kod vurgulama yöntemi
 - `chart-*`, `sidebar-*` ve `success` / `warning` / `info` token'ları: şimdilik yok, ihtiyaç duyan ilk bileşenle karar verilecek
 - `ArnConfigService` ile verilen bir alanı "varsayılana dön" diye silme yolu (reset) yok; ilk ihtiyaçta karar ver.

@@ -9,7 +9,10 @@ export type ArnDensity = 'comfortable' | 'compact';
 /** Color scheme. `system` follows the OS preference (no `.dark` / `.light` class is written). */
 export type ArnColorScheme = 'light' | 'dark' | 'system';
 
-/** Text direction. `auto` follows the direction of the document. */
+/**
+ * Text direction. `auto` follows the direction in effect at that place: the nearest
+ * `Directionality` (a parent `[arnConfig]` section, CDK `Dir`, else the document).
+ */
 export type ArnDirection = 'ltr' | 'rtl' | 'auto';
 
 /** When the error state of a form control becomes visible. */
@@ -51,11 +54,17 @@ export interface ArnConfig {
    * `applyToDocument` for the whole application).
    */
   colorScheme?: ArnColorScheme;
-  /** Text direction. Default: `auto`. */
+  /**
+   * Text direction. Default: `auto`. `[arnConfig]` writes an explicit value to its own element as
+   * `dir`; for the whole application set `<html dir>` yourself or use `applyToDocument`.
+   */
   direction?: ArnDirection;
   /** Whether the ripple effect is enabled. Default: `false`. */
   ripple?: boolean;
-  /** BCP 47 language tag (e.g. `tr-TR`). Default: Angular `LOCALE_ID` (`en-US`). */
+  /**
+   * BCP 47 language tag (e.g. `tr-TR`). Default: Angular `LOCALE_ID` (`en-US`). Day and month
+   * names follow it through `Intl`; other texts need `messages` (e.g. `@arn-ng/ui/locales/tr`).
+   */
   locale?: string;
   /** Component texts. May be partial; missing ones are deep-merged with the defaults (English). */
   messages?: ArnDeepPartial<ArnMessages>;
@@ -78,7 +87,8 @@ export interface ArnResolvedConfig {
   size: ArnSize;
   density: ArnDensity;
   colorScheme: ArnColorScheme;
-  direction: ArnDirection;
+  /** Never `auto`: resolved to the direction in effect. */
+  direction: Exclude<ArnDirection, 'auto'>;
   ripple: boolean;
   locale: string;
   messages: ArnMessages;
