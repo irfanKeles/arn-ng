@@ -1,0 +1,51 @@
+version: 2
+
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions:
+        patterns: ['*']
+
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Geliştirme Angular 19'da tutuluyor: Angular ve ona bağlı araçlarda majör güncelleme yok
+    ignore:
+      - dependency-name: '@angular/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@angular-devkit/*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: ng-packagr
+        update-types: ['version-update:semver-major']
+      # Angular 19 TypeScript'i <5.9 ile sınırlar; minor güncelleme de derlemeyi kırar
+      - dependency-name: typescript
+        update-types: ['version-update:semver-major', 'version-update:semver-minor']
+      - dependency-name: zone.js
+        update-types: ['version-update:semver-major']
+      - dependency-name: rxjs
+        update-types: ['version-update:semver-major']
+      # angular-eslint 19 yalnızca ESLint 8/9 destekler; @eslint/js eslint ile aynı majörde kalır
+      - dependency-name: eslint
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@eslint/js'
+        update-types: ['version-update:semver-major']
+      - dependency-name: angular-eslint
+        update-types: ['version-update:semver-major']
+      - dependency-name: karma
+        update-types: ['version-update:semver-major']
+      - dependency-name: 'karma-*'
+        update-types: ['version-update:semver-major']
+      - dependency-name: jasmine-core
+        update-types: ['version-update:semver-major']
+      - dependency-name: '@types/jasmine'
+        update-types: ['version-update:semver-major']
+      # Node 22'ye bağlı: tip majörü de 22'de kalır
+      - dependency-name: '@types/node'
+        update-types: ['version-update:semver-major']
+    groups:
+      minor-and-patch:
+        update-types: [minor, patch]

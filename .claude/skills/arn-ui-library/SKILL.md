@@ -186,7 +186,10 @@ Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüph
 - **Her bileşen spec'inde axe testi zorunlu:** `await expectNoA11yViolations(fixture.nativeElement)` (`projects/ui/testing/a11y.ts`). Yardımcı public API'nin parçası değildir, entry point'lerden export edilmez; spec'ler göreli yolla import eder.
 - Testler Jasmine'e özgü API kullanmaz (ileride Vitest'e geçiş için): yalnızca `describe/it/beforeEach/afterEach/expect` ve ortak matcher'lar. `jasmine.*`, `spyOn`, `expectAsync`, `fail`, `fit/fdescribe/xit/xdescribe`, `fakeAsync/waitForAsync/tick/flush` ESLint'te hatadır. Sahte fonksiyon gerekiyorsa elle yazılır.
 - Spec dosyaları kaynağın yanında durur (`*.spec.ts`); `projects/ui` altındaki her klasör taranır.
-- CI: lint, format kontrolü, birim test, axe a11y testi, build; Angular 19 ve en güncel sürümde derleme kontrolü.
+- CI (`.github/workflows/ci.yml`): `main`'e push ve her PR'da, Node sürümü `.nvmrc`'den, sırayla `npm ci` → `npm run lint` → `format:check` → `build:ui` → `build:docs` → `test:ci` (axe testleri dahil). Yerelde aynı komutları aynı sırayla çalıştır; PR açmadan önce hepsi geçmeli.
+- Dependabot (`.github/dependabot.yml`) haftalık. Angular, TypeScript ve ESLint ailesinde majör güncelleme kapalı (geliştirme Angular 19'da); minor/patch tek PR'da gruplanır.
+- En güncel Angular'da derleme kontrolü tüketici uyumluluk testiyle gelecek (ROADMAP Faz 4).
+- Yayın: npm trusted publishing (OIDC). Saklı npm token KULLANILMAZ. Workflow Faz 5'te yazılacak.
 - Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
 
 ## 16. Karar günlüğü
@@ -204,6 +207,7 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: Test altyapısı: Karma + Jasmine (CLI 19 varsayılanı), Chrome, CI için `ChromeHeadlessCI` (`--no-sandbox`). Testler zoneless koşar, zone.js test ortamına yüklenmez (`provideExperimentalZonelessChangeDetection` deneysel; yalnızca test kurulumunda, "zoneless uyumlu" kuralını zorlamak için). axe-core yardımcısı `projects/ui/testing/` altında, public API dışı. Jasmine'e özgü API yasak (Vitest'e geçişi kolaylaştırmak için). ui projesinin `sourceRoot`'u `projects/ui` (secondary entry point ve `testing/` altındaki spec'ler bulunsun diye).
 - 2026-10: `no-autofocus` ve `no-input-rename` ESLint kuralları açık kalıyor. Gerekçe: `autofocus` erişilebilirlik için sakıncalı, odak yönetimi kodla yapılır; `no-input-rename` directive selector'ıyla aynı alias'a izin verir, `arnRipple` gibi durumlar sorunsuz.
 - 2026-10: Bileşen referans dosyaları (bölüm 18): her bileşen/directive/servis/ortak yapı için `components/<ad>.md`, liste `components/INDEX.md`, iskelet `components/_TEMPLATE.md`. Bileşenle aynı değişiklikte yazılır/güncellenir. Satır limitleri: SKILL.md 300, bileşen dosyası 150, INDEX.md 150.
+- 2026-10: CI: GitHub Actions, tek job (`ubuntu-latest`, imajdaki Chrome), `actions/checkout@v7` + `actions/setup-node@v7`, izin `contents: read`, aynı ref'te eski çalışma iptal. Dependabot haftalık; `@angular/*`, `@angular-devkit/*`, `ng-packagr`, `typescript` (minor dahil), `zone.js`, `rxjs`, `eslint`, `@eslint/js`, `angular-eslint` majörleri yoksayılır. Yayın trusted publishing (OIDC) ile yapılacak, saklı npm token yok.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar
