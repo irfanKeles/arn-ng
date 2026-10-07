@@ -25,6 +25,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] i18n mesaj sistemi, RTL (`cdk/bidi`)
 - [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
 - [ ] `arnRipple` directive'i
+- [ ] Token kataloğu referans dosyası (global token'lar, tema, density)
 
 ## Faz 3 — Doküman sitesi iskeleti
 - [ ] Sidebar (kategorili), sayfa içi gezinti, arama
@@ -32,6 +33,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [ ] API ve Styling tablo bileşenleri
 - [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
+- [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için)
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
 - [ ] button (directive + element)

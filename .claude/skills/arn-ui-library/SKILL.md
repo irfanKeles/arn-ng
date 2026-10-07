@@ -34,6 +34,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 - Her bileşen kendi secondary entry point'inde: `@arn-ng/ui/button`, `@arn-ng/ui/input`, `@arn-ng/ui/select`.
 - Kök entry point (`@arn-ng/ui`) bileşen export etmez. Her şey secondary entry point'lerden import edilir.
 - Klasör yapısı: her entry point `projects/ui/<ad>/` altında, kendi `ng-package.json` ve `src/public-api.ts` dosyasıyla.
+- `angular.json`'da ui projesinin `sourceRoot`'u `projects/ui` (Karma spec'leri bulsun diye). Bileşen dosyaları `projects/ui/<entry-point>/src/` altında durur; `ng generate` kullanılırsa `--path` verilmeli.
 - Her entry point sadece bileşeni ve ona ait tipleri/token'ları export eder. Kullanıcı sadece kullandığını import eder (`import { ArnButton } from '@arn-ng/ui/button'`).
 - Tüm bileşenler standalone. NgModule YOK.
 - `package.json`: `sideEffects: false`, `peerDependencies` içinde `@angular/core`, `@angular/cdk` aralığı açıkça yazılı (>=19).
@@ -125,6 +126,7 @@ Bir bileşen ancak hepsi tamamsa bitmiştir:
 - [ ] SSR'da kırılmıyor
 - [ ] Birim testleri yazıldı
 - [ ] Doküman sayfası yazıldı (bölüm 13) ve örnekler çalışıyor
+- [ ] `components/<ad>.md` yazıldı/güncellendi ve `INDEX.md`'ye eklendi (bölüm 18)
 - [ ] Public API gözden geçirildi, gereksiz export yok
 
 ## 13. Doküman sayfası standardı (PrimeNG tarzı)
@@ -201,6 +203,7 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: tsconfig'e `noUncheckedIndexedAccess`, `strictStandalone`, `extendedDiagnostics.defaultCategory: error` eklendi. `exactOptionalPropertyTypes` ve `noUnusedLocals/Parameters` bilinçli olarak eklenmedi.
 - 2026-10: Test altyapısı: Karma + Jasmine (CLI 19 varsayılanı), Chrome, CI için `ChromeHeadlessCI` (`--no-sandbox`). Testler zoneless koşar, zone.js test ortamına yüklenmez (`provideExperimentalZonelessChangeDetection` deneysel; yalnızca test kurulumunda, "zoneless uyumlu" kuralını zorlamak için). axe-core yardımcısı `projects/ui/testing/` altında, public API dışı. Jasmine'e özgü API yasak (Vitest'e geçişi kolaylaştırmak için). ui projesinin `sourceRoot`'u `projects/ui` (secondary entry point ve `testing/` altındaki spec'ler bulunsun diye).
 - 2026-10: `no-autofocus` ve `no-input-rename` ESLint kuralları açık kalıyor. Gerekçe: `autofocus` erişilebilirlik için sakıncalı, odak yönetimi kodla yapılır; `no-input-rename` directive selector'ıyla aynı alias'a izin verir, `arnRipple` gibi durumlar sorunsuz.
+- 2026-10: Bileşen referans dosyaları (bölüm 18): her bileşen/directive/servis/ortak yapı için `components/<ad>.md`, liste `components/INDEX.md`, iskelet `components/_TEMPLATE.md`. Bileşenle aynı değişiklikte yazılır/güncellenir. Satır limitleri: SKILL.md 300, bileşen dosyası 150, INDEX.md 150.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar
@@ -208,3 +211,29 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - Doküman sitesi için araç (özel Angular uygulaması önerilir) ve kod örneği vurgulama yöntemi
 - Mesaj/i18n sisteminin tam API'si
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
+
+## 18. Bileşen referans dosyaları (`components/`)
+
+Her bileşen, directive, servis veya ortak yapı için `.claude/skills/arn-ui-library/components/<ad>.md` yazılır. Amaç: sonraki oturumlarda koda bakmadan bileşenin nasıl kurulduğunu anlamak. Kullanıcıya dönük doküman sayfasından (bölüm 13) farklıdır: orası "nasıl kullanılır", burası "nasıl yapıldı ve neden".
+
+- Bileşen oluşturulurken veya değiştirilirken referans dosyası AYNI değişiklikte yazılır/güncellenir. Güncel değilse bileşen BİTMİŞ sayılmaz.
+- Bir bileşeni değiştirmeden önce referans dosyasını oku.
+- Tüm referans dosyalarının tek satırlık listesi: [components/INDEX.md](components/INDEX.md). Bu dosya (SKILL.md) sadece INDEX'e bağlanır, bileşen ayrıntısı buraya yazılmaz.
+- Yeni dosya [components/_TEMPLATE.md](components/_TEMPLATE.md) kopyalanarak başlar.
+
+**Şablon bölümleri (bu sırayla)**
+1. **Özet:** selector, entry point, element/directive, sınıf adları, dosya yolları
+2. **Mimari ve CDK:** neyden extend ediyor, hangi CDK parçalarını kullandı, neyi neden genişletti, `hostDirectives`
+3. **Token'lar:** tablo (ad, varsayılan, bağlı anlamlı token)
+4. **Override rehberi:** global, container, tek örnek
+5. **Davranış ve a11y:** klavye, aria
+6. **Form uyumu**
+7. **Kısıtlar ve kararlar**
+8. **Testler**
+9. **Bağlantılar:** kod yolları, doküman sayfası
+
+**Satır limitleri**
+- SKILL.md en fazla 300 satır. Aşarsa bir bölüm ayrı dosyaya taşınır ve buradan referans verilir.
+- Bileşen dosyası en fazla 150 satır. Aşarsa `<ad>.md` + `<ad>-<konu>.md` olarak bölünür, ana dosyadan bağlanır.
+- INDEX.md en fazla 150 satır. Aşarsa kategori indekslerine bölünür.
+- Dosyalar kısa olsun: tablo ve liste ağırlıklı, kod kopyalamak yerine dosya yolu ver.
