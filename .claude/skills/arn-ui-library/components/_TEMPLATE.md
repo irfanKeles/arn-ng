@@ -16,6 +16,15 @@
 
 <!-- Neyden extend ediyor, hangi CDK parçalarını kullanıyor, neyi neden genişletti, hostDirectives. -->
 <!-- Config entegrasyonu: hangi alanlar injectArnConfig ile okunuyor (size, ripple…), hangi messages alt başlığı kullanılıyor (config.md §2, config-messages.md §5). -->
+<!--
+Overlay kullanan bileşen (overlay.md): CDK Overlay doğrudan kullanılmaz.
+  inject(ArnOverlayService).open(içerik, { preset, injector: inject(Injector), origin, viewContainerRef })
+Yaz: hangi preset ve katman, side/align/offset, autoFocus/restoreFocus sapmaları. z-index, portal, odak tuzağı,
+Esc/dışa tıklama ve kapanma zamanlaması bileşende YAZILMAZ. Animasyon yalnız panelin özniteliklerine bağlanır:
+  :host-context([data-state='open']) / ([data-state='closed']), yön için [data-side] / [data-align];
+  prefers-reduced-motion'da animasyonu kapat (servis o durumda beklemeden kaldırır).
+role ve aria-* bileşenin kendi elemanına yazılır (servis yazmaz). İçerik kendini inject(ArnOverlayRef).close(sonuç) ile kapatır.
+-->
 
 ## 3. Token'lar
 

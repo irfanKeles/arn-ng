@@ -1,0 +1,16 @@
+<arn-overlay-trigger #outside />
+<div
+  arnConfig
+  [size]="size()"
+  [colorScheme]="colorScheme()"
+  [density]="density()"
+  [direction]="direction()"
+>
+  <arn-overlay-trigger #inside />
+</div>
+<div class="dark">
+  <arn-overlay-trigger #manualDark />
+  <div class="light" data-density="compact">
+    <arn-overlay-trigger #manualLight />
+  </div>
+</div>

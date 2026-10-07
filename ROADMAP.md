@@ -23,7 +23,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Boyutlar xs-xl, density (comfortable / compact): CSS token'ları (`--arn-control-*`, `--arn-density`, `--arn-control-min-size`) `theme.css`'te. `size` / `density` TS tipleri ve DI `provideArn` maddesinde
 - [x] `provideArn()` ve hiyerarşik ayar öncelik sırası: `ArnConfig`, `[arnConfig]`, `ArnConfigService` (`applyToDocument`), `injectArnConfig` (`components/config.md`)
 - [x] i18n mesaj sistemi, RTL (`cdk/bidi`): mesaj şeması ve Intl gün/ay adları (`components/config-messages.md`), Türkçe çeviri paketi `@arn-ng/ui/locales/tr` (`components/locales.md`), `direction` → CDK `Directionality` ve bölüm bazında `dir`, `.arn-rtl-mirror` (`components/config-direction.md`)
-- [ ] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları
+- [x] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları: `ArnOverlayService` / `ArnOverlayRef`, katmanlar (`--arn-z-*`), preset'ler (modal, popover, dropdown, tooltip), ayar mirası, `data-state` kapanma sözleşmesi (`components/overlay.md`). Toast preset'i Faz 6, backdrop renk token'ı dialog ile Faz 4
 - [ ] `arnRipple` directive'i
 - [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
 - [x] Token kataloğuna boyut ve density bölümü (`components/tokens-sizes.md`)

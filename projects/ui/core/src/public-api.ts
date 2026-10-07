@@ -26,3 +26,13 @@ export type {
   ArnToastMessages,
 } from './config/messages';
 export { provideArn } from './config/provide-arn';
+export { ArnOverlayRef } from './overlay/overlay-ref';
+export { ArnOverlayService } from './overlay/overlay.service';
+export type {
+  ArnOverlayAlign,
+  ArnOverlayConfig,
+  ArnOverlayLayer,
+  ArnOverlayPreset,
+  ArnOverlaySide,
+  ArnOverlayState,
+} from './overlay/overlay.types';

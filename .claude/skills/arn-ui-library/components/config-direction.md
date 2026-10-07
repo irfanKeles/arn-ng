@@ -96,7 +96,7 @@ Yok.
 | `testing/theme.spec.ts` | `.arn-rtl-mirror`: RTL'de `scale` `-1 1`, LTR'de ve `rtl` içindeki `ltr`'de `none`, sınıfsız eleman, `transform` korunur |
 | `config.types.spec.ts` | Çözülmüş yöne `'auto'` atanamaz |
 
-Boşluklar: SSR'da çalıştırma yok; CDK 20+ ile çalıştırma yok (`valueSignal` yolu yalnız kendi nesnelerimizle sınandı); gerçek CDK overlay ile sınama overlay adımında.
+Boşluklar: SSR'da çalıştırma yok; CDK 20+ ile çalıştırma yok (`valueSignal` yolu yalnız kendi nesnelerimizle sınandı). Gerçek CDK overlay ile sınama: `overlay.inherit.spec.ts`, `overlay.presets.spec.ts` ([overlay.md](overlay.md)).
 
 ## 9. Bağlantılar
 

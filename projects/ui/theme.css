@@ -1,6 +1,7 @@
 /*
  * @arn-ng/ui theme file. The consumer adds it once: @import '@arn-ng/ui/theme.css';
- * Contains only tokens, color-scheme and one opt-in helper class (.arn-rtl-mirror); it paints no element.
+ * Contains tokens, color-scheme, the z-index rules of the overlay layers and one opt-in helper class
+ * (.arn-rtl-mirror); it paints no element.
  * Layers: raw (palette) → semantic. The component layer (--arn-<component>-<property>) lives in the component's own styles.
  * The size (xs-xl) control tokens and the density factor are here too; a component computes its own token on its host.
  * Values are the shadcn/ui neutral theme; token catalog: .claude/skills/arn-ui-library/components/tokens.md
@@ -126,6 +127,16 @@
 
   /* Density factor: affects only height and inline padding, not font size */
   --arn-density: 1;
+
+  /*
+   * Overlay layers: the order of overlays among themselves, lowest to highest. They all live in
+   * the CDK overlay container, whose own z-index (1000) decides how they stack against the page.
+   */
+  --arn-z-dropdown: 1000;
+  --arn-z-popover: 1100;
+  --arn-z-modal: 1200;
+  --arn-z-toast: 1300;
+  --arn-z-tooltip: 1400;
 }
 
 /* Forcing: the class overrides the system preference and can be nested */
@@ -150,7 +161,38 @@
 }
 
 /*
- * Opt-in helper, the only rule here that is not a token: mirrors a directional icon (arrow, chevron) in RTL.
+ * Overlay layers: ArnOverlayService puts these classes on the CDK host element and the backdrop of
+ * each overlay (the host creates the stacking context, so the pane's own z-index does not matter).
+ * CDK's z-index sits in @layer cdk-overlay and loses to these; the two-class selector also beats
+ * overlay-prebuilt.css when the consumer loads it.
+ */
+.arn-overlay-host.arn-overlay-host-dropdown,
+.arn-overlay-backdrop.arn-overlay-backdrop-dropdown {
+  z-index: var(--arn-z-dropdown);
+}
+
+.arn-overlay-host.arn-overlay-host-popover,
+.arn-overlay-backdrop.arn-overlay-backdrop-popover {
+  z-index: var(--arn-z-popover);
+}
+
+.arn-overlay-host.arn-overlay-host-modal,
+.arn-overlay-backdrop.arn-overlay-backdrop-modal {
+  z-index: var(--arn-z-modal);
+}
+
+.arn-overlay-host.arn-overlay-host-toast,
+.arn-overlay-backdrop.arn-overlay-backdrop-toast {
+  z-index: var(--arn-z-toast);
+}
+
+.arn-overlay-host.arn-overlay-host-tooltip,
+.arn-overlay-backdrop.arn-overlay-backdrop-tooltip {
+  z-index: var(--arn-z-tooltip);
+}
+
+/*
+ * Opt-in helper: mirrors a directional icon (arrow, chevron) in RTL.
  * :dir() follows the nearest dir attribute, so it works per section. scale leaves the element's own transform alone.
  */
 .arn-rtl-mirror:dir(rtl) {

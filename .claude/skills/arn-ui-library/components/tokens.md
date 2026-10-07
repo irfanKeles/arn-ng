@@ -9,10 +9,10 @@
 | Selector | Yok (CSS dosyası) |
 | Entry point | `@arn-ng/ui/theme.css` (JS entry point değil; `exports`'ta `style` + `default` koşulu) |
 | Tür | ortak yapı |
-| Sınıf adları | CSS: `.dark`, `.light`, `.arn-rtl-mirror` |
+| Sınıf adları | CSS: `.dark`, `.light`, `.arn-rtl-mirror`, `.arn-overlay-host(-<katman>)`, `.arn-overlay-backdrop(-<katman>)` |
 | Dosya yolları | `projects/ui/theme.css`, `projects/ui/testing/theme.spec.ts` |
 
-Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya yalnızca token, `color-scheme` ve tek bir isteğe bağlı yardımcı sınıf içerir (`.arn-rtl-mirror:dir(rtl) { scale: -1 1; }`, yön bildiren ikonları RTL'de aynalar: [config-direction.md](config-direction.md)); `body` dahil hiçbir elemanı boyamaz.
+Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya token, `color-scheme` ve iki token dışı kural grubu içerir: isteğe bağlı yardımcı sınıf `.arn-rtl-mirror:dir(rtl) { scale: -1 1; }` (yön bildiren ikonları RTL'de aynalar: [config-direction.md](config-direction.md)) ve overlay katmanlarının z-index kuralları ([overlay.md](overlay.md)); `body` dahil hiçbir elemanı boyamaz.
 
 ## 2. Mimari
 
@@ -73,6 +73,12 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 | `--arn-border-width` | `1px` | |
 | `--arn-ring-width` | `3px` | shadcn focus ring kalınlığı |
 
+### Anlamlı: overlay katmanları
+
+| Ad | Varsayılan | Not |
+|---|---|---|
+| `--arn-z-dropdown` / `-popover` / `-modal` / `-toast` / `-tooltip` | 1000 / 1100 / 1200 / 1300 / 1400 | Sabit tamsayı. Overlay'lerin kendi aralarındaki sıra; `ArnOverlayService` katman sınıfını host ve backdrop'a yazar ([overlay.md](overlay.md)). Sayfaya göre yüksekliği `.cdk-overlay-container` (CDK: 1000) belirler |
+
 `--arn-radius-sm` ve `--arn-text-sm` ölçeğin adımıdır; bileşen boyutu (`size="sm"`) DEĞİLDİR. Boyut (`--arn-control-*`) ve density (`--arn-density`) token'ları: [tokens-sizes.md](tokens-sizes.md).
 
 ## 4. Override rehberi
@@ -106,7 +112,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
 
 ## 9. Bağlantılar
 

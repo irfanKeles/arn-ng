@@ -150,6 +150,26 @@ describe('theme.css', () => {
     expect(missing).toEqual([]);
   });
 
+  it('overlay layer tokens are plain integers in ascending order', () => {
+    const rootStyle = getComputedStyle(document.documentElement);
+    const values = ['dropdown', 'popover', 'modal', 'toast', 'tooltip'].map((layer) =>
+      rootStyle.getPropertyValue(`--arn-z-${layer}`).trim(),
+    );
+
+    expect(values).toEqual(['1000', '1100', '1200', '1300', '1400']);
+  });
+
+  it('a layer class alone does nothing: both classes are needed (no clash with consumer CSS)', () => {
+    const element = box(host, 'arn-overlay-host-modal', 'none');
+
+    element.style.position = 'relative';
+
+    expect(getComputedStyle(element).zIndex).toBe('auto');
+    element.classList.add('arn-overlay-host');
+
+    expect(getComputedStyle(element).zIndex).toBe('1200');
+  });
+
   it('follows the system preference without a class', () => {
     const prefersDark = matchMedia('(prefers-color-scheme: dark)').matches;
     const element = box(host, '', 'var(--arn-background)');
