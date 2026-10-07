@@ -176,7 +176,11 @@ Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüph
 
 ## 15. Sürümleme ve kalite
 
-- Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider.
+- Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider (1.0.0'dan sonra).
+- Sürüm ve changelog: Changesets. Sürümün tek kaynağı `projects/ui/package.json`; kök `package.json` sürümü ilgisizdir. Akış: `npm run changeset` (değişikliği tarif et) → sürüm çıkarırken `npm run version-packages` (sürümü artırır, `projects/ui/CHANGELOG.md`'yi yazar) → `npm run build:ui` (sürüm ve changelog `dist/ui`'ye geçer). Durum: `npx changeset status`.
+- 0.x kuralı: kırıcı değişiklik ve yeni özellik `minor`, düzeltme `patch`. `major` changeset YAZILMAZ (0.x'i doğrudan 1.0.0 yapar); 1.0.0 ayrı karardır. 0.1.0'a kadar changeset yazılmaz, ilk sürüm tek changeset'le çıkar.
+- Dependabot PR'ları changeset istemez. İstisna: PR `projects/ui/package.json`'daki `dependencies`/`peerDependencies`'e dokunuyorsa changeset elle eklenir.
+- Yayın `dist/ui`'den yapılır. `changeset publish` KULLANILMAZ (kaynak klasörü yayınlar).
 - Node: 22 LTS (`.nvmrc`, `engines`). `engine-strict` kapalı.
 - Lint: `npm run lint` = ESLint (flat config, `eslint.config.mjs`: angular-eslint + typescript-eslint `strictTypeChecked`, şablon a11y kuralları) + Stylelint (`.stylelintrc.json`: `::ng-deep`, `!important` ve yön-bağımlı CSS yasak, ui'da token adı `--arn-*`). Bölüm 4-5 kurallarının çoğu burada hata olarak zorlanır. Kural kapatmak veya `eslint-disable` yazmak karar günlüğüne gerekçe ister.
 - Format: Prettier (`npm run format`, `npm run format:check`). Markdown ve `.claude/` kapsam dışı. Satır sonu LF (`.gitattributes`).
@@ -208,6 +212,7 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: `no-autofocus` ve `no-input-rename` ESLint kuralları açık kalıyor. Gerekçe: `autofocus` erişilebilirlik için sakıncalı, odak yönetimi kodla yapılır; `no-input-rename` directive selector'ıyla aynı alias'a izin verir, `arnRipple` gibi durumlar sorunsuz.
 - 2026-10: Bileşen referans dosyaları (bölüm 18): her bileşen/directive/servis/ortak yapı için `components/<ad>.md`, liste `components/INDEX.md`, iskelet `components/_TEMPLATE.md`. Bileşenle aynı değişiklikte yazılır/güncellenir. Satır limitleri: SKILL.md 300, bileşen dosyası 150, INDEX.md 150.
 - 2026-10: CI: GitHub Actions, tek job (`ubuntu-latest`, imajdaki Chrome), `actions/checkout@v7` + `actions/setup-node@v7`, izin `contents: read`, aynı ref'te eski çalışma iptal. Dependabot haftalık; `@angular/*`, `@angular-devkit/*`, `ng-packagr`, `typescript` (minor dahil), `zone.js`, `rxjs`, `eslint`, `@eslint/js`, `angular-eslint` majörleri yoksayılır. Yayın trusted publishing (OIDC) ile yapılacak, saklı npm token yok.
+- 2026-10: Sürümleme: Changesets 3 (`.changeset/config.json`: `baseBranch: main`, `access: public`, varsayılan changelog formatı). Changesets paketi bulabilsin diye kök `package.json`'da npm `workspaces: ["projects/ui"]` (yan etki: `node_modules/@arn-ng/ui` kaynağa bağlanır; derleme `tsconfig` `paths` ile `dist/ui`'yi kullanmaya devam eder). `projects/ui` sürümü `0.0.0`, ilk yayın 0.1.0. PR'larda changeset kontrolü CI'a 0.1.0'dan sonra eklenecek.
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

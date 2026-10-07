@@ -15,7 +15,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Lint, format, strict TypeScript (ESLint + angular-eslint, Stylelint, Prettier, Node 22)
 - [x] Birim test altyapısı (Karma + Jasmine, zoneless testler, axe yardımcısı, `test:ci`)
 - [x] CI (GitHub Actions: lint + format + build + test) ve Dependabot. En güncel Angular'da derleme kontrolü Faz 4'teki tüketici uyumluluk testine taşındı
-- [ ] Changesets + sürüm/changelog akışı
+- [x] Changesets + sürüm/changelog akışı (sürüm kaynağı `projects/ui/package.json`, npm workspaces)
 - [ ] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi
 
 ## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
@@ -49,6 +49,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] README, kurulum rehberi
 - [ ] `0.1.0` npm'e yayın
   - Yayın "trusted publishing (OIDC)" ile yapılacak, saklı npm token kullanılmayacak. Gerekçe: npm 31 Temmuz 2026'dan itibaren hassas işlemlerde etkileşimli 2FA istiyor, Ocak 2027'de 2FA-bypass token'lar doğrudan yayın yetkisini kaybedecek.
+- [ ] PR'larda changeset kontrolünü CI'a ekle (0.1.0'dan sonra)
 - [ ] Gerçek bir projede npm'den kurup kullanma
 - [ ] Geri bildirim ve düzeltmeler
 
