@@ -1,7 +1,7 @@
 /*
  * @arn-ng/ui theme file. The consumer adds it once: @import '@arn-ng/ui/theme.css';
- * Contains tokens, color-scheme, the z-index rules of the overlay layers and one opt-in helper class
- * (.arn-rtl-mirror); it paints no element.
+ * Contains tokens, color-scheme, the z-index rules of the overlay layers, the two ripple classes and
+ * one opt-in helper class (.arn-rtl-mirror); it paints no element of the page.
  * Layers: raw (palette) → semantic. The component layer (--arn-<component>-<property>) lives in the component's own styles.
  * The size (xs-xl) control tokens and the density factor are here too; a component computes its own token on its host.
  * Values are the shadcn/ui neutral theme; token catalog: .claude/skills/arn-ui-library/components/tokens.md
@@ -137,6 +137,14 @@
   --arn-z-modal: 1200;
   --arn-z-toast: 1300;
   --arn-z-tooltip: 1400;
+
+  /*
+   * Ripple (arnRipple). currentcolor resolves on the wave, so the color follows the host's text
+   * color and needs no separate dark value. The directive has no stylesheet, so these live here.
+   */
+  --arn-ripple-color: color-mix(in oklch, currentcolor 12%, transparent);
+  --arn-ripple-duration: 450ms;
+  --arn-ripple-easing: cubic-bezier(0, 0, 0.2, 1);
 }
 
 /* Forcing: the class overrides the system preference and can be nested */
@@ -189,6 +197,25 @@
 .arn-overlay-host.arn-overlay-host-tooltip,
 .arn-overlay-backdrop.arn-overlay-backdrop-tooltip {
   z-index: var(--arn-z-tooltip);
+}
+
+/*
+ * Ripple: arnRipple adds the container to its host while a wave is alive and writes the position
+ * and diameter of each wave inline. The host must be positioned; the directive does not style it.
+ */
+.arn-ripple-container {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.arn-ripple-wave {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--arn-ripple-color);
+  pointer-events: none;
 }
 
 /*

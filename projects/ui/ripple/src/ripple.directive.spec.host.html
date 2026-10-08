@@ -1,0 +1,16 @@
+<div arnConfig [ripple]="sectionRipple()" [direction]="direction()">
+  <button
+    #inSection
+    type="button"
+    class="arn-test-ripple-host"
+    [arnRipple]="own()"
+    [arnRippleColor]="color()"
+    [arnRippleCentered]="centered()"
+  >
+    Section
+  </button>
+</div>
+<button #atRoot type="button" class="arn-test-ripple-host" [arnRipple]="rootOwn()">Root</button>
+<button #plain type="button" class="arn-test-ripple-host" arnRipple>Plain</button>
+<arn-ripple-probe #bare />
+<arn-ripple-probe #bound [ripple]="probeRipple()" />

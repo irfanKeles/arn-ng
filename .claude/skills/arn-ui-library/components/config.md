@@ -125,7 +125,7 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 
 Boşluklar: SSR'da çalıştırma yok; gerçek bileşenle sınama Faz 4.
 
-Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.
+Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). `baseUrl: "."` Karma (webpack) içindir: yoksa `paths` çalışma dizinine göre çözülür ve entry point'ler arası çalışma zamanı import'u düşer (ilk örnek: ripple → core). Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.
 
 ## 9. Bağlantılar
 

@@ -11,10 +11,11 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | config-direction (yön, RTL, `Directionality`, `.arn-rtl-mirror`) | ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [config-direction.md](config-direction.md) |
 | locales (çeviri paketleri, `ARN_MESSAGES_TR`, yeni dil ekleme rehberi) | ortak yapı | `@arn-ng/ui/locales/<dil>` | [locales.md](locales.md) |
 | overlay (`ArnOverlayService`, `ArnOverlayRef`, katmanlar, preset'ler, ayar mirası, `data-state` sözleşmesi) | servis + ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [overlay.md](overlay.md) |
+| ripple (`arnRipple`, `ArnRippleDirective`, ripple token'ları) | directive | `@arn-ng/ui/ripple`, `@arn-ng/ui/theme.css` | [ripple.md](ripple.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
 ## Notlar
 
-- `@arn-ng/ui/core` şu an ayar sistemini ve overlay altyapısını içerir (ripple sonraki adım). Dil paketleri core'da değil, dil başına ayrı entry point'tedir (`@arn-ng/ui/locales/tr`). `@arn-ng/ui/button` hâlâ boş pilot (`export {};`). Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
+- `@arn-ng/ui/core` ayar sistemini ve overlay altyapısını içerir. Ripple core'da değil, kendi entry point'indedir (`@arn-ng/ui/ripple`) ve core'a bağımlıdır. Dil paketleri core'da değil, dil başına ayrı entry point'tedir (`@arn-ng/ui/locales/tr`). `@arn-ng/ui/button` hâlâ boş pilot (`export {};`). Tema bir JS entry point değil, paket kökündeki CSS dosyasıdır.
 - Bu dosya en fazla 150 satır. Aşarsa kategori indekslerine (Form, Button, Overlay, Data...) bölünür ve buradan bağlanır.

@@ -24,7 +24,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] `provideArn()` ve hiyerarşik ayar öncelik sırası: `ArnConfig`, `[arnConfig]`, `ArnConfigService` (`applyToDocument`), `injectArnConfig` (`components/config.md`)
 - [x] i18n mesaj sistemi, RTL (`cdk/bidi`): mesaj şeması ve Intl gün/ay adları (`components/config-messages.md`), Türkçe çeviri paketi `@arn-ng/ui/locales/tr` (`components/locales.md`), `direction` → CDK `Directionality` ve bölüm bazında `dir`, `.arn-rtl-mirror` (`components/config-direction.md`)
 - [x] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları: `ArnOverlayService` / `ArnOverlayRef`, katmanlar (`--arn-z-*`), preset'ler (modal, popover, dropdown, tooltip), ayar mirası, `data-state` kapanma sözleşmesi (`components/overlay.md`). Toast preset'i Faz 6, backdrop renk token'ı dialog ile Faz 4
-- [ ] `arnRipple` directive'i
+- [x] `arnRipple` directive'i: ayrı entry point `@arn-ng/ui/ripple` (`ArnRippleDirective`), token'lar ve sınıflar `theme.css`'te (`components/ripple.md`). Bileşen girdisi `[ripple]` Faz 4'te button ile
 - [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
 - [x] Token kataloğuna boyut ve density bölümü (`components/tokens-sizes.md`)
 
@@ -42,7 +42,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] checkbox
 - [ ] select
 - [ ] dialog
-- [ ] tooltip
+- [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
 - [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an yalnız `^19.0.0`; SKILL §3)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit)
 

@@ -9,10 +9,10 @@
 | Selector | Yok (CSS dosyası) |
 | Entry point | `@arn-ng/ui/theme.css` (JS entry point değil; `exports`'ta `style` + `default` koşulu) |
 | Tür | ortak yapı |
-| Sınıf adları | CSS: `.dark`, `.light`, `.arn-rtl-mirror`, `.arn-overlay-host(-<katman>)`, `.arn-overlay-backdrop(-<katman>)` |
+| Sınıf adları | CSS: `.dark`, `.light`, `.arn-rtl-mirror`, `.arn-overlay-host(-<katman>)`, `.arn-overlay-backdrop(-<katman>)`, `.arn-ripple-container`, `.arn-ripple-wave` |
 | Dosya yolları | `projects/ui/theme.css`, `projects/ui/testing/theme.spec.ts` |
 
-Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya token, `color-scheme` ve iki token dışı kural grubu içerir: isteğe bağlı yardımcı sınıf `.arn-rtl-mirror:dir(rtl) { scale: -1 1; }` (yön bildiren ikonları RTL'de aynalar: [config-direction.md](config-direction.md)) ve overlay katmanlarının z-index kuralları ([overlay.md](overlay.md)); `body` dahil hiçbir elemanı boyamaz.
+Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css';` (veya `angular.json` `styles`). Dosya token, `color-scheme` ve üç token dışı kural grubu içerir: ripple sınıfları ([ripple.md](ripple.md)), isteğe bağlı yardımcı sınıf `.arn-rtl-mirror:dir(rtl) { scale: -1 1; }` (yön bildiren ikonları RTL'de aynalar: [config-direction.md](config-direction.md)) ve overlay katmanlarının z-index kuralları ([overlay.md](overlay.md)); `body` dahil hiçbir elemanı boyamaz.
 
 ## 2. Mimari
 
@@ -79,6 +79,16 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 |---|---|---|
 | `--arn-z-dropdown` / `-popover` / `-modal` / `-toast` / `-tooltip` | 1000 / 1100 / 1200 / 1300 / 1400 | Sabit tamsayı. Overlay'lerin kendi aralarındaki sıra; `ArnOverlayService` katman sınıfını host ve backdrop'a yazar ([overlay.md](overlay.md)). Sayfaya göre yüksekliği `.cdk-overlay-container` (CDK: 1000) belirler |
 
+### Ripple
+
+Bileşen token'ı olmalarına rağmen `:root`'tadır (directive'in stil dosyası yok); ayrıntı [ripple.md](ripple.md).
+
+| Ad | Varsayılan | Not |
+|---|---|---|
+| `--arn-ripple-color` | `color-mix(in oklch, currentcolor 12%, transparent)` | `currentcolor` kullanıldığı elemanda çözülür: metin rengini izler, dark mode ayarı gerekmez |
+| `--arn-ripple-duration` | `450ms` | Düz `ms` / `s` değeri olmalı |
+| `--arn-ripple-easing` | `cubic-bezier(0, 0, 0.2, 1)` | |
+
 `--arn-radius-sm` ve `--arn-text-sm` ölçeğin adımıdır; bileşen boyutu (`size="sm"`) DEĞİLDİR. Boyut (`--arn-control-*`) ve density (`--arn-density`) token'ları: [tokens-sizes.md](tokens-sizes.md).
 
 ## 4. Override rehberi
@@ -112,7 +122,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
 
 ## 9. Bağlantılar
 

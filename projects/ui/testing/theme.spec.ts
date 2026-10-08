@@ -159,6 +159,81 @@ describe('theme.css', () => {
     expect(values).toEqual(['1000', '1100', '1200', '1300', '1400']);
   });
 
+  describe('ripple', () => {
+    it('the ripple tokens are defined on :root', () => {
+      const rootStyle = getComputedStyle(document.documentElement);
+      const valueOf = (token: string): string => rootStyle.getPropertyValue(token).trim();
+
+      expect(valueOf('--arn-ripple-color')).not.toBe('');
+      expect(valueOf('--arn-ripple-duration')).toBe('450ms');
+      expect(valueOf('--arn-ripple-easing')).toBe('cubic-bezier(0, 0, 0.2, 1)');
+    });
+
+    it('--arn-ripple-easing is a valid easing', () => {
+      const element = box(host, '', 'none');
+
+      element.style.transitionTimingFunction = 'var(--arn-ripple-easing)';
+
+      expect(getComputedStyle(element).transitionTimingFunction).toBe('cubic-bezier(0, 0, 0.2, 1)');
+    });
+
+    it('--arn-ripple-color is 12% of the text color of the element that uses it', () => {
+      const red = box(host, '', 'var(--arn-ripple-color)');
+      const blue = box(host, '', 'var(--arn-ripple-color)');
+
+      red.style.color = 'rgb(255, 0, 0)';
+      blue.style.color = 'rgb(0, 0, 255)';
+
+      expect(backgroundOf(red)).toMatch(/\/ 0\.12\)$/);
+      expect(backgroundOf(blue)).toMatch(/\/ 0\.12\)$/);
+      expect(backgroundOf(red)).not.toBe(backgroundOf(blue));
+    });
+
+    // No separate dark value: the color follows the foreground, which light-dark() already flips
+    it('--arn-ripple-color follows the foreground in .dark and .light', () => {
+      const dark = box(box(host, 'dark', 'none'), '', 'var(--arn-ripple-color)');
+      const light = box(box(host, 'light', 'none'), '', 'var(--arn-ripple-color)');
+
+      dark.style.color = 'var(--arn-foreground)';
+      light.style.color = 'var(--arn-foreground)';
+
+      expect(backgroundOf(dark)).toMatch(/\/ 0\.12\)$/);
+      expect(backgroundOf(dark)).not.toBe(backgroundOf(light));
+    });
+
+    it('.arn-ripple-container covers its positioned parent and takes no pointer events', () => {
+      const parent = box(host, '', 'none');
+
+      parent.style.position = 'relative';
+      parent.style.inlineSize = '120px';
+      parent.style.blockSize = '40px';
+      parent.style.borderRadius = '8px';
+
+      const style = getComputedStyle(box(parent, 'arn-ripple-container', 'none'));
+
+      expect(style.position).toBe('absolute');
+      expect([style.inlineSize, style.blockSize]).toEqual(['120px', '40px']);
+      expect(style.overflow).toBe('hidden');
+      expect(style.borderTopLeftRadius).toBe('8px');
+      expect(style.pointerEvents).toBe('none');
+    });
+
+    it('.arn-ripple-wave is a circle painted with --arn-ripple-color', () => {
+      const element = document.createElement('span');
+
+      element.className = 'arn-ripple-wave';
+      element.style.setProperty('--arn-ripple-color', 'rgb(1, 2, 3)');
+      host.appendChild(element);
+
+      const style = getComputedStyle(element);
+
+      expect(style.position).toBe('absolute');
+      expect(style.borderTopLeftRadius).toBe('50%');
+      expect(style.backgroundColor).toBe('rgb(1, 2, 3)');
+      expect(style.pointerEvents).toBe('none');
+    });
+  });
+
   it('a layer class alone does nothing: both classes are needed (no clash with consumer CSS)', () => {
     const element = box(host, 'arn-overlay-host-modal', 'none');
 

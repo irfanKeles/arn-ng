@@ -2,6 +2,8 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    // Needed by the Karma (webpack) build: without it the paths resolve against the working directory
+    "baseUrl": ".",
     "paths": {
       "@arn-ng/ui/*": ["./*/src/public-api.ts"]
     }
