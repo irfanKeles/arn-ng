@@ -114,7 +114,6 @@ Token ve sınıflar: `projects/ui/testing/theme.spec.ts` (`ripple` grubu, 6 test
 
 - Gerçek SSR çalıştırması yok (yalnız `PLATFORM_ID` dalı birim testte); tarayıcıda görsel doğrulama ve gerçek bileşenle kullanım Faz 4.
 - Core'daki `ARN_REDUCED_MOTION` export edilince `ARN_RIPPLE_REDUCED_MOTION` onunla birleştirilecek.
-- `eslint.config.mjs`'teki `no-restricted-globals` mesajı hâlâ `afterNextRender` öneriyor; ayrı adımda düzeltilecek.
 - Dokunmatikte kaydırma başlangıcı `pointercancel` ile söner ama dalga yine de bir an görünür (gecikme yok).
 
 ## 9. Bağlantılar

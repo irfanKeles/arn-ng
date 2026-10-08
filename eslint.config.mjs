@@ -70,7 +70,8 @@ export default tseslint.config(
         'error',
         {
           name: 'window',
-          message: 'inject(DOCUMENT).defaultView veya afterNextRender kullan (SKILL §4).',
+          message:
+            'inject(DOCUMENT).defaultView kullan; yalnız tarayıcıda çalışacak kodu isPlatformBrowser(inject(PLATFORM_ID)) ile koru (SKILL §4).',
         },
         { name: 'document', message: 'inject(DOCUMENT) kullan (SKILL §4).' },
         {
