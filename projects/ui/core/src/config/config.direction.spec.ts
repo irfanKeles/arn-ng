@@ -11,6 +11,7 @@ import {
 } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { expectNoA11yViolations } from '../../../testing/a11y';
+import { resetDocument } from '../../../testing/document';
 import { ArnConfigDirective } from './config.directive';
 import { ArnConfigService } from './config.service';
 import type { ArnDirection, ArnRootConfig } from './config.types';
@@ -92,7 +93,8 @@ describe('ArnConfigDirective: direction and locale', () => {
   }
 
   afterEach(() => {
-    root.removeAttribute('dir');
+    // applyToDocument also writes data-density, not only dir
+    resetDocument(document);
   });
 
   describe('locale precedence', () => {

@@ -123,6 +123,8 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 | `messages.spec.ts` | [config-messages.md](config-messages.md) §8 |
 | `config.types.spec.ts` | Derleme zamanı: 11 `@ts-expect-error` (Karma derlemesi kullanılmayan direktifte düşer; doğrulandı) |
 
+`<html>` ortak durumdur: `applyToDocument` kullanan spec `afterEach`'te `resetDocument(document)` çağırır (`testing/document.ts`; `data-density` her çağrıda yazılır, yalnız `dir` silmek sızdırır). `<html>`'in temiz olduğunu sınayan spec ayrıca `beforeEach`'te sıfırlar.
+
 Boşluklar: SSR'da çalıştırma yok; gerçek bileşenle sınama Faz 4.
 
 Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). `baseUrl: "."` Karma (webpack) içindir: yoksa `paths` çalışma dizinine göre çözülür ve entry point'ler arası çalışma zamanı import'u düşer (ilk örnek: ripple → core). Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.

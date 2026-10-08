@@ -2,6 +2,7 @@ import { Directionality } from '@angular/cdk/bidi';
 import { LOCALE_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { captureWarnings } from '../../../testing/console';
+import { resetDocument } from '../../../testing/document';
 import { ArnConfigService } from './config.service';
 import type { ArnRootConfig } from './config.types';
 import { provideArn } from './provide-arn';
@@ -33,10 +34,13 @@ describe('ArnConfigService', () => {
 
   const untouched = { dark: false, light: false, density: null, dir: null };
 
+  // The specs below compare against a clean <html>, whatever ran before them
+  beforeEach(() => {
+    resetDocument(document);
+  });
+
   afterEach(() => {
-    root.classList.remove('dark', 'light');
-    root.removeAttribute('data-density');
-    root.removeAttribute('dir');
+    resetDocument(document);
   });
 
   describe('values', () => {
