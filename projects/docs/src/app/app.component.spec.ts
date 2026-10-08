@@ -265,6 +265,64 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('layout', () => {
+    function sidebar(element: HTMLElement): HTMLElement {
+      return query(element, 'docs-sidebar');
+    }
+
+    function expectNear(actual: number, expected: number): void {
+      expect(Math.abs(actual - expected)).toBeLessThanOrEqual(1);
+    }
+
+    it('stretches the body and the divider to the bottom of the shell', async () => {
+      // A short page: its content alone would not fill the viewport
+      const { element } = await setup({ url: '/missing' });
+      const host = element.getBoundingClientRect();
+      const body = query(element, '.docs-body').getBoundingClientRect();
+      const content = main(element).getBoundingClientRect();
+      const side = sidebar(element).getBoundingClientRect();
+
+      expectNear(body.bottom, host.bottom);
+      expectNear(content.height, body.height);
+      expect(content.height).toBeGreaterThan(side.height);
+      expectNear(content.left, side.right);
+      expect(getComputedStyle(main(element)).borderInlineStartWidth).toBe('1px');
+      expect(getComputedStyle(sidebar(element)).borderInlineEndWidth).toBe('0px');
+    });
+
+    it('draws the divider on the sidebar side in RTL', async () => {
+      const { element, fixture } = await setup();
+
+      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
+      await fixture.whenStable();
+
+      expect(getComputedStyle(main(element)).borderRightWidth).toBe('1px');
+      expect(getComputedStyle(main(element)).borderLeftWidth).toBe('0px');
+    });
+
+    it('has no divider in a narrow viewport', async () => {
+      const { element } = await setup({ narrow: true, url: '/missing' });
+
+      expect(getComputedStyle(main(element)).borderInlineStartWidth).toBe('0px');
+      expectNear(
+        query(element, '.docs-body').getBoundingClientRect().bottom,
+        element.getBoundingClientRect().bottom,
+      );
+    });
+
+    it('gives the open drawer the full height of the body and an edge', async () => {
+      const shell = await setup({ narrow: true, url: '/missing' });
+
+      await openDrawer(shell);
+
+      expectNear(
+        sidebar(shell.element).getBoundingClientRect().height,
+        query(shell.element, '.docs-body').getBoundingClientRect().height,
+      );
+      expect(getComputedStyle(sidebar(shell.element)).borderInlineEndWidth).toBe('1px');
+    });
+  });
+
   describe('accessibility', () => {
     const modes: readonly { name: string; config: ArnConfig }[] = [
       { name: 'light', config: { colorScheme: 'light' } },

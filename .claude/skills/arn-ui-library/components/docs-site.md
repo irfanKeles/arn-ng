@@ -40,6 +40,7 @@ Sıra: skip link → `<header>` (çekmece düğmesi, site adı, `<docs-settings>
 
 - **Dar/geniş modu CSS media query değil, TS belirler:** `DOCS_NARROW_VIEWPORT` (`Signal<boolean>`, `(width < 48rem)`, sunucuda `false`) → `.docs-body`'de `docs-narrow` / `docs-drawer-open` sınıfı. Kırılma noktası tek yerde (`shell/viewport.ts`); spec token'ı `signal` ile değiştirir (Karma penceresi 800px, media query ile çekmece sınanamazdı).
 - **Sınıflar host'ta DEĞİL, şablondaki elemanda:** `ChangeDetectorRef.detectChanges()` bileşenin host binding'lerini yenilemez; odak taşımadan önce sınıfın yazılmış olması gerekir.
+- **Ayırıcı `main`'dedir** (`border-inline-start`), sidebar'da değil: sidebar sticky için `align-self: start` taşır ve içeriği kadardır. Host flex sütun, `.docs-body` `flex-grow: 1` ile kalan yüksekliği doldurur. Dar modda çizgi yok; çekmece kendi kenarını taşır.
 - `drawerVisible = computed(() => narrow() && drawerOpen())`: pencere genişleyince çekmece kendiliğinden kapalı sayılır (`effect()` yok).
 
 ### Değiştiriciler ve kalıcılık
@@ -64,6 +65,8 @@ Sıra: skip link → `<header>` (çekmece düğmesi, site adı, `<docs-settings>
 Bileşen token'ı yok. Docs CSS'i yalnız `theme.css`'te tanımlı `--arn-*` token'larını kullanır (grep ile doğrulandı; tanımsız `var()` sessizce geçersiz kalır, Stylelint yakalamaz). Siteye özgü üç ölçü `styles.css` `:root`'unda: `--docs-sidebar-width`, `--docs-content-width`, `--docs-gutter` (`--arn-spacing`'ten `calc`). Düz CSS, Tailwind yok; mantıksal özellikler ve Stylelint kuralları docs'ta da geçerlidir.
 
 Sayfa içeriği tipografisi globaldir (`styles.css`, `.docs-page …`): kabuğun kapsüllenmiş stili route bileşeninin içine ulaşamaz.
+
+Satır içi kod rozeti (`.docs-page :not(pre) > code`; kod bloklarına uygulanmaz) `inline-block`'tur: satır sonunda bölünmez (inline iken tireden sonra kırılıyordu), kapsayıcıdan genişse kendi içinde sarılır (`max-inline-size: 100%` + `border-box` + `overflow-wrap: break-word`; `anywhere` min-content'i tek karaktere indirip tablo sütununu ezerdi). Dikey padding yok, yükseklik `--arn-text-sm-line-height`'tan (satırı büyütmesin). `direction: ltr` taşır (RTL'de `@` ve `/` yer değiştirmesin); `unicode-bidi` gerekmez, atomik kutu dış paragrafta tek nötr nesnedir.
 
 ## 4. Override rehberi
 
@@ -116,10 +119,11 @@ Yok.
 | `shell/settings/…spec.ts` | Dört etiketli `<select>`; her biri servisi günceller ve `<html>`'e yansır; Türkçe ve İngilizce'ye dönüş (metinler + `Intl` adları); depoya yazım; listede olmayan değer; axe |
 | `settings/docs-settings.service.spec.ts` | Yaz/oku, geri yükleme, geçersiz / yanlış tipli / bozuk kayıt, `getItem` ve `setItem` fırlatınca, depo yokken, sunucuda `DOCS_STORAGE`, `appConfig` ile açılışta uygulama |
 | `shell/viewport.spec.ts` | Token tarayıcıda media query'yi, sunucuda `false` verir |
-| `app.component.spec.ts` | Landmark'lar, skip link, gezintide odak ve başlık, çekmece (aç/kapa, Esc, backdrop, odak, `inert`, genişleyince kapanma), hedef boyutu, axe: light / dark / RTL / compact × geniş, çekmece kapalı, çekmece açık |
+| `app.component.spec.ts` | Landmark'lar, skip link, gezintide odak ve başlık, çekmece (aç/kapa, Esc, backdrop, odak, `inert`, genişleyince kapanma), düzen (body kabuğun altına iner, ayırıcı `main`'de ve RTL'de sidebar tarafında, dar modda yok, çekmece tam yükseklik), hedef boyutu, axe: light / dark / RTL / compact × geniş, çekmece kapalı, çekmece açık |
 | `pages/**/…spec.ts` | 404 bilinmeyen URL'de, dönüş bağlantısı, RTL'de ok `scale: -1 1`; Overview tek `h1`; axe |
+| `src/styles.spec.ts` | Kod rozeti (düz DOM, 320px kapsayıcı): satır sonunda bölünmez, geniş rozet içinde sarılır ve kaydırma üretmez, tablo sütununu ezmez, satır yüksekliğini değiştirmez (±1px), RTL'de `ltr`, `pre > code` etkilenmez |
 
-Boşluklar: tarayıcıda görsel doğrulama yapılmadı (düzen, RTL aynalama, çekmece, koyu tema); gerçek pencere yeniden boyutlandırma ve gerçek SSR sınanmadı.
+Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (koyu tema; bulunan iki kusur 3a-fix'te giderildi: ayırıcı, kod rozeti). Kalan: gerçek pencere yeniden boyutlandırma ve gerçek SSR sınanmadı.
 
 ## 9. Bağlantılar
 

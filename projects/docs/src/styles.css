@@ -77,11 +77,20 @@ body {
   text-underline-offset: calc(var(--arn-spacing) * 0.75);
 }
 
-.docs-page code {
-  padding-block: calc(var(--arn-spacing) / 2);
+/*
+ * Inline code badge (not code blocks). An atomic box: it moves to the next line whole, and wraps
+ * inside itself only when it is wider than its container. Code reads left to right in RTL too.
+ */
+.docs-page :not(pre) > code {
+  display: inline-block;
+  box-sizing: border-box;
+  max-inline-size: 100%;
   padding-inline: var(--arn-spacing);
   border-radius: calc(var(--arn-radius) * 0.6);
   background: var(--arn-muted);
   font-family: var(--arn-font-mono);
   font-size: var(--arn-text-sm);
+  line-height: var(--arn-text-sm-line-height);
+  direction: ltr;
+  overflow-wrap: break-word;
 }
