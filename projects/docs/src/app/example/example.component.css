@@ -1,0 +1,71 @@
+:host {
+  --docs-example-target: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+
+  display: block;
+  min-inline-size: 0;
+  margin-block: 0 calc(var(--arn-spacing) * 6);
+  overflow: hidden;
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+}
+
+.docs-example-demo {
+  padding: calc(var(--arn-spacing) * 6);
+}
+
+.docs-example-bar,
+.docs-example-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: center;
+  padding: calc(var(--arn-spacing) * 2) calc(var(--arn-spacing) * 4);
+  border-block-start: var(--arn-border-width) solid var(--arn-border);
+}
+
+.docs-example-bar {
+  justify-content: flex-end;
+}
+
+.docs-example-tools {
+  justify-content: space-between;
+}
+
+.docs-example-tabs {
+  display: flex;
+  gap: var(--arn-spacing);
+}
+
+.docs-example-button,
+.docs-example-tab {
+  min-block-size: var(--docs-example-target);
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  font-family: inherit;
+  font-size: var(--arn-control-font-size-sm);
+  cursor: pointer;
+}
+
+.docs-example-tab {
+  border-color: transparent;
+  color: var(--arn-muted-foreground);
+}
+
+/* Not by color alone: the selected tab also gets a border and a heavier weight. */
+.docs-example-tab[aria-selected='true'] {
+  border-color: var(--arn-input);
+  background: var(--arn-muted);
+  color: var(--arn-foreground);
+  font-weight: var(--arn-font-weight-semibold);
+}
+
+.docs-example-panel {
+  min-inline-size: 0;
+  border-block-start: var(--arn-border-width) solid var(--arn-border);
+}

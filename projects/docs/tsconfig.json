@@ -3,6 +3,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "baseUrl": ".",
+    "module": "esnext",
     "paths": {
       "@arn-ng/ui/*": ["../ui/*/src/public-api.ts"]
     }

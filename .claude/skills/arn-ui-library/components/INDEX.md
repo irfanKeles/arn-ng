@@ -13,6 +13,7 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | overlay (`ArnOverlayService`, `ArnOverlayRef`, katmanlar, preset'ler, ayar mirası, `data-state` sözleşmesi) | servis + ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [overlay.md](overlay.md) |
 | ripple (`arnRipple`, `ArnRippleDirective`, ripple token'ları) | directive | `@arn-ng/ui/ripple`, `@arn-ng/ui/theme.css` | [ripple.md](ripple.md) |
 | docs-site (doküman sitesi kabuğu, `docs-nav.ts`, değiştiriciler, kalıcılık) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site.md](docs-site.md) |
+| docs-site-examples (örnek bloğu `docs-example`, kod bloğu `docs-code-block`, Shiki, metin import'u) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-examples.md](docs-site-examples.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 

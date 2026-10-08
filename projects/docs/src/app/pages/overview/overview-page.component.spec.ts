@@ -28,6 +28,16 @@ describe('OverviewPageComponent', () => {
     );
   });
 
+  it('keeps a space between each bold title and what follows it', () => {
+    const titles = Array.from(create().querySelectorAll('li > strong'));
+
+    expect(titles.length).toBeGreaterThan(0);
+
+    for (const title of titles) {
+      expect(title.nextSibling?.textContent).toMatch(/^\s/);
+    }
+  });
+
   it('carries the page class', () => {
     expect(create().classList.contains('docs-page')).toBe(true);
   });

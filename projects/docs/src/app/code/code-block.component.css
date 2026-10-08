@@ -1,0 +1,45 @@
+/*
+ * Code colors. The highlighter emits only these variable names, never a color, so the palette lives
+ * here alone: neutral for now, mapped to the library's tokens.
+ */
+:host {
+  --docs-code-background: var(--arn-card);
+  --docs-code-foreground: var(--arn-foreground);
+  --docs-code-token-keyword: var(--arn-foreground);
+  --docs-code-token-function: var(--arn-foreground);
+  --docs-code-token-link: var(--arn-foreground);
+  --docs-code-token-constant: light-dark(var(--arn-neutral-700), var(--arn-neutral-300));
+  --docs-code-token-parameter: light-dark(var(--arn-neutral-700), var(--arn-neutral-300));
+  --docs-code-token-string: light-dark(var(--arn-neutral-600), var(--arn-neutral-400));
+  --docs-code-token-string-expression: light-dark(var(--arn-neutral-600), var(--arn-neutral-400));
+  --docs-code-token-punctuation: var(--arn-muted-foreground);
+  --docs-code-token-comment: var(--arn-muted-foreground);
+  --docs-code-token-inserted: var(--arn-foreground);
+  --docs-code-token-deleted: var(--arn-foreground);
+  --docs-code-token-changed: var(--arn-foreground);
+
+  display: block;
+  min-inline-size: 0;
+}
+
+/* Code reads left to right in a right-to-left page too; a long line scrolls inside the block. */
+.docs-code-block-pre {
+  margin: 0;
+  padding: calc(var(--arn-spacing) * 4);
+  overflow-x: auto;
+  background: var(--docs-code-background);
+  color: var(--docs-code-foreground);
+  font-family: var(--arn-font-mono);
+  font-size: var(--arn-text-sm);
+  line-height: var(--arn-text-sm-line-height);
+  direction: ltr;
+  tab-size: 2;
+}
+
+.docs-code-block-italic {
+  font-style: italic;
+}
+
+.docs-code-block-bold {
+  font-weight: var(--arn-font-weight-semibold);
+}

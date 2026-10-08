@@ -1,0 +1,54 @@
+<div class="docs-example-demo"><ng-content /></div>
+
+<div class="docs-example-bar">
+  <button
+    type="button"
+    class="docs-example-button docs-example-toggle"
+    [attr.aria-expanded]="open()"
+    [attr.aria-controls]="codeId"
+    (click)="toggle()"
+  >
+    {{ open() ? 'Hide code' : 'Show code' }}
+  </button>
+</div>
+
+<div class="docs-example-code" [id]="codeId" [hidden]="!open()">
+  @if (open()) {
+    <div class="docs-example-tools">
+      <div class="docs-example-tabs" role="tablist" aria-label="Example code">
+        @for (tab of tabs; track tab.id) {
+          <button
+            type="button"
+            class="docs-example-tab"
+            role="tab"
+            [id]="tabId(tab.id)"
+            [attr.aria-selected]="tab.id === active()"
+            [attr.aria-controls]="panelId"
+            [attr.tabindex]="tab.id === active() ? 0 : -1"
+            (click)="select(tab.id)"
+            (keydown)="onTabKeydown($event)"
+          >
+            {{ tab.label }}
+          </button>
+        }
+      </div>
+
+      <button type="button" class="docs-example-button docs-example-copy" (click)="copy()">
+        {{ copyLabel() }}
+      </button>
+    </div>
+
+    <div
+      class="docs-example-panel"
+      role="tabpanel"
+      [id]="panelId"
+      [attr.aria-labelledby]="tabId(active())"
+    >
+      <docs-code-block
+        [code]="activeCode()"
+        [language]="activeTab().language"
+        [label]="activeTab().label + ' code'"
+      />
+    </div>
+  }
+</div>

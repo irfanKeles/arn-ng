@@ -58,6 +58,7 @@
     "karma-jasmine-html-reporter": "~2.1.0",
     "ng-packagr": "^19.2.0",
     "prettier": "^3.9.9",
+    "shiki": "^4.5.0",
     "stylelint": "^17.16.0",
     "stylelint-config-standard": "^40.0.0",
     "stylelint-use-logical": "^2.1.3",

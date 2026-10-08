@@ -102,7 +102,7 @@ Yok.
 
 | Adım | Eksik |
 |---|---|
-| 3b | Örnek bloğu, kod renklendirme (Shiki: tembel parça, JS regex motoru, `html` / `typescript` / `css`), API ve Styling tabloları, "bu sayfada" (sağ sütun; fragment gezintisinde odak taşınmaması hazır) |
+| 3b | 3b-1 bitti: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: API ve Styling tabloları, "bu sayfada" (sağ sütun; fragment gezintisinde odak taşınmaması hazır) |
 | 3c | Giriş sayfaları (Installation, Configuration, Theming, Accessibility…) ve ripple sayfası; dil değiştiricinin etkisini gösteren ilk içerik |
 | 3d | Arama (sidebar'da) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |
@@ -110,7 +110,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/docs/src/app/**/*.spec.ts` (Karma, zoneless, Jasmine'e özgü API yok). axe yardımcısı kütüphaneninkidir (`projects/ui/testing/a11y.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
+`projects/docs/src/app/**/*.spec.ts` (Karma, zoneless, Jasmine'e özgü API yok). axe yardımcısı kütüphaneninkidir (`projects/ui/testing/a11y.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`, `nextTask`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
 
 | Spec | Kapsam |
 |---|---|
@@ -128,5 +128,5 @@ Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (k
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/`, `projects/docs/src/styles.css`, `projects/docs/tsconfig.json`, `angular.json` (docs)
-- İlgili: [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
+- İlgili: [docs-site-examples.md](docs-site-examples.md), [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
 - Yerelde: `npm run build:ui` ardından `npm run serve:docs`

@@ -37,6 +37,13 @@ export function resetDocument(doc: Document): void {
   }
 }
 
+/** Resolves in a later task: every promise callback that is already queued has run by then. */
+export function nextTask(): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve);
+  });
+}
+
 /** The trimmed text of a node. */
 export function text(node: Node): string {
   return (node.textContent ?? '').trim();

@@ -1,0 +1,6 @@
+<pre
+  class="docs-code-block-pre"
+  role="group"
+  tabindex="0"
+  [attr.aria-label]="label()"
+><code>@if (tokens(); as highlighted) {@for (token of highlighted; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}} @else {{{ code() }}}</code></pre>

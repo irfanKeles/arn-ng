@@ -4,6 +4,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/spec",
+    "module": "esnext",
     "types": ["jasmine"]
   },
   "files": ["src/test-setup.ts"],

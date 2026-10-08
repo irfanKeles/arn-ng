@@ -33,10 +33,15 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Sayfa içi gezinti, "bu sayfada" (adım 3b)
 - [ ] Arama (adım 3d)
 - [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
-- [ ] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
+- [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [ ] API ve Styling tablo bileşenleri
 - [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
 - [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
+- [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
+- [ ] Docs cilası: renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
+- [ ] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçiyor, ubuntu-24.04'e sabitle ya da Ubuntu 26'da dene
+- [ ] projects/ui/testing/a11y.ts yardımcısına expect eklemek ("has no expectations" uyarısını keser)
+- [ ] Test hijyeni: overlay.presets.spec.ts:139-149 düğme temizliği afterEach'e taşınmalı
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
 - [ ] button (directive + element)
