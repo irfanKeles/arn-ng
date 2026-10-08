@@ -29,12 +29,14 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Token kataloğuna boyut ve density bölümü (`components/tokens-sizes.md`)
 
 ## Faz 3 — Doküman sitesi iskeleti
-- [ ] Sidebar (kategorili), sayfa içi gezinti, arama
-- [ ] Tema / yön / yoğunluk / dil değiştiriciler
+- [x] Sidebar (kategorili): kabuk, tek tipli gezinti verisi (`docs-nav.ts`), küçük ekranda çekmece, 404 (adım 3a; `components/docs-site.md`)
+- [ ] Sayfa içi gezinti, "bu sayfada" (adım 3b)
+- [ ] Arama (adım 3d)
+- [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
 - [ ] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [ ] API ve Styling tablo bileşenleri
 - [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
-- [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için)
+- [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
 - [ ] button (directive + element)
@@ -50,6 +52,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] README, kurulum rehberi (`projects/ui/README.md` hâlâ CLI'ın jenerik metni ve pakete giriyor)
 - [ ] `0.1.0` npm'e yayın
   - Yayın "trusted publishing (OIDC)" ile yapılacak, saklı npm token kullanılmayacak. Gerekçe: npm 31 Temmuz 2026'dan itibaren hassas işlemlerde etkileşimli 2FA istiyor, Ocak 2027'de 2FA-bypass token'lar doğrudan yayın yetkisini kaybedecek.
+- [ ] Docs Overview sayfasındaki yayın durumu ifadesini güncelle ("has not been published to npm yet" 0.1.0 yayınıyla yanlış olur; `projects/docs/src/app/pages/overview/`)
 - [ ] PR'larda changeset kontrolünü CI'a ekle (0.1.0'dan sonra)
 - [ ] Gerçek bir projede npm'den kurup kullanma
 - [ ] Geri bildirim ve düzeltmeler
@@ -58,6 +61,5 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] mask input, date picker, table, toast ve diğerleri (önceliği ihtiyaçla belirle)
 
 ## Açık kararlar
-- Doküman sitesinde kod vurgulama yöntemi
 - `chart-*`, `sidebar-*` ve `success` / `warning` / `info` token'ları: şimdilik yok, ihtiyaç duyan ilk bileşenle karar verilecek
 - `ArnConfigService` ile verilen bir alanı "varsayılana dön" diye silme yolu (reset) yok; ilk ihtiyaçta karar ver.

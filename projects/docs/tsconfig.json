@@ -1,0 +1,10 @@
+/* Used by the editor and ESLint only: entry points resolve to source, so lint needs no dist. The build (tsconfig.app.json) and the specs (tsconfig.spec.json) extend the root config and consume dist/ui like a real application. */
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@arn-ng/ui/*": ["../ui/*/src/public-api.ts"]
+    }
+  }
+}

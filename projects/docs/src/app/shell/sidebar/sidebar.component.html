@@ -1,0 +1,20 @@
+<nav class="docs-nav" aria-label="Documentation">
+  @for (category of visible(); track category.id) {
+    <h2 class="docs-nav-heading" [id]="'docs-nav-' + category.id">{{ category.title }}</h2>
+    <ul class="docs-nav-list" [attr.aria-labelledby]="'docs-nav-' + category.id">
+      @for (page of category.pages; track page.slug) {
+        <li>
+          <a
+            class="docs-nav-link"
+            routerLinkActive="docs-nav-link-active"
+            ariaCurrentWhenActive="page"
+            [routerLink]="'/' + page.slug"
+            [routerLinkActiveOptions]="{ exact: true }"
+          >
+            {{ page.title }}
+          </a>
+        </li>
+      }
+    </ul>
+  }
+</nav>

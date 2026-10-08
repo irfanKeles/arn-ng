@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.docs-nav {
+  padding-block: calc(var(--arn-spacing) * 6);
+  padding-inline: calc(var(--arn-spacing) * 4);
+}
+
+.docs-nav-heading {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  padding-inline: var(--arn-control-padding-inline-sm);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-semibold);
+  line-height: var(--arn-text-sm-line-height);
+}
+
+.docs-nav-list {
+  display: grid;
+  gap: var(--arn-spacing);
+  margin-block: 0 calc(var(--arn-spacing) * 6);
+  padding: 0;
+  list-style: none;
+}
+
+.docs-nav-link {
+  display: flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  border-radius: calc(var(--arn-radius) * 0.8);
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-sm);
+  text-decoration: none;
+}
+
+.docs-nav-link:hover {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}
+
+/* The current page: background, color and weight (not color alone) */
+.docs-nav-link-active {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+  font-weight: var(--arn-font-weight-medium);
+}

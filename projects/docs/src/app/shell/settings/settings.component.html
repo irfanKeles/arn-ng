@@ -1,0 +1,47 @@
+<div class="docs-setting">
+  <label class="docs-setting-label" for="docs-setting-color-scheme">Theme</label>
+  <select
+    id="docs-setting-color-scheme"
+    class="docs-setting-select"
+    (change)="onColorScheme($event)"
+  >
+    @for (option of colorSchemes; track option.value) {
+      <option [value]="option.value" [selected]="option.value === config.colorScheme()">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+</div>
+
+<div class="docs-setting">
+  <label class="docs-setting-label" for="docs-setting-direction">Direction</label>
+  <select id="docs-setting-direction" class="docs-setting-select" (change)="onDirection($event)">
+    @for (option of directions; track option.value) {
+      <option [value]="option.value" [selected]="option.value === config.direction()">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+</div>
+
+<div class="docs-setting">
+  <label class="docs-setting-label" for="docs-setting-density">Density</label>
+  <select id="docs-setting-density" class="docs-setting-select" (change)="onDensity($event)">
+    @for (option of densities; track option.value) {
+      <option [value]="option.value" [selected]="option.value === config.density()">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+</div>
+
+<div class="docs-setting">
+  <label class="docs-setting-label" for="docs-setting-locale">Language</label>
+  <select id="docs-setting-locale" class="docs-setting-select" (change)="onLocale($event)">
+    @for (option of locales; track option.value) {
+      <option [value]="option.value" [selected]="option.value === config.locale()">
+        {{ option.label }}
+      </option>
+    }
+  </select>
+</div>

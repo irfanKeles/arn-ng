@@ -1,0 +1,31 @@
+:host {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 3);
+  align-items: center;
+}
+
+.docs-setting {
+  display: flex;
+  gap: var(--arn-control-gap-sm);
+  align-items: center;
+}
+
+.docs-setting-label {
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-sm);
+}
+
+.docs-setting-select {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-xs) * var(--arn-density));
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  font-family: inherit;
+  font-size: var(--arn-control-font-size-sm);
+}

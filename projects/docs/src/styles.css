@@ -1,7 +1,87 @@
 @import url('@arn-ng/ui/theme.css');
 
+/* Site-only measures, derived from the library's spacing base */
+:root {
+  --docs-sidebar-width: calc(var(--arn-spacing) * 64);
+  --docs-content-width: calc(var(--arn-spacing) * 192);
+  --docs-gutter: calc(var(--arn-spacing) * 6);
+}
+
 body {
+  margin: 0;
   background: var(--arn-background);
   color: var(--arn-foreground);
   font-family: var(--arn-font-sans);
+  font-size: var(--arn-text-base);
+  line-height: var(--arn-text-base-line-height);
+}
+
+:focus-visible {
+  outline: var(--arn-ring-width) solid var(--arn-ring);
+  outline-offset: calc(var(--arn-spacing) / 2);
+}
+
+/* Text for assistive technology only */
+.docs-visually-hidden {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Page content: every page component carries this class on its host */
+.docs-page {
+  display: block;
+  max-inline-size: var(--docs-content-width);
+}
+
+.docs-page h1 {
+  margin-block: 0 calc(var(--arn-spacing) * 4);
+  font-size: calc(var(--arn-text-xl) * 1.5);
+  font-weight: var(--arn-font-weight-semibold);
+  line-height: 1.2;
+}
+
+.docs-page h2 {
+  margin-block: calc(var(--arn-spacing) * 10) calc(var(--arn-spacing) * 3);
+  font-size: var(--arn-text-xl);
+  font-weight: var(--arn-font-weight-semibold);
+  line-height: var(--arn-text-xl-line-height);
+}
+
+.docs-page p,
+.docs-page ul {
+  margin-block: 0 calc(var(--arn-spacing) * 4);
+}
+
+.docs-page ul {
+  padding-inline-start: calc(var(--arn-spacing) * 6);
+}
+
+.docs-page li {
+  margin-block-end: calc(var(--arn-spacing) * 2);
+}
+
+.docs-page .docs-lead {
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-lg);
+  line-height: var(--arn-text-lg-line-height);
+}
+
+.docs-page a {
+  color: inherit;
+  font-weight: var(--arn-font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: calc(var(--arn-spacing) * 0.75);
+}
+
+.docs-page code {
+  padding-block: calc(var(--arn-spacing) / 2);
+  padding-inline: var(--arn-spacing);
+  border-radius: calc(var(--arn-radius) * 0.6);
+  background: var(--arn-muted);
+  font-family: var(--arn-font-mono);
+  font-size: var(--arn-text-sm);
 }

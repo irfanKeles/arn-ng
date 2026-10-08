@@ -1,0 +1,15 @@
+.docs-back-link {
+  display: inline-flex;
+  gap: var(--arn-control-gap-md);
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+}
+
+.docs-back-icon {
+  flex: none;
+  inline-size: var(--arn-control-icon-size-md);
+  block-size: var(--arn-control-icon-size-md);
+}

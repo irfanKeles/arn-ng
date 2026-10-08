@@ -51,7 +51,6 @@
             "outputPath": "dist/docs",
             "index": "projects/docs/src/index.html",
             "browser": "projects/docs/src/main.ts",
-            "polyfills": ["zone.js"],
             "tsConfig": "projects/docs/tsconfig.app.json",
             "assets": [
               {

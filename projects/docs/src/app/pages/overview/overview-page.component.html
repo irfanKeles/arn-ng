@@ -1,0 +1,51 @@
+<h1>arn-ng</h1>
+
+<p class="docs-lead">
+  An Angular UI component library built on Angular CDK. Its visual language follows shadcn/ui.
+</p>
+
+<h2>Status</h2>
+
+<p>
+  <code>&#64;arn-ng/ui</code> is in early development (0.x) and has not been published to npm yet.
+  This site is built in the same workspace and consumes the library the way an application would.
+</p>
+
+<h2>What exists today</h2>
+
+<ul>
+  <li>
+    <strong>Theme.</strong> Design tokens in <code>&#64;arn-ng/ui/theme.css</code>, with light and
+    dark color schemes, five control sizes and two densities.
+  </li>
+  <li>
+    <strong>Configuration.</strong> <code>provideArn()</code>, the <code>arnConfig</code> directive
+    and <code>ArnConfigService</code> in <code>&#64;arn-ng/ui/core</code> set size, density, color
+    scheme, direction and locale for the application, a section or a single component.
+  </li>
+  <li>
+    <strong>Locales.</strong> English texts are built in; Turkish ships as
+    <code>&#64;arn-ng/ui/locales/tr</code>.
+  </li>
+  <li>
+    <strong>Overlay.</strong> <code>ArnOverlayService</code> is the shared foundation for dialogs,
+    menus and tooltips.
+  </li>
+  <li>
+    <strong>Ripple.</strong> The <code>arnRipple</code> directive in
+    <code>&#64;arn-ng/ui/ripple</code>.
+  </li>
+</ul>
+
+<p>Components come next; none has been released yet.</p>
+
+<h2>Try the settings</h2>
+
+<p>
+  The controls in the header change the library's configuration through
+  <code>ArnConfigService</code>. Theme, direction and density apply to this whole site immediately,
+  because the site is styled with the library's tokens. Language switches the library's locale and
+  built-in texts, not the language of this site.
+</p>
+
+<p><a href="https://github.com/irfanKeles/arn-ng">Source on GitHub</a></p>

@@ -1,0 +1,144 @@
+:host {
+  display: block;
+  min-block-size: 100dvb;
+}
+
+/* Visible only while focused */
+.docs-skip-link {
+  position: absolute;
+  inset-block-start: calc(var(--arn-spacing) * 2);
+  inset-inline-start: calc(var(--arn-spacing) * 2);
+  z-index: 3;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: var(--arn-control-padding-inline-sm);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-primary);
+  color: var(--arn-primary-foreground);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-medium);
+}
+
+.docs-skip-link:not(:focus) {
+  inline-size: 1px;
+  block-size: 1px;
+  min-block-size: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.docs-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 3);
+  align-items: center;
+  padding-block: calc(var(--arn-spacing) * 2);
+  padding-inline: var(--docs-gutter);
+  border-block-end: var(--arn-border-width) solid var(--arn-border);
+}
+
+.docs-site-name {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  color: inherit;
+  font-size: var(--arn-text-lg);
+  font-weight: var(--arn-font-weight-semibold);
+  text-decoration: none;
+}
+
+.docs-header-settings {
+  margin-inline-start: auto;
+}
+
+.docs-drawer-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  padding: 0;
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: inherit;
+  cursor: pointer;
+}
+
+.docs-drawer-toggle:hover {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}
+
+.docs-drawer-icon {
+  inline-size: var(--arn-control-icon-size-xl);
+  block-size: var(--arn-control-icon-size-xl);
+}
+
+.docs-body {
+  position: relative;
+  display: grid;
+  grid-template-columns: var(--docs-sidebar-width) minmax(0, 1fr);
+}
+
+.docs-sidebar {
+  position: sticky;
+  inset-block-start: 0;
+  align-self: start;
+  max-block-size: 100dvb;
+  overflow: auto;
+  border-inline-end: var(--arn-border-width) solid var(--arn-border);
+}
+
+.docs-main {
+  padding-block: calc(var(--arn-spacing) * 8);
+  padding-inline: var(--docs-gutter);
+}
+
+/* Focus arrives here on navigation and from the skip link; keep the ring inside the viewport */
+.docs-main:focus-visible {
+  outline-offset: calc(var(--arn-ring-width) * -1);
+}
+
+/* Narrow viewport: one column, the sidebar is a drawer below the header */
+.docs-body.docs-narrow {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.docs-narrow .docs-sidebar {
+  display: none;
+}
+
+.docs-drawer-open .docs-sidebar {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  z-index: 2;
+  display: block;
+  inline-size: min(var(--docs-sidebar-width), 85%);
+  min-block-size: 100%;
+  max-block-size: none;
+  background: var(--arn-background);
+}
+
+.docs-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: color-mix(in oklch, var(--arn-foreground) 40%, transparent);
+}

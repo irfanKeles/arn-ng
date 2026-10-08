@@ -1,3 +1,50 @@
-<h1>Hello, {{ title }}</h1>
+<a class="docs-skip-link" href="#docs-main" (click)="skipToContent($event)">Skip to content</a>
 
-<router-outlet />
+<header class="docs-header">
+  @if (narrow()) {
+    <button
+      #drawerToggle
+      type="button"
+      class="docs-drawer-toggle"
+      aria-controls="docs-sidebar"
+      [attr.aria-expanded]="drawerVisible()"
+      (click)="toggleDrawer()"
+    >
+      <svg
+        class="docs-drawer-icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        aria-hidden="true"
+        focusable="false"
+      >
+        <path d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+      <span class="docs-visually-hidden">Navigation</span>
+    </button>
+  }
+
+  <a class="docs-site-name" routerLink="/">{{ siteName }}</a>
+
+  <docs-settings class="docs-header-settings" />
+</header>
+
+<div class="docs-body" [class.docs-narrow]="narrow()" [class.docs-drawer-open]="drawerVisible()">
+  <docs-sidebar id="docs-sidebar" class="docs-sidebar" [categories]="nav" />
+
+  @if (drawerVisible()) {
+    <div class="docs-backdrop"></div>
+  }
+
+  <main
+    #main
+    id="docs-main"
+    class="docs-main"
+    tabindex="-1"
+    [attr.inert]="drawerVisible() ? '' : null"
+  >
+    <router-outlet />
+  </main>
+</div>
