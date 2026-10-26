@@ -1,0 +1,53 @@
+/* min-inline-size: 0 lets a flex or grid parent shrink it; the region scrolls instead of the page */
+:host {
+  display: block;
+  min-inline-size: 0;
+  margin-block: 0 calc(var(--arn-spacing) * 6);
+}
+
+.docs-table-region {
+  overflow-x: auto;
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+}
+
+.docs-table {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font-size: var(--arn-text-sm);
+  line-height: var(--arn-text-sm-line-height);
+}
+
+.docs-table-caption {
+  padding-block: calc(var(--arn-spacing) * 2);
+  padding-inline: calc(var(--arn-spacing) * 3);
+  font-weight: var(--arn-font-weight-semibold);
+  text-align: start;
+}
+
+.docs-table th,
+.docs-table td {
+  padding-block: calc(var(--arn-spacing) * 2);
+  padding-inline: calc(var(--arn-spacing) * 3);
+  border-block-start: var(--arn-border-width) solid var(--arn-border);
+  text-align: start;
+  vertical-align: top;
+}
+
+.docs-table thead th {
+  color: var(--arn-muted-foreground);
+  font-weight: var(--arn-font-weight-medium);
+  white-space: nowrap;
+}
+
+.docs-table tbody th {
+  font-weight: var(--arn-font-weight-normal);
+  white-space: nowrap;
+}
+
+/* Code reads left to right in RTL too; isolate, so the inline box takes its own direction */
+.docs-table-code {
+  font-family: var(--arn-font-mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+}

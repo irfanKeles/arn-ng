@@ -1,0 +1,79 @@
+import type { DocsApiTable, DocsApiToken } from './docs-api';
+
+/** A cell: code is set in monospace and read left to right; empty text means "none". */
+export interface DocsTableCell {
+  readonly text: string;
+  readonly code: boolean;
+}
+
+/** A row: the name is its header cell. */
+export interface DocsTableRow {
+  readonly name: string;
+  readonly cells: readonly DocsTableCell[];
+}
+
+/** What the table renders; `columns` starts with the name column. */
+export interface DocsTableView {
+  readonly caption: string;
+  readonly columns: readonly string[];
+  readonly rows: readonly DocsTableRow[];
+}
+
+function code(text: string | undefined): DocsTableCell {
+  return { text: text ?? '', code: true };
+}
+
+function prose(text: string): DocsTableCell {
+  return { text, code: false };
+}
+
+/** The view of an API table (inputs, outputs, methods or slots). */
+export function apiTableView(table: DocsApiTable): DocsTableView {
+  switch (table.kind) {
+    case 'inputs':
+      return {
+        caption: 'Inputs',
+        columns: ['Name', 'Type', 'Default', 'Description'],
+        rows: table.rows.map((row) => ({
+          name: row.name,
+          cells: [code(row.type), code(row.default), prose(row.description)],
+        })),
+      };
+    case 'outputs':
+      return {
+        caption: 'Outputs',
+        columns: ['Name', 'Type', 'Description'],
+        rows: table.rows.map((row) => ({
+          name: row.name,
+          cells: [code(row.type), prose(row.description)],
+        })),
+      };
+    case 'methods':
+      return {
+        caption: 'Methods',
+        columns: ['Name', 'Signature', 'Description'],
+        rows: table.rows.map((row) => ({
+          name: row.name,
+          cells: [code(row.signature), prose(row.description)],
+        })),
+      };
+    case 'slots':
+      return {
+        caption: 'Templates',
+        columns: ['Name', 'Description'],
+        rows: table.rows.map((row) => ({ name: row.name, cells: [prose(row.description)] })),
+      };
+  }
+}
+
+/** The view of the Styling table: the component's CSS tokens. */
+export function tokenTableView(rows: readonly DocsApiToken[]): DocsTableView {
+  return {
+    caption: 'CSS tokens',
+    columns: ['Name', 'Default', 'Description'],
+    rows: rows.map((row) => ({
+      name: row.name,
+      cells: [code(row.default), prose(row.description)],
+    })),
+  };
+}

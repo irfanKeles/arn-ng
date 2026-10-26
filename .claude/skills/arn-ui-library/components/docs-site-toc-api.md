@@ -6,13 +6,13 @@
 
 | Alan | Değer |
 |---|---|
-| Selector | `docs-section` (sayfa bölümü), `docs-toc` ("On this page") |
+| Selector | `docs-section` (sayfa bölümü), `docs-toc` ("On this page"), `docs-api-table`, `docs-token-table`, iç `docs-table` |
 | Entry point | Yok (uygulama) |
-| Tür | ortak yapı (docs bileşenleri + root servis) |
-| Sınıf adları | `DocsSectionComponent`, `DocsTocComponent`, `DocsTocService`; tip `DocsTocEntry`; token `DOCS_TOC_VIEWPORT` (`shell/viewport.ts`) |
-| Dosya yolları | `projects/docs/src/app/toc/`, kabuk `app.component.*`, `--docs-toc-width` `styles.css` |
+| Tür | ortak yapı (docs bileşenleri + root servis + spec yardımcısı) |
+| Sınıf adları | `DocsSectionComponent`, `DocsTocComponent`, `DocsTocService`, `ApiTableComponent`, `TokenTableComponent`, `DocsTableComponent`; tipler `DocsTocEntry`, `DocsApiTable`, `DocsApiInput` / `Output` / `Method` / `Slot` / `Token`; token `DOCS_TOC_VIEWPORT` |
+| Dosya yolları | `projects/docs/src/app/toc/`, `projects/docs/src/app/api/` (yardımcı `api/testing/expect-api.ts`), kabuk `app.component.*`, `--docs-toc-width` `styles.css` |
 
-Adım 3b-2'nin ilk yarısı ("On this page"). API ve Styling tabloları bu dosyaya ikinci yarıda eklenir.
+Adım 3b-2: "On this page" ile API ve Styling tabloları (SKILL §13 bölüm 13-14).
 
 ## 2. Mimari ve CDK
 
@@ -49,11 +49,27 @@ Sayfa `<h2>` yazmaz; `<docs-section sectionId="status" heading="Status">` yazar.
 | Çekmece | Çakışmaz: çekmece <48rem, liste ≥80rem. `!narrow()` yine de yazıldı; listeye `inert` gerekmez |
 | `scroll-margin` | Gerekmez: header sticky değil |
 
+### API ve Styling tabloları: elle yazılmış veri + spec doğrulaması
+
+Sayfa `<docs-api-table [table]="{ kind: 'inputs', rows }">` (kind: `inputs` / `outputs` / `methods` / `slots`) ve `<docs-token-table [rows]>` yazar. Veri tipli ve elle yazılır (`api/docs-api.ts`); derleme zamanında kod çözümleme (compodoc, TS API) şimdilik ağır bulundu.
+
+| Parça | Görev |
+|---|---|
+| `api/docs-table.ts` | Saf `apiTableView` / `tokenTableView`: başlık (Inputs, Outputs, Methods, Templates, CSS tokens), sütunlar, hücreler (`code` / düz metin, boş = yok) |
+| `DocsTableComponent` | Tek şablon: iki sarmalayıcı aynı tabloyu basar (plandaki iki ayrı tablo yerine ortak iç bileşen) |
+| `ApiTableComponent`, `TokenTableComponent` | İnce sarmalayıcı: girdi → `computed` görünüm → `<docs-table>` |
+| `apiMismatches(type, { inputs, outputs }): string[]` | Saf karşılaştırma: `reflectComponentType` (19'da kararlı) ile gerçek `templateName`'ler (alias ve `model()`'in `<ad>Change` output'u dahil) ↔ tablo adları. Eksik, fazla, tekrar eden ad satır satır; boş liste = uyumlu |
+| `expectApiMatchesComponent` | İnce sarmalayıcı: `expect(apiMismatches(...)).toEqual([])`. Sayfa spec'i her bileşen için çağırır (SKILL §13 "eski doküman yasak") |
+
+**Boşluk:** directive'ler `reflectComponentType` ile okunamaz (`null`); `apiMismatches` bunu tek satırlık sorun olarak döndürür. Directive sayfaları (ripple, 3c) için doğrulama yolu o sayfada kararlaştırılır. Yalnız ad karşılaştırılır; tip, varsayılan ve açıklama elle tutulur.
+
+Henüz hiçbir sayfa kullanmıyor (bileşen yok); ilk kullanım 3c ripple / Faz 4 button.
+
 CDK: yok (`MediaMatcher` viewport token'ında).
 
 ## 3. Token'lar
 
-Bileşen token'ı yok. `--docs-toc-width: calc(var(--arn-spacing) * 56)` (`styles.css` `:root`). Liste stili sidebar bağlantılarının aynısıdır (`--arn-muted-foreground`, hover `--arn-accent`).
+Bileşen token'ı yok. `--docs-toc-width: calc(var(--arn-spacing) * 56)` (`styles.css` `:root`). Liste stili sidebar bağlantılarının aynısıdır (`--arn-muted-foreground`, hover `--arn-accent`). Tablo: kenarlık `--arn-border`, başlık hücresi `--arn-muted-foreground`, kod `--arn-font-mono`; yeni değer yok.
 
 ## 4. Override rehberi
 
@@ -69,6 +85,10 @@ Yok (uygulama).
 | Odak | Sayfa değişince `<main>` (mevcut kural); yalnız fragment değişince `<main>`'e taşınmaz, liste bağlantısı başlığa taşır |
 | Hedef boyutu | Bağlantılar compact'ta da ≥24px |
 | RTL | Mantıksal CSS; sütun `main`'in solunda |
+| Tablo yapısı | Görünür `<caption>`; `th scope="col"`; ad hücresi `th scope="row"` + `<code>` |
+| Tablo bölgesi | `<div role="region" tabindex="0" aria-labelledby=caption>`: dar ekranda yalnız bölge yatay kayar, klavyeyle odaklanıp kaydırılır (axe `scrollable-region-focusable`; kod bloğundaki örüntü) |
+| Boş hücre | Görünür "—" (`aria-hidden`) + gizli "None" |
+| Tablo RTL | Hücre `text-align: start`; kod `direction: ltr` + `unicode-bidi: isolate` (inline kutu kendi yönünü alsın) |
 
 ## 6. Form uyumu
 
@@ -80,7 +100,9 @@ Yok.
 - Sonradan (`@if`) gelen bölüm sırası bozulabilir; şimdilik bölümler koşulsuz yazılır.
 - Yalnız `h2` listelenir; `h3` alt bölümler listeye girmez.
 - `sectionId` sayfada benzersiz olmalı (denetlenmiyor).
-- **Bundle (prod, ölçüldü):** initial 248.16 → 252.54 kB ham (68.71 → 69.88 kB aktarım; liste ve servis kabukta, `main` 23.47 → 26.24 kB). `docs-section` yalnız kullanan sayfanın tembel parçasında (Overview 2.47 → 3.33 kB). Bütçe uyarısı yok.
+- **Bundle (prod, ölçüldü):** initial 248.16 → 252.54 kB ham (68.71 → 69.88 kB aktarım; liste ve servis kabukta, `main` 23.47 → 26.24 kB). `docs-section` yalnız kullanan sayfanın tembel parçasında (Overview 2.47 → 3.33 kB). Bütçe uyarısı yok. Tablolar eklenince çıktı birebir aynı (dosya adları dahil); tablo dizgeleri `dist/docs`'ta yok.
+- `apiMismatches` spec fixture'ında alias YOK: `@angular-eslint/no-input-rename` alias'ı yasaklar, kural kapatılmadı; alias desteği `templateName` karşılaştırmasından gelir, `model()` örneği türetilmiş adı sınar.
+- Prettier `<caption>` içindeki interpolasyonu üç satıra böler (zararsız, biçim kaynaklı).
 
 ## 8. Testler
 
@@ -92,14 +114,18 @@ Yok.
 | `shell/viewport.spec.ts` | `DOCS_TOC_VIEWPORT` tarayıcıda media query, sunucuda `false`; dar aralıkla çakışmaz |
 | `app.component.spec.ts` | İki `nav`, Overview'un üç bölümü ve `href`; kırılmada / <2 bölümde / dar modda yok ve sütun sayısı (2 / 2 / 1); viewport ile gelip gitme (3 ↔ 2 sütun); sayfa değişince eski bölümler gider; bağlantı → başlığa odak, `<main>`'e değil; sütun yeri LTR / RTL; axe dört mod × liste açık |
 | `pages/overview/…spec.ts` | Üç bölüm sırasıyla servis listesinde ve `h2` id'leri |
+| `api/docs-table.spec.ts` | Saf görünüm: her kind'in başlığı ve sütunları, hücre türleri, boş varsayılan, sütun başına bir hücre; token tablosu |
+| `api/api-table.component.spec.ts` | Caption bölgeyi adlandırır; `scope` col / row; kod ve düz metin hücreleri; "—" + "None"; girdi değişimi; benzersiz caption id; 320px: sayfa taşmaz, yalnız bölge taşar (`overflow-x: auto`), bölge `tabindex=0` ile odak alır ve kayan elemandır; RTL'de kod `ltr` + `isolate`, hücre `start`; axe light / dark / RTL / compact + 320px |
+| `api/token-table.component.spec.ts` | "CSS tokens" başlığı, sütunlar, adlar ve varsayılan kod olarak; axe |
+| `api/testing/expect-api.spec.ts` | `apiMismatches`: uyumlu → boş, sıra önemsiz; eksik girdi, fazla girdi, yanlış ad, `model()`'in `valueChange`'i eksik, fazla output, tekrar eden satır, tablo yok → dolu liste; directive → tek satır; sarmalayıcı uyumlu tabloda geçer |
 
 Sidebar seçicileri `app.component.spec.ts`'te `nav[aria-label="Documentation"]` ile daraltıldı (ikinci `nav` yüzünden).
 
 Ctrl+tık testi varsayılan eylemi iptal eder: sentetik Ctrl+tık bağlantıda gerçekten yeni sekme açıp test penceresinin odağını alıyor, rastgele sırada sonraki odak testini (skip link) düşürüyordu.
 
-Boşluklar: gerçek kaydırma (`anchorScrolling`) ve gerçek pencere genişliği tarayıcıda elle sınanır.
+Boşluklar: gerçek kaydırma (`anchorScrolling`) ve gerçek pencere genişliği tarayıcıda elle sınanır. Tablo bölgesinin gerçek ok tuşuyla kaydırılması Karma'da üretilemez (sentetik tuş olayı tarayıcıyı kaydırmaz); spec onun önkoşullarını sınar: bölge odaklanabilir, kayan eleman odur, sayfa kaymaz.
 
 ## 9. Bağlantılar
 
-- Kod: `projects/docs/src/app/toc/`, `projects/docs/src/app/shell/viewport.ts`, `app.component.*`, `app.config.ts`, `pages/overview/`
+- Kod: `projects/docs/src/app/toc/`, `projects/docs/src/app/api/`, `projects/docs/src/app/shell/viewport.ts`, `app.component.*`, `app.config.ts`, `pages/overview/`
 - İlgili: [docs-site.md](docs-site.md), [docs-site-examples.md](docs-site-examples.md)

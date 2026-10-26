@@ -102,7 +102,7 @@ Yok.
 
 | Adım | Eksik |
 |---|---|
-| 3b | 3b-1 bitti: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page" bitti ([docs-site-toc-api.md](docs-site-toc-api.md)); kalan API ve Styling tabloları |
+| 3b | Bitti. 3b-1: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page", API ve Styling tabloları ([docs-site-toc-api.md](docs-site-toc-api.md)) |
 | 3c | Giriş sayfaları (Installation, Configuration, Theming, Accessibility…) ve ripple sayfası; dil değiştiricinin etkisini gösteren ilk içerik |
 | 3d | Arama (sidebar'da) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |

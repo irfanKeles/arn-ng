@@ -1,0 +1,36 @@
+<div class="docs-table-region" role="region" tabindex="0" [attr.aria-labelledby]="captionId">
+  <table class="docs-table">
+    <caption [id]="captionId" class="docs-table-caption">
+      {{
+        view().caption
+      }}
+    </caption>
+    <thead>
+      <tr>
+        @for (column of view().columns; track $index) {
+          <th scope="col">{{ column }}</th>
+        }
+      </tr>
+    </thead>
+    <tbody>
+      @for (row of view().rows; track $index) {
+        <tr>
+          <th scope="row">
+            <code class="docs-table-code">{{ row.name }}</code>
+          </th>
+          @for (cell of row.cells; track $index) {
+            <td>
+              @if (cell.text === '') {
+                <span aria-hidden="true">—</span><span class="docs-visually-hidden">None</span>
+              } @else if (cell.code) {
+                <code class="docs-table-code">{{ cell.text }}</code>
+              } @else {
+                {{ cell.text }}
+              }
+            </td>
+          }
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
