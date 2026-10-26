@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   ci:
-    runs-on: ubuntu-latest
+    # Sabit: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti; Karma imajdaki Chrome'a dayanır
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v7

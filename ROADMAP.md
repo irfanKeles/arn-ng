@@ -39,7 +39,8 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
 - [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
 - [ ] Docs cilası: renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
-- [ ] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçiyor, ubuntu-24.04'e sabitle ya da Ubuntu 26'da dene
+- [x] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti, `ubuntu-24.04`'e sabitlendi (Ubuntu 26 denemesi ayrı iş)
+- [ ] CI: Ubuntu 26 imajında Chrome sürümü ve test:ci denemesi (Faz 3 sonuna)
 - [ ] projects/ui/testing/a11y.ts yardımcısına expect eklemek ("has no expectations" uyarısını keser)
 - [ ] Test hijyeni: overlay.presets.spec.ts:139-149 düğme temizliği afterEach'e taşınmalı
 
