@@ -40,9 +40,9 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
 - [ ] Docs cilası: renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
 - [x] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti, `ubuntu-24.04`'e sabitlendi (Ubuntu 26 denemesi ayrı iş)
-- [ ] CI: Ubuntu 26 imajında Chrome sürümü ve test:ci denemesi (Faz 3 sonuna)
 - [x] projects/ui/testing/a11y.ts yardımcısına expect eklemek ("has no expectations" uyarısını keser): ihlalde fırlatma korundu, temizse `expect(violations).toEqual([])`; uyarı 48 → 0
 - [ ] Test hijyeni: overlay.presets.spec.ts:139-149 düğme temizliği afterEach'e taşınmalı
+- [ ] CI: Ubuntu 26 imajında Chrome sürümü ve test:ci denemesi
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
 - [ ] button (directive + element)
