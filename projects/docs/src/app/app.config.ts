@@ -14,7 +14,10 @@ export const appConfig: ApplicationConfig = {
   providers: [
     // Experimental in Angular 19; the docs app runs zoneless to exercise the library that way.
     provideExperimentalZonelessChangeDetection(),
-    provideRouter(routes, withInMemoryScrolling({ scrollPositionRestoration: 'enabled' })),
+    provideRouter(
+      routes,
+      withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),
+    ),
     provideArn({ applyToDocument: true }),
     // Runs after provideArn's initializer and before the first render: no flash of the defaults.
     provideAppInitializer(() => {

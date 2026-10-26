@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
 import { query, queryAs } from '../../testing/dom';
+import { DocsTocService } from '../../toc/docs-toc.service';
 import { OverviewPageComponent } from './overview-page.component';
 
 describe('OverviewPageComponent', () => {
@@ -36,6 +37,24 @@ describe('OverviewPageComponent', () => {
     for (const title of titles) {
       expect(title.nextSibling?.textContent).toMatch(/^\s/);
     }
+  });
+
+  it('lists its three sections under "On this page", in order', () => {
+    const element = create();
+    const sections = TestBed.inject(DocsTocService)
+      .sections()
+      .map((section) => [section.id(), section.heading()]);
+
+    expect(sections).toEqual([
+      ['status', 'Status'],
+      ['what-exists-today', 'What exists today'],
+      ['try-the-settings', 'Try the settings'],
+    ]);
+    expect(Array.from(element.querySelectorAll('h2')).map((heading) => heading.id)).toEqual([
+      'status',
+      'what-exists-today',
+      'try-the-settings',
+    ]);
   });
 
   it('carries the page class', () => {

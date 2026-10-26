@@ -114,6 +114,19 @@
   border-inline-start: var(--arn-border-width) solid var(--arn-border);
 }
 
+/* Wide viewport with sections: a third column, opened only while the list is rendered */
+.docs-body.docs-with-toc {
+  grid-template-columns: var(--docs-sidebar-width) minmax(0, 1fr) var(--docs-toc-width);
+}
+
+.docs-toc {
+  position: sticky;
+  inset-block-start: 0;
+  align-self: start;
+  max-block-size: 100dvb;
+  overflow: auto;
+}
+
 /* Focus arrives here on navigation and from the skip link; keep the ring inside the viewport */
 .docs-main:focus-visible {
   outline-offset: calc(var(--arn-ring-width) * -1);

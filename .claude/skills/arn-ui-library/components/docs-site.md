@@ -36,7 +36,7 @@ Yeni sayfa: bileşeni `pages/<ad>/` altına yaz (host `class: 'docs-page'`), `DO
 
 ### Kabuk: `AppComponent`
 
-Sıra: skip link → `<header>` (çekmece düğmesi, site adı, `<docs-settings>`) → `.docs-body` (`<docs-sidebar>`, backdrop, `<main id="docs-main" tabindex="-1">`). Sağda "bu sayfada" alanı YOK (3b).
+Sıra: skip link → `<header>` (çekmece düğmesi, site adı, `<docs-settings>`) → `.docs-body` (`<docs-sidebar>`, backdrop, `<main id="docs-main" tabindex="-1">`, geniş ekranda `<docs-toc>`). "On this page" ve üçüncü sütun: [docs-site-toc-api.md](docs-site-toc-api.md).
 
 - **Dar/geniş modu CSS media query değil, TS belirler:** `DOCS_NARROW_VIEWPORT` (`Signal<boolean>`, `(width < 48rem)`, sunucuda `false`) → `.docs-body`'de `docs-narrow` / `docs-drawer-open` sınıfı. Kırılma noktası tek yerde (`shell/viewport.ts`); spec token'ı `signal` ile değiştirir (Karma penceresi 800px, media query ile çekmece sınanamazdı).
 - **Sınıflar host'ta DEĞİL, şablondaki elemanda:** `ChangeDetectorRef.detectChanges()` bileşenin host binding'lerini yenilemez; odak taşımadan önce sınıfın yazılmış olması gerekir.
@@ -102,7 +102,7 @@ Yok.
 
 | Adım | Eksik |
 |---|---|
-| 3b | 3b-1 bitti: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: API ve Styling tabloları, "bu sayfada" (sağ sütun; fragment gezintisinde odak taşınmaması hazır) |
+| 3b | 3b-1 bitti: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page" bitti ([docs-site-toc-api.md](docs-site-toc-api.md)); kalan API ve Styling tabloları |
 | 3c | Giriş sayfaları (Installation, Configuration, Theming, Accessibility…) ve ripple sayfası; dil değiştiricinin etkisini gösteren ilk içerik |
 | 3d | Arama (sidebar'da) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |
@@ -128,5 +128,5 @@ Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (k
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/`, `projects/docs/src/styles.css`, `projects/docs/tsconfig.json`, `angular.json` (docs)
-- İlgili: [docs-site-examples.md](docs-site-examples.md), [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
+- İlgili: [docs-site-examples.md](docs-site-examples.md), [docs-site-toc-api.md](docs-site-toc-api.md), [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
 - Yerelde: `npm run build:ui` ardından `npm run serve:docs`

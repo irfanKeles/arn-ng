@@ -13,15 +13,18 @@ import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router
 import { DOCS_NAV, DOCS_SITE_NAME } from './nav/docs-nav';
 import { SettingsComponent } from './shell/settings/settings.component';
 import { SidebarComponent } from './shell/sidebar/sidebar.component';
-import { DOCS_NARROW_VIEWPORT } from './shell/viewport';
+import { DOCS_NARROW_VIEWPORT, DOCS_TOC_VIEWPORT } from './shell/viewport';
+import { DocsTocComponent } from './toc/docs-toc.component';
+import { DocsTocService } from './toc/docs-toc.service';
 
 /**
- * The site shell: header with the switchers, sidebar and the page. On a narrow viewport the sidebar
- * is a drawer that opens below the header (a disclosure, not a modal: the header stays usable).
+ * The site shell: header with the switchers, sidebar, the page and, on a wide viewport, "On this
+ * page". On a narrow viewport the sidebar is a drawer that opens below the header (a disclosure,
+ * not a modal: the header stays usable).
  */
 @Component({
   selector: 'docs-root',
-  imports: [RouterLink, RouterOutlet, SettingsComponent, SidebarComponent],
+  imports: [DocsTocComponent, RouterLink, RouterOutlet, SettingsComponent, SidebarComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -36,13 +39,27 @@ export class AppComponent {
   private readonly drawerToggle = viewChild<ElementRef<HTMLButtonElement>>('drawerToggle');
   private readonly sidebar = viewChild.required(SidebarComponent);
   private readonly drawerOpen = signal(false);
-  private currentPath: string | undefined;
+  private readonly tocViewport = inject(DOCS_TOC_VIEWPORT);
+  private readonly tocSections = inject(DocsTocService).sections;
 
   protected readonly siteName = DOCS_SITE_NAME;
   protected readonly nav = DOCS_NAV;
   protected readonly narrow = inject(DOCS_NARROW_VIEWPORT);
   /** The drawer exists only on a narrow viewport; widening the window closes it by itself. */
   protected readonly drawerVisible = computed(() => this.narrow() && this.drawerOpen());
+  /** The path of the current page, without query or fragment; `undefined` before the first navigation. */
+  protected readonly path = signal<string | undefined>(undefined);
+  /**
+   * "On this page" needs a wide viewport and at least two sections. The breakpoints do not overlap
+   * with the drawer's; `narrow()` is checked anyway, so the two never show together.
+   */
+  protected readonly tocVisible = computed(
+    () =>
+      this.tocViewport() &&
+      !this.narrow() &&
+      this.path() !== undefined &&
+      this.tocSections().length >= 2,
+  );
 
   constructor() {
     const subscription = inject(Router).events.subscribe((event) => {
@@ -91,10 +108,10 @@ export class AppComponent {
 
   /** Moves focus to the page on a real page change, so the new content is announced. */
   private onNavigated(url: string): void {
-    const path = url.split('#')[0];
-    const previous = this.currentPath;
+    const path = url.split(/[?#]/)[0] ?? url;
+    const previous = this.path();
 
-    this.currentPath = path;
+    this.path.set(path);
 
     // Not on the first navigation (page load) and not when only the fragment changed.
     if (previous === undefined || previous === path) {

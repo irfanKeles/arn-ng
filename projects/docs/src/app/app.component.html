@@ -31,7 +31,12 @@
   <docs-settings class="docs-header-settings" />
 </header>
 
-<div class="docs-body" [class.docs-narrow]="narrow()" [class.docs-drawer-open]="drawerVisible()">
+<div
+  class="docs-body"
+  [class.docs-narrow]="narrow()"
+  [class.docs-drawer-open]="drawerVisible()"
+  [class.docs-with-toc]="tocVisible()"
+>
   <docs-sidebar id="docs-sidebar" class="docs-sidebar" [categories]="nav" />
 
   @if (drawerVisible()) {
@@ -47,4 +52,8 @@
   >
     <router-outlet />
   </main>
+
+  @if (tocVisible()) {
+    <docs-toc class="docs-toc" [path]="path() ?? '/'" />
+  }
 </div>

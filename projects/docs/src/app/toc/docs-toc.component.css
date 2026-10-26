@@ -1,0 +1,44 @@
+:host {
+  display: block;
+}
+
+.docs-toc-nav {
+  padding-block: calc(var(--arn-spacing) * 8);
+  padding-inline: calc(var(--arn-spacing) * 4);
+}
+
+/* A label, not a heading: it stays out of the page's heading outline */
+.docs-toc-title {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  padding-inline: var(--arn-control-padding-inline-sm);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-semibold);
+  line-height: var(--arn-text-sm-line-height);
+}
+
+.docs-toc-list {
+  display: grid;
+  gap: var(--arn-spacing);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.docs-toc-link {
+  display: flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  border-radius: calc(var(--arn-radius) * 0.8);
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-sm);
+  text-decoration: none;
+}
+
+.docs-toc-link:hover {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}

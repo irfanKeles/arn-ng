@@ -6,25 +6,33 @@ import { expectNoA11yViolations } from '../../../ui/testing/a11y';
 import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { DOCS_STORAGE } from './settings/docs-storage';
-import { DOCS_NARROW_VIEWPORT } from './shell/viewport';
+import { DOCS_NARROW_VIEWPORT, DOCS_TOC_VIEWPORT } from './shell/viewport';
 import { query, queryAs, resetDocument, text } from './testing/dom';
+
+/** The sidebar; "On this page" is a second navigation landmark. */
+const SIDEBAR_NAV = 'nav[aria-label="Documentation"]';
 
 interface Shell {
   fixture: ComponentFixture<AppComponent>;
   element: HTMLElement;
   router: Router;
   narrow: WritableSignal<boolean>;
+  toc: WritableSignal<boolean>;
 }
 
 describe('AppComponent', () => {
-  async function setup(options: { narrow?: boolean; url?: string } = {}): Promise<Shell> {
+  async function setup(
+    options: { narrow?: boolean; toc?: boolean; url?: string } = {},
+  ): Promise<Shell> {
     const narrow = signal(options.narrow ?? false);
+    const toc = signal(options.toc ?? false);
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter(routes),
         provideArn({ applyToDocument: true }),
         { provide: DOCS_NARROW_VIEWPORT, useValue: narrow },
+        { provide: DOCS_TOC_VIEWPORT, useValue: toc },
         { provide: DOCS_STORAGE, useValue: null },
       ],
     });
@@ -35,7 +43,15 @@ describe('AppComponent', () => {
     await router.navigateByUrl(options.url ?? '/');
     await fixture.whenStable();
 
-    return { fixture, element: fixture.nativeElement as HTMLElement, router, narrow };
+    return { fixture, element: fixture.nativeElement as HTMLElement, router, narrow, toc };
+  }
+
+  function tocList(element: HTMLElement): HTMLElement | null {
+    return element.querySelector('docs-toc');
+  }
+
+  function columns(element: HTMLElement): number {
+    return getComputedStyle(query(element, '.docs-body')).gridTemplateColumns.split(' ').length;
   }
 
   function toggle(element: HTMLElement): HTMLButtonElement {
@@ -66,7 +82,7 @@ describe('AppComponent', () => {
 
       expect(element.querySelectorAll('header').length).toBe(1);
       expect(element.querySelectorAll('main').length).toBe(1);
-      expect(query(element, 'nav').getAttribute('aria-label')).toBe('Documentation');
+      expect(element.querySelectorAll(SIDEBAR_NAV).length).toBe(1);
       expect(query(element, 'header .docs-site-name').textContent).toBe('arn-ng');
       expect(element.querySelectorAll('header select').length).toBe(4);
     });
@@ -75,15 +91,15 @@ describe('AppComponent', () => {
       const { element } = await setup();
 
       expect(query(main(element), 'h1').textContent).toBe('arn-ng');
-      expect(query(element, 'nav a').getAttribute('aria-current')).toBe('page');
+      expect(query(element, `${SIDEBAR_NAV} a`).getAttribute('aria-current')).toBe('page');
     });
 
     it('lists every visible page in the sidebar', async () => {
       const { element } = await setup();
 
-      expect(Array.from(element.querySelectorAll('nav a')).map((link) => text(link))).toEqual([
-        'Overview',
-      ]);
+      expect(
+        Array.from(element.querySelectorAll(`${SIDEBAR_NAV} a`)).map((link) => text(link)),
+      ).toEqual(['Overview']);
     });
 
     it('starts with a skip link that moves focus to main', async () => {
@@ -129,7 +145,7 @@ describe('AppComponent', () => {
       expect(document.activeElement).toBe(main(element));
       expect(document.title).toBe('Page not found · arn-ng');
       expect(query(main(element), 'h1').textContent).toBe('Page not found');
-      expect(query(element, 'nav a').hasAttribute('aria-current')).toBe(false);
+      expect(query(element, `${SIDEBAR_NAV} a`).hasAttribute('aria-current')).toBe(false);
     });
 
     it('does not move focus when only the fragment changes', async () => {
@@ -154,10 +170,107 @@ describe('AppComponent', () => {
     it('ignores Escape', async () => {
       const shell = await setup();
 
-      queryAs(shell.element, 'nav a', HTMLAnchorElement).focus();
+      queryAs(shell.element, `${SIDEBAR_NAV} a`, HTMLAnchorElement).focus();
       await pressEscape(shell);
 
-      expect(document.activeElement).toBe(query(shell.element, 'nav a'));
+      expect(document.activeElement).toBe(query(shell.element, `${SIDEBAR_NAV} a`));
+    });
+  });
+
+  describe('on this page', () => {
+    it('is a second navigation landmark listing the page sections on a wide viewport', async () => {
+      const { element } = await setup({ toc: true });
+      const toc = query(element, 'nav[aria-labelledby]');
+
+      expect(element.querySelectorAll('nav').length).toBe(2);
+      expect(Array.from(toc.querySelectorAll('a')).map((link) => text(link))).toEqual([
+        'Status',
+        'What exists today',
+        'Try the settings',
+      ]);
+      expect(queryAs(toc, 'a', HTMLAnchorElement).getAttribute('href')).toBe('/#status');
+    });
+
+    it('is not rendered below its breakpoint, and the body keeps two columns', async () => {
+      const { element } = await setup();
+
+      expect(tocList(element)).toBeNull();
+      expect(columns(element)).toBe(2);
+    });
+
+    it('is not rendered on a page with fewer than two sections', async () => {
+      const { element } = await setup({ toc: true, url: '/missing' });
+
+      expect(tocList(element)).toBeNull();
+      expect(columns(element)).toBe(2);
+    });
+
+    it('is never shown together with the drawer', async () => {
+      const { element } = await setup({ toc: true, narrow: true });
+
+      expect(tocList(element)).toBeNull();
+      expect(columns(element)).toBe(1);
+    });
+
+    it('appears and leaves with the viewport', async () => {
+      const shell = await setup();
+
+      shell.toc.set(true);
+      await shell.fixture.whenStable();
+
+      expect(tocList(shell.element)).not.toBeNull();
+      expect(columns(shell.element)).toBe(3);
+
+      shell.toc.set(false);
+      await shell.fixture.whenStable();
+
+      expect(tocList(shell.element)).toBeNull();
+      expect(columns(shell.element)).toBe(2);
+    });
+
+    it('follows the page: the sections of the previous page are gone', async () => {
+      const { element, router, fixture } = await setup({ toc: true });
+
+      await router.navigateByUrl('/missing');
+      await fixture.whenStable();
+
+      expect(tocList(element)).toBeNull();
+
+      await router.navigateByUrl('/');
+      await fixture.whenStable();
+
+      expect(element.querySelectorAll('docs-toc a').length).toBe(3);
+    });
+
+    it('moves focus to the section heading, not to main, when a link is used', async () => {
+      const { element, router, fixture } = await setup({ toc: true });
+
+      queryAs(element, 'docs-toc a[href="/#what-exists-today"]', HTMLAnchorElement).click();
+      await fixture.whenStable();
+
+      expect(router.url).toBe('/#what-exists-today');
+      expect(document.activeElement).toBe(query(main(element), '#what-exists-today'));
+    });
+
+    it('sits in a third column after main, on the inline-end side', async () => {
+      const { element } = await setup({ toc: true });
+      const content = main(element).getBoundingClientRect();
+      const list = query(element, 'docs-toc').getBoundingClientRect();
+
+      expect(columns(element)).toBe(3);
+      expect(list.left).toBeGreaterThanOrEqual(content.right - 1);
+    });
+
+    it('moves to the left of main in RTL', async () => {
+      const { element, fixture } = await setup({ toc: true });
+
+      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
+      await fixture.whenStable();
+
+      const content = main(element).getBoundingClientRect();
+      const list = query(element, 'docs-toc').getBoundingClientRect();
+
+      expect(list.right).toBeLessThanOrEqual(content.left + 1);
     });
   });
 
@@ -181,7 +294,7 @@ describe('AppComponent', () => {
 
       expect(toggle(shell.element).getAttribute('aria-expanded')).toBe('true');
       expect(getComputedStyle(query(shell.element, 'docs-sidebar')).display).toBe('block');
-      expect(document.activeElement).toBe(query(shell.element, 'nav a'));
+      expect(document.activeElement).toBe(query(shell.element, `${SIDEBAR_NAV} a`));
       expect(main(shell.element).hasAttribute('inert')).toBe(true);
       expect(shell.element.querySelector('.docs-backdrop')).not.toBeNull();
     });
@@ -225,7 +338,7 @@ describe('AppComponent', () => {
       const shell = await setup({ narrow: true });
 
       await openDrawer(shell);
-      query(shell.element, 'nav h2').click();
+      query(shell.element, `${SIDEBAR_NAV} h2`).click();
       await shell.fixture.whenStable();
 
       expect(toggle(shell.element).getAttribute('aria-expanded')).toBe('true');
@@ -347,6 +460,16 @@ describe('AppComponent', () => {
         await expectNoA11yViolations(element);
       });
 
+      it(`has no violations in ${mode.name} mode with "On this page"`, async () => {
+        const shell = await setup({ toc: true });
+
+        TestBed.inject(ArnConfigService).update(mode.config);
+        await shell.fixture.whenStable();
+
+        expect(tocList(shell.element)).not.toBeNull();
+        await expectNoA11yViolations(shell.element);
+      });
+
       it(`has no violations in ${mode.name} mode with the drawer closed`, async () => {
         const { element } = await setupMode(true);
 
@@ -381,7 +504,7 @@ describe('AppComponent', () => {
 
       const minimum = 24;
       const targets = shell.element.querySelectorAll<HTMLElement>(
-        'header a, header button, header select, nav a',
+        `header a, header button, header select, ${SIDEBAR_NAV} a`,
       );
 
       expect(targets.length).toBe(7);

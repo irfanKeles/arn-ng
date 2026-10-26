@@ -1,0 +1,17 @@
+<nav class="docs-toc-nav" aria-labelledby="docs-toc-title">
+  <p id="docs-toc-title" class="docs-toc-title">On this page</p>
+  <ul class="docs-toc-list">
+    @for (section of sections(); track section) {
+      <li>
+        <a
+          class="docs-toc-link"
+          [routerLink]="path()"
+          [fragment]="section.id()"
+          (click)="focusSection($event, section.id())"
+        >
+          {{ section.heading() }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>

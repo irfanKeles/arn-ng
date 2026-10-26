@@ -30,7 +30,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 
 ## Faz 3 — Doküman sitesi iskeleti
 - [x] Sidebar (kategorili): kabuk, tek tipli gezinti verisi (`docs-nav.ts`), küçük ekranda çekmece, 404 (adım 3a; `components/docs-site.md`)
-- [ ] Sayfa içi gezinti, "bu sayfada" (adım 3b)
+- [x] Sayfa içi gezinti, "bu sayfada" (adım 3b-2): `docs-section` + `DocsTocService`, geniş ekranda (≥80rem) üçüncü sütun (`components/docs-site-toc-api.md`)
 - [ ] Arama (adım 3d)
 - [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
 - [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
@@ -38,6 +38,8 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
 - [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
 - [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
+- [ ] Docs cilası: "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
+- [ ] Docs cilası: sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
 - [ ] Docs cilası: renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
 - [x] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti, `ubuntu-24.04`'e sabitlendi (Ubuntu 26 denemesi ayrı iş)
 - [x] projects/ui/testing/a11y.ts yardımcısına expect eklemek ("has no expectations" uyarısını keser): ihlalde fırlatma korundu, temizse `expect(violations).toEqual([])`; uyarı 48 → 0

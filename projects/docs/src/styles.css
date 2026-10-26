@@ -3,6 +3,7 @@
 /* Site-only measures, derived from the library's spacing base */
 :root {
   --docs-sidebar-width: calc(var(--arn-spacing) * 64);
+  --docs-toc-width: calc(var(--arn-spacing) * 56);
   --docs-content-width: calc(var(--arn-spacing) * 192);
   --docs-gutter: calc(var(--arn-spacing) * 6);
 }

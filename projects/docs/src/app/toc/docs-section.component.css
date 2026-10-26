@@ -1,0 +1,4 @@
+/* The heading's style comes from the page typography (.docs-page h2) */
+:host {
+  display: block;
+}
