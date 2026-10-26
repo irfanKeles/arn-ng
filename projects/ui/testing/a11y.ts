@@ -24,7 +24,10 @@ export async function a11yViolations(
   );
 }
 
-/** Throws an error listing every violation, if any, so the test fails. */
+/**
+ * Throws an error listing every violation, if any, so the test fails. Otherwise records a passing
+ * expectation, so a spec whose only check is this one is not reported as having no expectations.
+ */
 export async function expectNoA11yViolations(
   element: Element,
   options?: axe.RunOptions,
@@ -36,4 +39,6 @@ export async function expectNoA11yViolations(
       `axe found ${String(violations.length)} violation(s):\n${violations.join('\n')}`,
     );
   }
+
+  expect(violations).toEqual([]);
 }
