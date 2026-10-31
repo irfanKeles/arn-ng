@@ -1,4 +1,5 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { provideRouter } from '@angular/router';
 import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
@@ -12,7 +13,7 @@ import basicCss from './examples/basic.example.css?source' with { loader: 'text'
 import centeredCss from './examples/centered.example.css?source' with { loader: 'text' };
 import colorCss from './examples/color.example.css?source' with { loader: 'text' };
 import configCss from './examples/config.example.css?source' with { loader: 'text' };
-import { A11Y_MODES } from './examples/ripple-example.testing';
+import { A11Y_MODES } from '../../testing/render-example';
 import { RIPPLE_INPUTS, RIPPLE_TOKENS } from './ripple.api';
 import { RipplePageComponent } from './ripple-page.component';
 
@@ -23,7 +24,9 @@ describe('RipplePageComponent', () => {
   }
 
   async function render(): Promise<Page> {
-    TestBed.configureTestingModule({ providers: [provideArn({ applyToDocument: true })] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideArn({ applyToDocument: true })],
+    });
 
     const fixture = TestBed.createComponent(RipplePageComponent);
 
@@ -70,6 +73,14 @@ describe('RipplePageComponent', () => {
 
     it('links only to pages that exist', async () => {
       expect(unknownInternalLinks(await create())).toEqual([]);
+    });
+
+    it('links to the Configuration page where it explains turning it on', async () => {
+      const section = query(await create(), 'docs-section:has(#turning-it-on)');
+
+      expect(queryAs(section, 'a[href]', HTMLAnchorElement).getAttribute('href')).toBe(
+        '/configuration',
+      );
     });
 
     it('explains that an empty attribute is always on and overrides the configuration', async () => {

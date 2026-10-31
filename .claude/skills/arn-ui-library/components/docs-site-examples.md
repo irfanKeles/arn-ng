@@ -12,7 +12,7 @@
 | Sınıf adları | `ExampleComponent`, `CodeBlockComponent`, `DocsHighlighterService`; token'lar `DOCS_HIGHLIGHT_LOADER`, `DOCS_CLIPBOARD`; tipler `DocsCodeLanguage`, `DocsCodeToken`, `DocsHighlight` |
 | Dosya yolları | `projects/docs/src/app/example/`, `projects/docs/src/app/code/`, `projects/docs/src/text-imports.d.ts`, renkler `code/code-block.component.css` |
 
-Adım 3b-1'de yazıldı. İlk gerçek kullanım 3c Ripple sayfası ([docs-site-pages.md](docs-site-pages.md)); örnek yalnız kullanan sayfanın tembel parçasına girer (bkz. §7).
+Adım 3b-1'de yazıldı. İlk gerçek kullanım 3c Ripple sayfası ([docs-site-pages-guides.md](docs-site-pages-guides.md)); örnek yalnız kullanan sayfanın tembel parçasına girer (bkz. §7).
 
 ## 2. Mimari ve CDK
 

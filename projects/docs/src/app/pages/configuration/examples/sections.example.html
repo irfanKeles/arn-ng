@@ -1,0 +1,22 @@
+<div class="sections">
+  <section class="section" aria-labelledby="sections-app">
+    <h3 id="sections-app" class="section-title">The application</h3>
+    <docs-configuration-locale-example />
+  </section>
+
+  <section class="section" aria-labelledby="sections-locale" arnConfig locale="de-DE">
+    <h3 id="sections-locale" class="section-title">locale="de-DE" only</h3>
+    <docs-configuration-locale-example />
+  </section>
+
+  <section
+    class="section"
+    aria-labelledby="sections-turkish"
+    arnConfig
+    locale="tr-TR"
+    [messages]="turkish"
+  >
+    <h3 id="sections-turkish" class="section-title">locale="tr-TR" with Turkish texts</h3>
+    <docs-configuration-locale-example />
+  </section>
+</div>

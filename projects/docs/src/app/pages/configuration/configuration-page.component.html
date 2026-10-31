@@ -1,0 +1,131 @@
+<h1>Configuration</h1>
+
+<p class="docs-lead">
+  One set of settings, <code>ArnConfig</code>, for the whole application, a part of the page or a
+  single component.
+</p>
+
+<docs-section sectionId="precedence" heading="Precedence">
+  <p>Each setting is decided by the first of these levels that gives it a value:</p>
+
+  <ol>
+    <li>The component's own input, for example <code>size="sm"</code>.</li>
+    <li>The nearest <code>arnConfig</code> section around it.</li>
+    <li>
+      The application: <code>provideArn()</code>, changed at runtime through
+      <code>ArnConfigService</code>.
+    </li>
+    <li>The library default.</li>
+  </ol>
+
+  <p>
+    <code>undefined</code> on any level means "not given": the next level decides. Two defaults come
+    from the environment: <code>locale</code> from Angular's <code>LOCALE_ID</code>, and
+    <code>direction</code> from the nearest direction in effect. Colors, fonts and borders are not
+    settings; they are CSS tokens.
+  </p>
+</docs-section>
+
+<docs-section sectionId="global" heading="The application: provideArn">
+  <p>
+    Call <code>provideArn()</code> once in the root providers (<a routerLink="/installation"
+      >Installation</a
+    >
+    shows where). Every field is optional.
+  </p>
+
+  <docs-code-block [code]="globalCode" language="typescript" label="provideArn" />
+
+  <docs-api-table [table]="properties" />
+
+  <p>
+    <strong>Density, color scheme and direction work through CSS.</strong> Their values only change
+    the page once they are written to an element: <code>applyToDocument: true</code> writes them to
+    <code>&lt;html&gt;</code> and keeps them up to date. Without it,
+    <code>provideArn(&#123; density: 'compact' &#125;)</code> changes the setting but not what you
+    see. <code>size</code> needs nothing: a component applies it to itself. The library never writes
+    <code>&lt;html lang&gt;</code>; the language of the content is the application's to set.
+  </p>
+</docs-section>
+
+<docs-section sectionId="sections" heading="A part of the page: arnConfig">
+  <p>
+    The <code>arnConfig</code> directive takes the same eight fields as inputs and applies them to
+    everything inside it. Sections can be nested; an inner one overrides only what it gives. It
+    writes <code>data-density</code>, <code>.dark</code> or <code>.light</code> and an explicit
+    <code>dir</code> to its own element, so its part of the page changes at once.
+  </p>
+
+  <docs-code-block [code]="sectionCode" language="html" label="arnConfig" />
+</docs-section>
+
+<docs-section sectionId="runtime" heading="At runtime: ArnConfigService">
+  <p>
+    The service changes the application level while the application runs. Each field is also a
+    signal that holds the current value. The switches in this site's header use it.
+  </p>
+
+  <docs-code-block [code]="runtimeCode" language="typescript" label="ArnConfigService" />
+
+  <docs-api-table [table]="methods" />
+</docs-section>
+
+<docs-section sectionId="own-code" heading="In your own components: injectArnConfig">
+  <p>
+    <code>injectArnConfig()</code> reads the configuration in effect where a component is placed,
+    with every level applied. With a key and the component's own input it applies the first level
+    too: the input wins when it is given. A component should read settings only this way, so the
+    precedence stays the same everywhere.
+  </p>
+
+  <docs-code-block [code]="ownCode" language="typescript" label="injectArnConfig" />
+</docs-section>
+
+<docs-section sectionId="locale-and-messages" heading="Locale and messages">
+  <p>
+    Two fields decide the language of the library. <code>locale</code> sets day and month names,
+    which come from the browser's <code>Intl</code>. <code>messages</code> sets every other text;
+    English is built in, and a partial object changes only what it names. Turkish ships as
+    <code>&#64;arn-ng/ui/locales/tr</code>. A locale does not bring its texts: give both.
+  </p>
+
+  <docs-code-block [code]="messagesCode" language="typescript" label="Locale and messages" />
+
+  <p>
+    The component below reads both through <code>injectArnConfig()</code>. Switch
+    <strong>Language</strong> in the header to Turkish: it changes at once.
+  </p>
+
+  <docs-example [html]="locale.html" [ts]="locale.ts" [css]="locale.css">
+    <docs-configuration-locale-example />
+  </docs-example>
+
+  <p>
+    The same component in three places. The second section gives only a locale: the names turn
+    German, the texts stay those of the application. The third gives a locale and the Turkish texts,
+    so it stays Turkish whatever the header says.
+  </p>
+
+  <docs-example [html]="sections.html" [ts]="sections.ts" [css]="sections.css">
+    <docs-configuration-sections-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="direction" heading="Direction (RTL)">
+  <p>
+    The library's styles use logical properties, so they follow the direction of the place they are
+    in. For a whole application, set <code>dir</code> on <code>&lt;html&gt;</code>; it is also right
+    when the page is rendered on the server. A section with <code>direction</code> changes one part
+    of the page, and the CDK parts of the library follow it too.
+  </p>
+
+  <docs-code-block [code]="directionCode" language="html" label="Direction" />
+
+  <p>
+    Like density, <code>provideArn(&#123; direction: 'rtl' &#125;)</code> alone changes only the
+    setting, not the page: add <code>applyToDocument: true</code>, or set <code>dir</code> yourself.
+    An icon that points in a direction, such as an arrow, gets the <code>arn-rtl-mirror</code> class
+    and is mirrored in RTL; one that does not, such as a check mark, keeps its shape. The
+    <a routerLink="/ripple">ripple</a> starts from the pointer in both directions.
+  </p>
+</docs-section>

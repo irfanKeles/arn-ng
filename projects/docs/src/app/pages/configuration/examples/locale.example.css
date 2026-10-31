@@ -1,0 +1,16 @@
+.readout {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: calc(var(--arn-spacing) * 1) calc(var(--arn-spacing) * 4);
+  margin: 0;
+  font-size: var(--arn-text-sm);
+  line-height: var(--arn-text-sm-line-height);
+}
+
+.readout dt {
+  color: var(--arn-muted-foreground);
+}
+
+.readout dd {
+  margin: 0;
+}

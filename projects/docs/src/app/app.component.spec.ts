@@ -99,7 +99,7 @@ describe('AppComponent', () => {
 
       expect(
         Array.from(element.querySelectorAll(`${SIDEBAR_NAV} a`)).map((link) => text(link)),
-      ).toEqual(['Overview', 'Installation', 'Ripple']);
+      ).toEqual(['Overview', 'Installation', 'Configuration', 'Ripple']);
     });
 
     it('starts with a skip link that moves focus to main', async () => {
@@ -423,14 +423,14 @@ describe('AppComponent', () => {
       );
     });
 
-    it('gives the open drawer the full height of the body and an edge', async () => {
+    it('gives the open drawer at least the full height of the body, and an edge', async () => {
       const shell = await setup({ narrow: true, url: '/missing' });
 
       await openDrawer(shell);
 
-      expectNear(
-        sidebar(shell.element).getBoundingClientRect().height,
-        query(shell.element, '.docs-body').getBoundingClientRect().height,
+      // min-block-size: 100%; a long list makes it taller than a short page
+      expect(sidebar(shell.element).getBoundingClientRect().height).toBeGreaterThanOrEqual(
+        query(shell.element, '.docs-body').getBoundingClientRect().height - 1,
       );
       expect(getComputedStyle(sidebar(shell.element)).borderInlineEndWidth).toBe('1px');
     });
@@ -507,7 +507,7 @@ describe('AppComponent', () => {
         `header a, header button, header select, ${SIDEBAR_NAV} a`,
       );
 
-      expect(targets.length).toBe(9);
+      expect(targets.length).toBe(10);
 
       for (const target of Array.from(targets)) {
         expect(target.getBoundingClientRect().height).toBeGreaterThanOrEqual(minimum);

@@ -42,6 +42,20 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
     ],
   },
   {
+    id: 'guides',
+    title: 'Guides',
+    pages: [
+      {
+        slug: 'configuration',
+        title: 'Configuration',
+        loadComponent: () =>
+          import('../pages/configuration/configuration-page.component').then(
+            (m) => m.ConfigurationPageComponent,
+          ),
+      },
+    ],
+  },
+  {
     id: 'directives',
     title: 'Directives',
     pages: [

@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { ApiTableComponent } from '../../api/api-table.component';
 import type { DocsApiTable } from '../../api/docs-api';
 import { TokenTableComponent } from '../../api/token-table.component';
@@ -55,6 +56,7 @@ const OVERRIDE_CODE = `/* Everywhere */
     RippleCenteredExampleComponent,
     RippleColorExampleComponent,
     RippleConfigExampleComponent,
+    RouterLink,
     TokenTableComponent,
   ],
   templateUrl: './ripple-page.component.html',

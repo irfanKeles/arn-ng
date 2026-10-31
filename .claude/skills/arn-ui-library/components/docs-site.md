@@ -27,7 +27,7 @@ Tek tipli veri hem sidebar'ı hem lazy route'ları üretir.
 | Parça | Görev |
 |---|---|
 | `DocsNavCategory` `{ id, title, pages }`, `DocsNavPage` `{ slug, title, loadComponent }` | Sözleşme. `slug` site genelinde benzersiz, URL düz: `/<slug>`; boş slug ana sayfa |
-| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview, Installation; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages.md](docs-site-pages.md) |
+| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview, Installation; Guides → Configuration; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages-guides.md](docs-site-pages-guides.md), spec yardımcıları: [docs-site-pages.md](docs-site-pages.md) |
 | `visibleCategories(nav)` | Sayfasız kategoriyi atar (başlığı gösterilmez) |
 | `buildRoutes(nav)` | Sayfa başına `{ path, pathMatch: 'full', title, loadComponent }`; başlık `"<title> · arn-ng"` |
 | `app.routes.ts` | `buildRoutes(DOCS_NAV)` + `**` → 404 (gezintide listelenmez) |
@@ -94,7 +94,7 @@ Yok.
 
 - `effect()`, `afterNextRender`, `rxjs-interop` kullanılmaz (kütüphaneyle aynı örüntü): router olaylarına elle abonelik + `DestroyRef`, odak öncesi `detectChanges()`.
 - Backdrop tıklaması host `(click)` dinleyicisindedir (şablonda tıklanabilir `div` a11y lint'ine takılır; klavye karşılığı Esc).
-- Dil değiştiricinin 3a'da GÖRÜNÜR etkisi yok: `messages` okuyan bileşen henüz yok.
+- Dil değiştiricinin görünür etkisi 3c'de geldi: Configuration sayfasının "Locale and messages" örneği `injectArnConfig()` ile `locale`, `messages().common` ve gün / ay adlarını gösterir; Türkçe seçilince anında değişir ([docs-site-pages-guides.md](docs-site-pages-guides.md)). Kütüphanede `messages` okuyan bileşen hâlâ yok (Faz 4).
 - Dağıtım (barındırma, `base href`) Faz 5'e bırakıldı.
 - Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](tokens.md) §7).
 
@@ -103,7 +103,7 @@ Yok.
 | Adım | Eksik |
 |---|---|
 | 3b | Bitti. 3b-1: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page", API ve Styling tabloları ([docs-site-toc-api.md](docs-site-toc-api.md)) |
-| 3c | Giriş sayfaları (Installation, Configuration, Theming, Accessibility…) ve ripple sayfası; dil değiştiricinin etkisini gösteren ilk içerik |
+| 3c | Bitenler: Ripple, Installation, Configuration (dil değiştiricinin etkisi burada). Kalan: Theming, Accessibility |
 | 3d | Arama (sidebar'da) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |
 | Faz 5 | Overview'daki yayın durumu ifadesi ("has not been published to npm yet") 0.1.0 yayınıyla YANLIŞ olur; güncellenecek (ROADMAP Faz 5) |

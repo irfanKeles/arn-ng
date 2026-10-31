@@ -120,4 +120,4 @@ Token ve sınıflar: `projects/ui/testing/theme.spec.ts` (`ripple` grubu, 6 test
 
 - Kod: `projects/ui/ripple/src/`, `projects/ui/theme.css`
 - İlgili: [config.md](config.md), [tokens.md](tokens.md)
-- Doküman sayfası: `/ripple` (`projects/docs/src/app/pages/ripple/`, [docs-site-pages.md](docs-site-pages.md)); bileşenle kullanımı Faz 4 (button)
+- Doküman sayfası: `/ripple` (`projects/docs/src/app/pages/ripple/`, [docs-site-pages-guides.md](docs-site-pages-guides.md)); bileşenle kullanımı Faz 4 (button)

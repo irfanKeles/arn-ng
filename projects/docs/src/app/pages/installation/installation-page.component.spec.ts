@@ -1,5 +1,6 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
+import { provideRouter } from '@angular/router';
 import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { ARN_MESSAGES_TR } from '@arn-ng/ui/locales/tr';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
@@ -8,7 +9,7 @@ import { CodeBlockComponent } from '../../code/code-block.component';
 import { query, resetDocument, text } from '../../testing/dom';
 import { unknownInternalLinks } from '../../testing/links';
 import { DocsTocService } from '../../toc/docs-toc.service';
-import { A11Y_MODES } from '../ripple/examples/ripple-example.testing';
+import { A11Y_MODES } from '../../testing/render-example';
 import { InstallationPageComponent } from './installation-page.component';
 import { LIBRARY_PACKAGE_JSON, LIBRARY_PEERS, peerDependencies } from './installation.data';
 
@@ -19,7 +20,9 @@ describe('InstallationPageComponent', () => {
   }
 
   async function render(): Promise<Page> {
-    TestBed.configureTestingModule({ providers: [provideArn({ applyToDocument: true })] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter([]), provideArn({ applyToDocument: true })],
+    });
 
     const fixture = TestBed.createComponent(InstallationPageComponent);
 
@@ -68,6 +71,14 @@ describe('InstallationPageComponent', () => {
 
     it('links only to pages that exist', async () => {
       expect(unknownInternalLinks((await render()).element)).toEqual([]);
+    });
+
+    it('links to the Configuration page for the details', async () => {
+      const { element } = await render();
+
+      expect(
+        Array.from(element.querySelectorAll('a[href]')).map((link) => link.getAttribute('href')),
+      ).toContain('/configuration');
     });
 
     it('has no example blocks, only code blocks', async () => {

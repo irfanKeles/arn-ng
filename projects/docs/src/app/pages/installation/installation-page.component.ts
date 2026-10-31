@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CodeBlockComponent } from '../../code/code-block.component';
 import { DocsSectionComponent } from '../../toc/docs-section.component';
 import {
@@ -12,7 +13,7 @@ import {
 
 @Component({
   selector: 'docs-installation-page',
-  imports: [CodeBlockComponent, DocsSectionComponent],
+  imports: [CodeBlockComponent, DocsSectionComponent, RouterLink],
   templateUrl: './installation-page.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: { class: 'docs-page' },
