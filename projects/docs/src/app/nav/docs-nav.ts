@@ -59,6 +59,14 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
         loadComponent: () =>
           import('../pages/theming/theming-page.component').then((m) => m.ThemingPageComponent),
       },
+      {
+        slug: 'accessibility',
+        title: 'Accessibility',
+        loadComponent: () =>
+          import('../pages/accessibility/accessibility-page.component').then(
+            (m) => m.AccessibilityPageComponent,
+          ),
+      },
     ],
   },
   {

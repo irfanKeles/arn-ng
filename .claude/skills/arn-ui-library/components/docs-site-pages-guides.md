@@ -1,4 +1,4 @@
-# docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming)
+# docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming, Accessibility)
 
 <!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Spec yardımcıları: docs-site-pages.md. Ana dosya: docs-site.md. Kurallar: ../SKILL.md §13, §16, §18. -->
 
@@ -6,13 +6,13 @@
 
 | Alan | Değer |
 |---|---|
-| Selector | `docs-ripple-page`, `docs-installation-page`, `docs-configuration-page`, `docs-theming-page`; örnekler `docs-ripple-{basic,config,color,centered}-example`, `docs-configuration-{locale,sections}-example`, `docs-theming-{dark-mode,sizes,density,override}-example` |
+| Selector | `docs-ripple-page`, `docs-installation-page`, `docs-configuration-page`, `docs-theming-page`, `docs-accessibility-page`; örnekler `docs-ripple-{basic,config,color,centered}-example`, `docs-configuration-{locale,sections}-example`, `docs-theming-{dark-mode,sizes,density,override}-example` |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (sayfalar) |
-| Sınıf adları | `RipplePageComponent`, `InstallationPageComponent`, `ConfigurationPageComponent`, `ThemingPageComponent`, örnek bileşenleri; veri `RIPPLE_INPUTS`, `RIPPLE_TOKENS`, `LIBRARY_PEERS`, `CONFIG_PROPERTIES`, `CONFIG_SERVICE_METHODS`, `THEMING_TOKEN_GROUPS` |
-| Dosya yolları | `projects/docs/src/app/pages/{ripple,installation,configuration,theming}/` (sayfa + `examples/` + `*.api.ts` / `*.data.ts` / `*.tokens.ts`), `pages/token-coverage.spec.ts` |
+| Sınıf adları | `RipplePageComponent`, `InstallationPageComponent`, `ConfigurationPageComponent`, `ThemingPageComponent`, `AccessibilityPageComponent`, örnek bileşenleri; veri `RIPPLE_INPUTS`, `RIPPLE_TOKENS`, `LIBRARY_PEERS`, `CONFIG_PROPERTIES`, `CONFIG_SERVICE_METHODS`, `THEMING_TOKEN_GROUPS` |
+| Dosya yolları | `projects/docs/src/app/pages/{ripple,installation,configuration,theming,accessibility}/` (sayfa + `examples/` + `*.api.ts` / `*.data.ts` / `*.tokens.ts`), `pages/token-coverage.spec.ts` |
 
-Gezinti: Getting started → Overview, Installation; Guides → Configuration, Theming; Directives → Ripple. Her sayfa spec'i 320px'te belge taşmasını sınar (`expectNoPageOverflow`, [docs-site-pages.md](docs-site-pages.md)). Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
+Gezinti: Getting started → Overview, Installation; Guides → Configuration, Theming, Accessibility; Directives → Ripple. Her sayfa spec'i 320px'te belge taşmasını sınar (`expectNoPageOverflow`, [docs-site-pages.md](docs-site-pages.md)). Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
 
 ## 2. Mimari ve CDK
 
@@ -67,6 +67,19 @@ Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `over
 | Override örneği | `.brand` `--arn-primary` ve `--arn-radius`'ı ezer (`!important` / `::ng-deep` yok; spec CSS metninde arar). Tuzak görünür: `calc(var(--arn-radius) * 0.8)` izler, `--arn-radius-md` izlemez |
 | Bağlantılar | `/configuration`; Configuration ve Installation'dan Theming'e |
 
+### Accessibility (`/accessibility`)
+
+Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `testing`, `known-limits`. Kaynak SKILL §8 ve §15, [tokens-sizes.md](tokens-sizes.md) (SC 2.5.8), [ripple.md](ripple.md) §5, `projects/ui/testing/a11y.ts`. Örnek yok, beş kod bloğu.
+
+| Konu | Karar |
+|---|---|
+| Dil | "Garanti" değil kural: başta `role="note"` "No components yet … These are rules"; başlık "What every component must meet". Spec metinde "guarantee" geçmediğini sınar |
+| Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (theme.spec.ts yöntemi) yeniden hesaplar ve metinde arar |
+| Token'lar | Tablo YOK (kapsam değişmezi iki sayfada belgelemeyi yasaklar); `/theming`'e bağlanır. Spec `docs-token-table` / `docs-api-table` olmadığını sınar |
+| axe örneği | Kütüphanenin iç test yardımcısı; kod yorumu paketin parçası olmadığını söyler |
+| Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok; Karma gerçek tuşla kaydırmayı sınayamaz; ripple klavyede dalga çizmez (karar) |
+| Bağlantılar | `/ripple`, `/configuration`, `/theming` |
+
 **Token kapsamı değişmezi** (`pages/token-coverage.spec.ts`): `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da açık izin listesinde (nerede belgelendiği notuyla) olmalı; token tek sayfada belgelenir; listedeki her ad temada var ve hiçbir sayfada yok. Bugün listede yalnız `--arn-z-*` (Overlay sayfası gelene kadar, tokens.md §3). Yeni sayfanın tabloları `DOCUMENTED`'a eklenir.
 
 ### axe ile bulunan kusur (Ripple)
@@ -92,7 +105,7 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 ## 7. Kısıtlar ve kararlar
 
 - Sayfa metni yalnız koddan doğrulanan iddiaları taşır (ör. "kök entry point boş": `public-api.ts`; "provideArn'sız varsayılan": `ARN_ROOT_CONFIG` `optional`).
-- **Bundle (prod, ölçüldü):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. Theming ile 259.90 → 260.09 kB ham (72.96 → 73.02 kB aktarım; `main` +0.11 nav, ortak parça +0.08); Theming parçası 32.83 kB ham / 7.56 kB aktarım. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
+- **Bundle (prod, ölçüldü):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. Theming ile 259.90 → 260.09 kB ham (72.96 → 73.02 kB aktarım; `main` +0.11 nav, ortak parça +0.08); Theming parçası 32.83 kB ham / 7.56 kB aktarım. Accessibility ile 260.09 → 260.40 kB ham (73.02 → 73.08 kB aktarım; `main` +0.14 nav, ortak parça +0.17); Accessibility parçası 8.49 kB. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
 
 ## 8. Testler
 
@@ -107,7 +120,9 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 | `pages/theming/theming-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar + `/configuration`, dört örnek, tuzak metni; yedi grup × (`tokenMismatches` + temadaki varsayılan); yedi ayrı başlık; 320px; axe dört mod |
 | `pages/theming/examples/*.example.spec.ts` | sizes: beş kutu, yükseklik token'a eşit ve gösterilen, density canlı (compact md 31.5, xs 24); density: iki bölüm, 24/32/36/40/48 ve 24/28/31.5/35/42, yazı aynı; dark-mode: `.light` / `.dark`, bölüm ve primary kutucuğu kendi şemasında, sayfa koyuyken de; override: sınıf, `!important` / `::ng-deep` yok, primary yalnız `.brand`'de, `calc` köşesi izler, `-md` izlemez; hepsinde axe |
 | `pages/token-coverage.spec.ts` | `:root`'taki her `--arn-*` bir tabloda ya da izin listesinde; tek sayfada; liste dürüst |
-| Sayfa spec'leri (dördü) | 320px'te belge taşmaz (`expectNoPageOverflow`) |
+| `pages/accessibility/accessibility-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/theming`, `/configuration`, `/ripple`); örnek ve tablo yok, beş kod bloğu; "No components yet", "guarantee" yok; dört sınır; halka kontrastı temadan hesaplanır (4.7 / 4.2), 24px ve 3px temada; 320px; axe dört mod |
+| Sayfa spec'leri (beşi) | 320px'te belge taşmaz (`expectNoPageOverflow`) |
+| `app.component.spec.ts` (3c sonu) | Altı sayfa, 12 hedef. Düzen testi özellik tabanlı (ayrı test commit'i): sidebar `align-self: start` + `position: sticky`; `main` gövdeye, gövde kabuğun altına eşit. Yükseklik karşılaştırması kaldırıldı: uzun listede `main` sidebar'a esniyor, sonuç pencereye bağlıydı (CI #25) |
 | `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground`; `.docs-note` kenar + ton |
 | `app.component.spec.ts` | Dört sayfa sidebar'da; açık çekmece EN AZ gövde boyu (üç kategoriyle kısa sayfadan uzun: eşitlik varsayımı düzeltildi) |
 

@@ -1,0 +1,139 @@
+<h1>Accessibility</h1>
+
+<p class="docs-lead">
+  The rules every component of the library must meet before it counts as finished, and how they are
+  checked.
+</p>
+
+<p class="docs-note" role="note">
+  <strong>No components yet.</strong> These are rules, not a description of finished components:
+  each component is held to them as it is added. What exists today, the
+  <a routerLink="/ripple">ripple</a> directive, the configuration and the theme, already follows the
+  ones that apply to it.
+</p>
+
+<docs-section sectionId="must-meet" heading="What every component must meet">
+  <ul>
+    <li>
+      <strong>Keyboard.</strong> Everything works with the keyboard alone: Tab and Shift+Tab, and
+      the arrow keys, Enter, Space, Escape, Home and End as the WAI-ARIA Authoring Practices pattern
+      for that kind of component expects.
+    </li>
+    <li>
+      <strong>Roles and states.</strong> The right <code>role</code> and
+      <code>aria-*</code> attributes, such as <code>aria-expanded</code>,
+      <code>aria-invalid</code> and <code>aria-describedby</code>. Where a native element exists,
+      the component renders it instead of imitating it.
+    </li>
+    <li>
+      <strong>Focus.</strong> A visible focus ring. An overlay moves focus inside when it opens and
+      back to its trigger when it closes; a dialog keeps focus inside while it is open.
+    </li>
+    <li>
+      <strong>Not color alone.</strong> A state is shown by more than a color change, and text has
+      enough contrast in both color schemes.
+    </li>
+    <li>
+      <strong>Names and texts.</strong> Every control has an accessible name. Built-in texts, labels
+      for assistive technology included, come from the configuration's messages, so they can be
+      translated (<a routerLink="/configuration">Configuration</a>).
+    </li>
+  </ul>
+
+  <p>
+    Angular CDK's tools (<code>FocusTrap</code>, <code>FocusMonitor</code>,
+    <code>ListKeyManager</code>, <code>LiveAnnouncer</code>) are preferred to hand-written ones. A
+    component with an accessibility gap is not finished.
+  </p>
+</docs-section>
+
+<docs-section sectionId="target-size" heading="Target size">
+  <p>
+    A control is never shorter than 24 CSS pixels, the minimum target size of WCAG 2.2 (success
+    criterion 2.5.8). The floor is <code>--arn-control-min-size</code> in the theme, and each
+    component writes its height with <code>max()</code>, so compact density cannot go below it: an
+    <code>xs</code> control is 24px in both densities.
+  </p>
+
+  <docs-code-block [code]="targetCode" language="css" label="Target size" />
+
+  <p>
+    The size tokens and how they combine with density:
+    <a routerLink="/theming">Theming</a>.
+  </p>
+</docs-section>
+
+<docs-section sectionId="focus-ring" heading="Focus ring">
+  <p>
+    Keyboard focus is shown with a ring <code>--arn-ring-width</code> (3px) wide in the
+    <code>--arn-ring</code> color. WCAG 2.2 asks a focus indicator for at least 3:1 against what is
+    around it (success criterion 1.4.11). Against the background, the ring has about
+    {{ ring.light }}:1 in the light scheme and {{ ring.dark }}:1 in the dark one. The light value is
+    darker than shadcn/ui's, whose ring is below 3:1 on white.
+  </p>
+
+  <docs-code-block [code]="focusCode" language="css" label="Focus ring" />
+</docs-section>
+
+<docs-section sectionId="reduced-motion" heading="Reduced motion">
+  <p>
+    Every animation can be turned off by the operating system's "reduce motion" setting (<code
+      >prefers-reduced-motion: reduce</code
+    >). The ripple draws no wave at all then, and reads the preference on every press. An overlay
+    that would animate as it closes is removed at once.
+  </p>
+
+  <docs-code-block [code]="motionCode" language="css" label="Reduced motion" />
+</docs-section>
+
+<docs-section sectionId="rtl" heading="RTL">
+  <p>
+    Every component works right to left. Styles use logical properties, so they follow the direction
+    of the place they are in; Stylelint rejects physical ones such as
+    <code>margin-left</code>. An icon that points in a direction carries
+    <code>arn-rtl-mirror</code> and is mirrored. Arrow keys that move between items follow the
+    direction too. How to set the direction: <a routerLink="/configuration">Configuration</a>.
+  </p>
+
+  <docs-code-block [code]="rtlCode" language="css" label="Logical properties" />
+</docs-section>
+
+<docs-section sectionId="testing" heading="How it is tested">
+  <p>
+    Every component spec runs axe-core on what it renders and fails on any violation. The
+    documentation's specs do the same for every page and example, in the light and dark schemes,
+    right to left and in compact density. Keyboard behavior, focus movement and ARIA attributes have
+    their own tests. The tests run in Chrome, without zone.js.
+  </p>
+
+  <docs-code-block [code]="axeCode" language="typescript" label="An axe test" />
+
+  <p>
+    A fragment is scanned on its own, so axe's rule that all content must sit in a landmark is
+    turned off for it; the pages check their landmarks separately. Each documentation page is also
+    checked at 320px, where it must not scroll sideways.
+  </p>
+</docs-section>
+
+<docs-section sectionId="known-limits" heading="Known limits">
+  <ul>
+    <li>
+      <strong>Automated checks find only part of the problems.</strong> axe catches what can be
+      decided from the page, such as missing names or low contrast; it cannot judge whether a name
+      makes sense or a flow is usable.
+    </li>
+    <li>
+      <strong>No screen reader testing yet.</strong> Nothing has been tried with a real screen
+      reader so far; announcements and reading order are checked only through the DOM.
+    </li>
+    <li>
+      <strong>Real key presses are not simulated.</strong> The test runner cannot scroll a region
+      with an actual arrow key; it checks the conditions instead: the region can take focus and is
+      the element that scrolls.
+    </li>
+    <li>
+      <strong>The ripple ignores the keyboard by design.</strong> Enter and Space activate an
+      element without a wave; the focus ring is the keyboard's feedback.
+    </li>
+  </ul>
+</docs-section>

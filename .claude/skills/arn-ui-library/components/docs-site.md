@@ -27,7 +27,7 @@ Tek tipli veri hem sidebar'ı hem lazy route'ları üretir.
 | Parça | Görev |
 |---|---|
 | `DocsNavCategory` `{ id, title, pages }`, `DocsNavPage` `{ slug, title, loadComponent }` | Sözleşme. `slug` site genelinde benzersiz, URL düz: `/<slug>`; boş slug ana sayfa |
-| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview, Installation; Guides → Configuration, Theming; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages-guides.md](docs-site-pages-guides.md), spec yardımcıları: [docs-site-pages.md](docs-site-pages.md) |
+| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview, Installation; Guides → Configuration, Theming, Accessibility; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages-guides.md](docs-site-pages-guides.md), spec yardımcıları: [docs-site-pages.md](docs-site-pages.md) |
 | `visibleCategories(nav)` | Sayfasız kategoriyi atar (başlığı gösterilmez) |
 | `buildRoutes(nav)` | Sayfa başına `{ path, pathMatch: 'full', title, loadComponent }`; başlık `"<title> · arn-ng"` |
 | `app.routes.ts` | `buildRoutes(DOCS_NAV)` + `**` → 404 (gezintide listelenmez) |
@@ -103,7 +103,7 @@ Yok.
 | Adım | Eksik |
 |---|---|
 | 3b | Bitti. 3b-1: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page", API ve Styling tabloları ([docs-site-toc-api.md](docs-site-toc-api.md)) |
-| 3c | Bitenler: Ripple, Installation, Configuration (dil değiştiricinin etkisi burada), Theming. Kalan: Accessibility |
+| 3c | Bitti: Ripple, Installation, Configuration (dil değiştiricinin etkisi burada), Theming, Accessibility ([docs-site-pages-guides.md](docs-site-pages-guides.md)) |
 | 3d | Arama (sidebar'da) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |
 | Faz 5 | Overview'daki yayın durumu ifadesi ("has not been published to npm yet") 0.1.0 yayınıyla YANLIŞ olur; güncellenecek (ROADMAP Faz 5) |

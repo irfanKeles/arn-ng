@@ -15,7 +15,7 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | docs-site (doküman sitesi kabuğu, `docs-nav.ts`, değiştiriciler, kalıcılık) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site.md](docs-site.md) |
 | docs-site-examples (örnek bloğu `docs-example`, kod bloğu `docs-code-block`, Shiki, metin import'u) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-examples.md](docs-site-examples.md) |
 | docs-site-pages (doküman spec yardımcıları: `unknownInternalLinks`, `apiMismatches` directive desteği, `tokenMismatches`, `renderExample`; `properties` tablo türü) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages.md](docs-site-pages.md) |
-| docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming; örnekleri, doğrulamaları, token kapsamı değişmezi) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages-guides.md](docs-site-pages-guides.md) |
+| docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming, Accessibility; örnekleri, doğrulamaları, token kapsamı değişmezi) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages-guides.md](docs-site-pages-guides.md) |
 | docs-site-toc-api ("On this page": `docs-section`, `docs-toc`, `DocsTocService`; API ve Styling tabloları `docs-api-table`, `docs-token-table`, `apiMismatches`) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-toc-api.md](docs-site-toc-api.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
