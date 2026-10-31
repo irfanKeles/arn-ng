@@ -36,7 +36,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [x] API ve Styling tablo bileşenleri (adım 3b-2): `docs-api-table`, `docs-token-table`, spec doğrulaması `apiMismatches` (`components/docs-site-toc-api.md`)
 - [x] Ripple sayfası (adım 3c): `/ripple`, dört örnek (CSS sekmeli), API ve Styling tabloları doğrulamalı (`components/docs-site-pages.md`)
-- [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
+- [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik. Kurulum bitti (`/installation`, adım 3c)
 - [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
 - [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
 - [ ] Docs cilası: "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
@@ -61,6 +61,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] README, kurulum rehberi (`projects/ui/README.md` hâlâ CLI'ın jenerik metni ve pakete giriyor)
 - [ ] `0.1.0` npm'e yayın
   - Yayın "trusted publishing (OIDC)" ile yapılacak, saklı npm token kullanılmayacak. Gerekçe: npm 31 Temmuz 2026'dan itibaren hassas işlemlerde etkileşimli 2FA istiyor, Ocak 2027'de 2FA-bypass token'lar doğrudan yayın yetkisini kaybedecek.
+- [ ] Docs Installation sayfasının başındaki "Not on npm yet … 0.1.0" durum notunu 0.1.0 yayınıyla kaldır ya da güncelle (`projects/docs/src/app/pages/installation/`)
 - [ ] Docs Overview sayfasındaki yayın durumu ifadesini güncelle ("has not been published to npm yet" 0.1.0 yayınıyla yanlış olur; `projects/docs/src/app/pages/overview/`)
 - [ ] PR'larda changeset kontrolünü CI'a ekle (0.1.0'dan sonra)
 - [ ] Gerçek bir projede npm'den kurup kullanma

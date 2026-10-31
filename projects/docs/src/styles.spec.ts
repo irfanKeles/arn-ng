@@ -130,6 +130,19 @@ describe('global styles: inline code', () => {
     expect(getComputedStyle(badge).color).toBe(getComputedStyle(probe).color);
   });
 
+  it('marks a status note with an edge on the start side as well as a tint', () => {
+    const note = create('p', 'Not on npm yet.');
+
+    note.className = 'docs-note';
+    page.append(note);
+
+    const style = getComputedStyle(note);
+
+    expect(parseFloat(style.borderInlineStartWidth)).toBeGreaterThan(1);
+    expect(style.borderInlineEndWidth).toBe('0px');
+    expect(style.backgroundColor).not.toBe(getComputedStyle(page).backgroundColor);
+  });
+
   it('leaves code blocks alone', () => {
     const block = create('pre');
     const code = create('code', 'const answer = 42;');

@@ -64,6 +64,18 @@ Bölümler (`docs-section`, sırayla): `import`, `basic`, `turning-it-on`, `colo
 | Styling | `docs-token-table` (CSS tokens). Doğrulama `tokenMismatches(…, scanTokens(themeStyleSheet()), ad => ad.startsWith('--arn-ripple-'))`; varsayılanlar `theme.css` metninde `<ad>: <değer>;` olarak aranır |
 | Bağlantı | Yok (Configuration / Theming henüz yok); `provideArn` ve tema kod bloklarıyla anlatılır |
 
+### Sayfa: Installation (`/installation`, kategori Getting started)
+
+Bölümler: `requirements`, `install`, `theme`, `configuration`, `imports`. Örnek yok, yalnız kod blokları (shell `shellscript`).
+
+| Konu | Karar |
+|---|---|
+| Durum notu | `h1`'in hemen ardından `<p class="docs-note" role="note">` "Not on npm yet … 0.1.0". Overview'daki cümleye dokunulmadı; ikisi de 0.1.0'da güncellenir (ROADMAP Faz 5, iki madde). `.docs-note` global (`styles.css`): kenar + ton, yalnız renk değil |
+| Gereksinimler | `installation.data.ts` `projects/ui/package.json`'ı `?source` ile alır; `peerDependencies(metin)` `unknown` → daraltma ile ayrıştırır (string olmayan aralık atılır). Sayfadaki liste ve spec aynı dosyadan: elle yazılmış sürüm yok |
+| Adımlar | `local-package-test.md` çalıştırmalarında denenenler: `npm install @arn-ng/ui` (npm CDK peer'ını kendiliğinden kurar; 5. çalıştırma), `src/styles.css`'e `@import '@arn-ng/ui/theme.css';` (2.), `provideArn` (3.), `ARN_MESSAGES_TR` (4.), `@arn-ng/ui/ripple` (7.). Denenmeyenler yazılmadı: `angular.json` `styles`, başka paket yöneticileri ("not tried yet") |
+| Entry point'ler | core, ripple, locales/tr, theme.css. Kök `@arn-ng/ui` boş (`export {};`), iç yollar çözülmez (7. çalıştırma). Boş pilot `@arn-ng/ui/button` listelenmez |
+| Bağlantı | Yok: Configuration / Theming henüz yok |
+
 **axe ile bulunan kusur:** `.docs-lead` içindeki satır içi kod rozeti açık temada `--arn-muted` üstünde ≈4.3:1 idi. Rozet artık kendi rengini taşır (`--arn-foreground`; `styles.css`, [docs-site.md](docs-site.md) §3); `styles.spec.ts` sabitler.
 
 ## 3. Token'lar
@@ -89,7 +101,7 @@ Yok.
 - `tokenMismatches` varsayılan değeri denetlemez; tablodaki varsayılan elle tutulur.
 - CSSOM seçiciyi yeniden yazar (öznitelik değerleri çift tırnakla); `elsewhere` seçicileri kaynaktaki yazımla birebir değildir.
 - Fixture sınıflarına örnek alanı eklendi (`no-extraneous-class` kapatılmadı).
-- **Bundle (prod, ölçüldü):** 3c-1b'de değişmedi. Ripple sayfasıyla initial 252.54 → 259.19 kB ham (69.87 → 73.17 kB aktarım); `main` 26.24 → 18.55 kB, yeni ortak initial parçalar (biri CDK `LiveAnnouncer`). Initial'da sayfa kodu, örnek metni ve Shiki YOK (grep'le doğrulandı): esbuild'in ana paketle sayfa arasında paylaşılan bağımlılıkları ortak parçaya ayırması (3b-1 önizlemesindeki örüntü). Sayfa parçası `ripple-page-component` 34.01 kB ham / 8.22 kB aktarım; `docs-highlight` ilk "Show code"da yüklenir (677.55 kB ham / 87.69 kB aktarım). Bütçe uyarısı yok.
+- **Bundle (prod, ölçüldü):** 3c-1b'de değişmedi. Ripple sayfasıyla initial 252.54 → 259.19 kB ham (69.87 → 73.17 kB aktarım); `main` 26.24 → 18.55 kB, yeni ortak initial parçalar (biri CDK `LiveAnnouncer`). Initial'da sayfa kodu, örnek metni ve Shiki YOK (grep'le doğrulandı): esbuild'in ana paketle sayfa arasında paylaşılan bağımlılıkları ortak parçaya ayırması (3b-1 önizlemesindeki örüntü). Sayfa parçası `ripple-page-component` 34.01 kB ham / 8.22 kB aktarım; `docs-highlight` ilk "Show code"da yüklenir (677.55 kB ham / 87.69 kB aktarım). Bütçe uyarısı yok. Installation ile initial 259.19 → 259.56 kB ham: yalnız `main` (+0.13, nav satırı) ve `styles` (+0.24, `.docs-note`); diğer initial parçalar hash'iyle aynı. Kod bloğu iki sayfanın ortak tembel parçasına çıktı (3.15 kB; Ripple parçası 34.01 → 31.11 kB), Installation parçası 6.24 kB.
 
 ## 8. Testler
 
@@ -101,7 +113,8 @@ Yok.
 | `testing/links.spec.ts` | Slug → yol; gerçek gezinti; var olan sayfa (fragment / sorgu ile) kabul; dış bağlantı atlanır; olmayan sayfa, çıplak fragment ve göreli yol → dolu liste |
 | `pages/ripple/ripple-page.component.spec.ts` | Tek `h1`, sayfa sınıfı; bölüm sırası (TOC); iç bağlantılar; tuzak metni; dört örnek ve her birinde HTML / TS / CSS sekmeleri; dört CSS'te `position: relative`; API directive ile, token'lar tema ile eşleşir, varsayılanlar temadaki değer; iki tablo başlığı ve satır adları; axe light / dark / RTL / compact |
 | `pages/ripple/examples/*.example.spec.ts` | basic: yerel düğme ve ad, `position: relative`, basışta düğmenin içinde dalga, klavyede (Enter, Space, `click()`) dalga yok; config: etiketler, bölüm açıkken izleyen + her zaman açık dalgalanır, kapalıyken yalnız boş attribute; color: container'da verilen değer, dalga rengi aynı ifadeyle çözülür; centered: `aria-label`, SVG gizli, dalga merkezde (±1px), compact'ta ≥24px; hepsinde axe dört mod (dalgalı) |
-| `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground` taşır |
+| `pages/installation/installation-page.component.spec.ts` | Tek `h1`; durum notu `h1`'in ardında, "Not on npm yet" + 0.1.0; bölüm sırası; iç bağlantılar; örnek yok, beş kod bloğu; peer'lar `package.json`'la birebir ve sayfada adıyla / aralığıyla; ayrıştırıcı peer'sız ve string olmayan aralıkta; diller (`shellscript`, `css`, 3 × `typescript`); komutlar Verdaccio adımlarıyla aynı; adı geçen entry point'ler çözülür; axe dört mod |
+| `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground` taşır; `.docs-note` başlangıç kenarı + ton |
 
 Boşluklar: gerçek `prefers-reduced-motion` ve gerçek dokunmatik basış tarayıcıda elle sınanır (directive'in kendi spec'i reduced-motion dalını sahte okuyucuyla kapsar, ripple.md §8).
 

@@ -152,7 +152,7 @@ Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüph
 - Solda sidebar: bileşenler kategori başlıkları altında gruplanır (Form, Button, Overlay, Data...). Altında arama.
 - Sağda sayfa içi başlık gezintisi ("bu sayfada").
 - Üstte tema (light/dark), yön (LTR/RTL), yoğunluk (comfortable/compact) ve dil değiştiriciler. Bunlar tüm örnekleri anlık etkiler.
-- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik.
+- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik. Altı başlık dört sayfada karşılanır: Yoğunluk Theming'de, RTL ve i18n Configuration'da bölümdür (§16).
 
 **Her bileşen sayfasının bölümleri (bu sırayla)**
 1. Kısa açıklama
@@ -247,6 +247,7 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 - 2026-10: API ve Styling tabloları (Faz 3 adım 3b-2 ikinci yarı; ayrıntı `components/docs-site-toc-api.md`). (1) Veri elle yazılır, tipli (`api/docs-api.ts`); derleme zamanı kod çözümleme (compodoc, TS API) şimdilik reddedildi. (2) Bayatlamaya karşı her sayfa spec'i `expectApiMatchesComponent` çağırır: saf `apiMismatches` `reflectComponentType` (19'da kararlı) ile gerçek input/output template adlarını (alias ve `model()`'in `<ad>Change`'i dahil) tabloyla birebir karşılaştırır; yalnız ad denetlenir. (3) Directive'ler `reflectComponentType` ile okunamaz; 3c-1b'de çözüldü (sonraki madde). (4) İki tablo bileşeni tek iç `docs-table`'ı paylaşır; tablo odaklanabilir, adlı bir bölgede yalnız kendi içinde kayar.
 - 2026-10: Odak halkası shadcn'den sapıyor: `--arn-ring` açık temada neutral-400 → neutral-500 (beyaz üstünde ≈2.6:1 → ≈4.7:1; WCAG 1.4.11 odak göstergesi için 3:1 ister). Koyu tema değişmedi (neutral-500, neutral-950 üstünde ≈4.2:1). `theme.spec.ts` iki temada ≥3:1'i sınar.
 - 2026-10: Doküman doğrulama yardımcıları (Faz 3 adım 3c-1b; ayrıntı `components/docs-site-pages.md`). (1) Directive API'si derlenmiş tanımdan (`ɵdir`) okunur: public API yok, "yalnız kararlı API" kuralından YALNIZ docs spec kodunda sapma, kütüphaneye girmez. Yalnız anahtarlar (template adları) kullanılır, şekil denetlenir; bilinmeyen şekil "okunamadı" diye düşer, şekil spec'i Angular güncellemesini yakalar. (2) `tokenMismatches`: `theme.css` metni ayrı bir `CSSStyleSheet`'e ayrıştırılır (`document.styleSheets` değil), `@layer` / `@media` / iç içe kurallar dolaşılır, yalnız `--arn-*`, iki yönlü ve kapsam fonksiyonuyla. (3) `properties` tablo türü (`inputs` sütunları, başlık "Properties").
+- 2026-10: Giriş sayfaları (Faz 3 adım 3c; ayrıntı `components/docs-site-pages.md`). (1) §13'ün altı giriş başlığı dört sayfada: Installation, Configuration (RTL ve i18n bölüm olarak), Theming (Density bölüm olarak), Accessibility; ayırmak sonra kolay. (2) Installation 0.1.0'dan önce yazıldı, başında "Not on npm yet" notuyla; adımlar Verdaccio çalıştırmalarında denenenlerdir, gereksinimler `projects/ui/package.json`'dan derleme anında okunur. Not 0.1.0'da kaldırılır (ROADMAP Faz 5).
 - İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
 
 ## 17. Henüz açık kararlar

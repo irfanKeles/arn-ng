@@ -31,6 +31,14 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
         loadComponent: () =>
           import('../pages/overview/overview-page.component').then((m) => m.OverviewPageComponent),
       },
+      {
+        slug: 'installation',
+        title: 'Installation',
+        loadComponent: () =>
+          import('../pages/installation/installation-page.component').then(
+            (m) => m.InstallationPageComponent,
+          ),
+      },
     ],
   },
   {

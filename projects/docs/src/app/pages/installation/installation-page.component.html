@@ -1,0 +1,82 @@
+<h1>Installation</h1>
+
+<p class="docs-note" role="note">
+  <strong>Not on npm yet.</strong>&ngsp;<code>&#64;arn-ng/ui</code> has not been published. These
+  steps are for its first release, 0.1.0; they have been run against a local registry.
+</p>
+
+<p class="docs-lead">Add the package, its theme and, if you want, its configuration.</p>
+
+<docs-section sectionId="requirements" heading="Requirements">
+  <p>The library supports these versions of its peer dependencies:</p>
+
+  <ul class="docs-peers">
+    @for (peer of peers; track peer.name) {
+      <li>
+        <code>{{ peer.name }}</code
+        >&ngsp;<code>{{ peer.range }}</code>
+      </li>
+    }
+  </ul>
+
+  <p>
+    It is built on Angular CDK, which is why the CDK is a peer dependency. A newer Angular major is
+    added to these ranges once it has been tested.
+  </p>
+</docs-section>
+
+<docs-section sectionId="install" heading="Install">
+  <docs-code-block [code]="installCommand" language="shellscript" label="Install" />
+
+  <p>
+    npm installs <code>&#64;angular/cdk</code> with it, as a peer dependency, in the version that
+    matches your Angular. Other package managers have not been tried yet.
+  </p>
+</docs-section>
+
+<docs-section sectionId="theme" heading="Add the theme">
+  <p>
+    Import the theme once, in the application's global stylesheet. It defines the design tokens
+    (colors, sizes, density), the light and dark color schemes and the few classes the library
+    needs; it styles none of your elements.
+  </p>
+
+  <docs-code-block [code]="themeCode" language="css" label="Theme" />
+
+  <p>
+    Without a class the theme follows the system's light or dark preference;
+    <code>.dark</code> or <code>.light</code> on an element forces one.
+  </p>
+</docs-section>
+
+<docs-section sectionId="configuration" heading="Provide the configuration">
+  <p>
+    <code>provideArn()</code> in the root providers sets the application-wide configuration. Every
+    field is optional, and without <code>provideArn()</code> every setting keeps its default. With
+    <code>applyToDocument: true</code> the color scheme, direction and density are also written to
+    the <code>&lt;html&gt;</code> element, so the whole page follows them.
+  </p>
+
+  <docs-code-block [code]="configCode" language="typescript" label="Configuration" />
+
+  <p>English texts are built in. Other languages are separate imports; Turkish is the first one:</p>
+
+  <docs-code-block [code]="localeCode" language="typescript" label="Turkish texts" />
+</docs-section>
+
+<docs-section sectionId="imports" heading="Import what you use">
+  <p>
+    Everything is imported from a secondary entry point, so an application only pays for what it
+    uses. <code>&#64;arn-ng/ui</code> itself exports nothing, and paths inside the package are not
+    part of its API: they do not resolve.
+  </p>
+
+  <docs-code-block [code]="importCode" language="typescript" label="Imports" />
+
+  <ul>
+    <li><code>&#64;arn-ng/ui/core</code>: configuration and the shared overlay service</li>
+    <li><code>&#64;arn-ng/ui/ripple</code>: the ripple directive</li>
+    <li><code>&#64;arn-ng/ui/locales/tr</code>: Turkish texts</li>
+    <li><code>&#64;arn-ng/ui/theme.css</code>: the theme (a stylesheet, not a script)</li>
+  </ul>
+</docs-section>

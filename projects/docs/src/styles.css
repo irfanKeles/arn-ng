@@ -71,6 +71,15 @@ body {
   line-height: var(--arn-text-lg-line-height);
 }
 
+/* A status note at the top of a page: an edge and a tint, not color alone */
+.docs-page .docs-note {
+  padding-block: calc(var(--arn-spacing) * 3);
+  padding-inline: calc(var(--arn-spacing) * 4);
+  border-inline-start: calc(var(--arn-border-width) * 4) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+  background: var(--arn-muted);
+}
+
 .docs-page a {
   color: inherit;
   font-weight: var(--arn-font-weight-medium);
