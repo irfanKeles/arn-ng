@@ -86,7 +86,7 @@ Yok (uygulama).
 | Hedef boyutu | Bağlantılar compact'ta da ≥24px |
 | RTL | Mantıksal CSS; sütun `main`'in solunda |
 | Tablo yapısı | Görünür `<caption>`; `th scope="col"`; ad hücresi `th scope="row"` + `<code>` |
-| Tablo bölgesi | `<div role="region" tabindex="0" aria-labelledby=caption>`: dar ekranda yalnız bölge yatay kayar, klavyeyle odaklanıp kaydırılır (axe `scrollable-region-focusable`; kod bloğundaki örüntü) |
+| Tablo bölgesi | `<div role="region" tabindex="0" aria-labelledby=caption>`: dar ekranda yalnız bölge yatay kayar, klavyeyle odaklanıp kaydırılır (axe `scrollable-region-focusable`; kod bloğundaki örüntü). Bölge `position: relative`: gizli "None" (`.docs-visually-hidden`, `position: absolute`) için kapsayıcı blok olur; yoksa metin `overflow-x`'ten kaçıp belgeyi genişletiyordu (320px'te Configuration 89px kayıyordu) |
 | Boş hücre | Görünür "—" (`aria-hidden`) + gizli "None" |
 | Tablo RTL | Hücre `text-align: start`; kod `direction: ltr` + `unicode-bidi: isolate` (inline kutu kendi yönünü alsın) |
 
@@ -103,6 +103,7 @@ Yok.
 - **Bundle (prod, ölçüldü):** initial 248.16 → 252.54 kB ham (68.71 → 69.88 kB aktarım; liste ve servis kabukta, `main` 23.47 → 26.24 kB). `docs-section` yalnız kullanan sayfanın tembel parçasında (Overview 2.47 → 3.33 kB). Bütçe uyarısı yok. Tablolar eklenince çıktı birebir aynı (dosya adları dahil); tablo dizgeleri `dist/docs`'ta yok.
 - `apiMismatches` spec fixture'ında alias YOK: `@angular-eslint/no-input-rename` alias'ı yasaklar, kural kapatılmadı; alias desteği `templateName` karşılaştırmasından gelir, `model()` örneği türetilmiş adı sınar.
 - Prettier `<caption>` içindeki interpolasyonu üç satıra böler (zararsız, biçim kaynaklı).
+- **Kalıp:** kaydırılan / kırpan bir kapsayıcının içindeki mutlak konumlu eleman, kapsayıcı konumlu değilse kırpılmaz ve sayfayı genişletir. Tarandı (3c): kod bloğu `pre` yalnız satır içi `span`; sidebar ve "On this page" mutlak eleman taşımaz; örnek bloğu `:host` (`overflow: hidden`, konumsuz) bugün güvenli (ripple dalgaları konumlu düğmelerde) ama AÇIK: konumsuz bir host'ta ripple ya da gizli metin içeren örnek kaçar.
 
 ## 8. Testler
 
@@ -115,7 +116,7 @@ Yok.
 | `app.component.spec.ts` | İki `nav`, Overview'un üç bölümü ve `href`; kırılmada / <2 bölümde / dar modda yok ve sütun sayısı (2 / 2 / 1); viewport ile gelip gitme (3 ↔ 2 sütun); sayfa değişince eski bölümler gider; bağlantı → başlığa odak, `<main>`'e değil; sütun yeri LTR / RTL; axe dört mod × liste açık |
 | `pages/overview/…spec.ts` | Üç bölüm sırasıyla servis listesinde ve `h2` id'leri |
 | `api/docs-table.spec.ts` | Saf görünüm: her kind'in başlığı ve sütunları, hücre türleri, boş varsayılan, sütun başına bir hücre; token tablosu |
-| `api/api-table.component.spec.ts` | Caption bölgeyi adlandırır; `scope` col / row; kod ve düz metin hücreleri; "—" + "None"; girdi değişimi; benzersiz caption id; 320px: sayfa taşmaz, yalnız bölge taşar (`overflow-x: auto`), bölge `tabindex=0` ile odak alır ve kayan elemandır; RTL'de kod `ltr` + `isolate`, hücre `start`; axe light / dark / RTL / compact + 320px |
+| `api/api-table.component.spec.ts` | Caption bölgeyi adlandırır; `scope` col / row; kod ve düz metin hücreleri; "—" + "None"; girdi değişimi; benzersiz caption id; 320px: sayfa taşmaz, yalnız bölge taşar (`overflow-x: auto`); kenarın ötesindeki boş varsayılan hücresiyle `document.documentElement.scrollWidth` render öncesinden büyümez (`.docs-page.scrollWidth` bunu görmüyordu; taban Karma raporlayıcısı yüzünden render öncesi genişlik); bölge `tabindex=0` ile odak alır ve kayan elemandır; RTL'de kod `ltr` + `isolate`, hücre `start`; axe light / dark / RTL / compact + 320px |
 | `api/token-table.component.spec.ts` | "CSS tokens" başlığı, sütunlar, adlar ve varsayılan kod olarak; axe |
 | `api/testing/expect-api.spec.ts` | `apiMismatches`: uyumlu → boş, sıra önemsiz; eksik girdi, fazla girdi, yanlış ad, `model()`'in `valueChange`'i eksik, fazla output, tekrar eden satır, tablo yok → dolu liste; sarmalayıcı uyumlu tabloda geçer. Directive grubu: [docs-site-pages.md](docs-site-pages.md) §8 |
 
@@ -123,7 +124,7 @@ Sidebar seçicileri `app.component.spec.ts`'te `nav[aria-label="Documentation"]`
 
 Ctrl+tık testi varsayılan eylemi iptal eder: sentetik Ctrl+tık bağlantıda gerçekten yeni sekme açıp test penceresinin odağını alıyor, rastgele sırada sonraki odak testini (skip link) düşürüyordu.
 
-Boşluklar: gerçek kaydırma (`anchorScrolling`) ve gerçek pencere genişliği tarayıcıda elle sınanır. Tablo bölgesinin gerçek ok tuşuyla kaydırılması Karma'da üretilemez (sentetik tuş olayı tarayıcıyı kaydırmaz); spec onun önkoşullarını sınar: bölge odaklanabilir, kayan eleman odur, sayfa kaymaz.
+Boşluklar: gerçek kaydırma (`anchorScrolling`) tarayıcıda elle sınanır. Gerçek pencere daraltması bir kez Playwright ile ölçüldü (2026-10, repo dışı, `playwright-core` + sistem Chrome): `/ripple`, `/installation`, `/configuration` 1280 → 320px yenilemesiz `docs-narrow` alır, taşma 0. Tablo bölgesinin gerçek ok tuşuyla kaydırılması Karma'da üretilemez (sentetik tuş olayı tarayıcıyı kaydırmaz); spec onun önkoşullarını sınar: bölge odaklanabilir, kayan eleman odur, sayfa kaymaz.
 
 ## 9. Bağlantılar
 

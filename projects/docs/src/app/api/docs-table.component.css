@@ -5,7 +5,12 @@
   margin-block: 0 calc(var(--arn-spacing) * 6);
 }
 
+/*
+ * position: relative makes the region the containing block of the visually hidden "None"
+ * (position: absolute); otherwise that text escapes overflow-x and widens the document.
+ */
 .docs-table-region {
+  position: relative;
   overflow-x: auto;
   border: var(--arn-border-width) solid var(--arn-border);
   border-radius: var(--arn-radius);

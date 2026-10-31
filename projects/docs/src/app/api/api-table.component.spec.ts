@@ -165,6 +165,34 @@ describe('ApiTableComponent', () => {
       expect(getComputedStyle(region(element)).overflowX).toBe('auto');
     });
 
+    it('does not widen the document either: hidden text in a cell past the edge stays clipped', async () => {
+      // An empty default renders a visually hidden "None" (position: absolute). Its cell starts
+      // past the window's right edge; unless the region is its containing block, the text escapes
+      // the region's overflow and widens the document, which .docs-page.scrollWidth does not see.
+      // Measured against the document before rendering: Karma's own reporter is wider than the
+      // window by a couple of pixels.
+      const root = document.documentElement;
+      const before = root.scrollWidth;
+      const { element } = await setup(
+        {
+          kind: 'inputs',
+          rows: [
+            {
+              name: 'aVeryLongInputNameThatDoesNotWrap'.repeat(6),
+              type: 'string',
+              description: 'No default.',
+            },
+          ],
+        },
+        '320px',
+      );
+      const hidden = query(element, 'tbody td .docs-visually-hidden');
+
+      expect(text(hidden)).toBe('None');
+      expect(hidden.getBoundingClientRect().left).toBeGreaterThan(root.clientWidth);
+      expect(root.scrollWidth).toBeLessThanOrEqual(Math.max(before, root.clientWidth));
+    });
+
     it('is the scroll container, and keyboard users can focus it to scroll', async () => {
       const { element } = await setup(WIDE, '320px');
       const scroller = region(element);
