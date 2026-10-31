@@ -56,7 +56,7 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 | `--arn-destructive` | red-600 | red-400 |
 | `--arn-border` | neutral-200 | `oklch(100% 0 0deg / 10%)` |
 | `--arn-input` | neutral-200 | `oklch(100% 0 0deg / 15%)` |
-| `--arn-ring` | neutral-400 | neutral-500 |
+| `--arn-ring` | neutral-500 (shadcn neutral-400'den sapma, §7) | neutral-500 |
 
 ### Anlamlı: ölçek
 
@@ -105,7 +105,7 @@ Tüketicinin kuralı `theme.css` import'undan SONRA gelmelidir (aynı özgüllü
 
 ## 5. Davranış ve a11y
 
-Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test.options.styles`).
+Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir. Odak halkası `--arn-ring` iki temada da arka plana karşı en az 3:1 (WCAG 1.4.11): açıkta beyaz üstünde ≈4.7:1, koyuda neutral-950 üstünde ≈4.2:1; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test.options.styles`).
 
 ## 6. Form uyumu
 
@@ -113,7 +113,7 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- **shadcn'den sapmalar:** (1) dark mode `.dark` bloğunda yeniden tanımlama yerine `light-dark()`; gerekçe: değerler tek yerde, iç içe tema ve sistem tercihi bedava. (2) `.light` sınıfı eklendi. (3) oklch yazımı (yüzde ve `deg`); gerekçe: Stylelint kuralı kapatmamak. (4) `--arn-` öneki.
+- **shadcn'den sapmalar:** (1) dark mode `.dark` bloğunda yeniden tanımlama yerine `light-dark()`; gerekçe: değerler tek yerde, iç içe tema ve sistem tercihi bedava. (2) `.light` sınıfı eklendi. (3) oklch yazımı (yüzde ve `deg`); gerekçe: Stylelint kuralı kapatmamak. (4) `--arn-` öneki. (5) `--arn-ring` açık temada neutral-500 (shadcn neutral-400): neutral-400 beyaz üstünde ≈2.6:1, WCAG 1.4.11'in 3:1'inin altında; koyu tema shadcn'deki gibi neutral-500.
 - **Eklenmeyenler:** `chart-*`, `sidebar-*` (ilgili bileşen yok; iki resmi shadcn kaynağı chart için farklı değer veriyor), `success/warning/info` (shadcn'de yok), `destructive-foreground` (güncel shadcn'de yok). İhtiyaç duyan bileşenle ayrı karar.
 - **Tarayıcı tabanı:** `light-dark()` → Chrome 123, Firefox 120, Safari 17.5. Fallback yok (SKILL §1 hedef tarayıcı).
 - `sideEffects: false` kaldı; CSS, `styles` veya CSS `@import` ile eklenir, JS'ten import edilmez.
@@ -122,7 +122,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; odak halkası iki temada neutral-500 ve arka plana karşı ≥3:1; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
 
 ## 9. Bağlantılar
 

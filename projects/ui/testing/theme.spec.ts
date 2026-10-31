@@ -273,6 +273,37 @@ describe('theme.css', () => {
     expect(backgroundOf(lightInDark)).toBe(resolved('neutral-900'));
   });
 
+  describe('focus ring', () => {
+    /** Relative luminance of a computed achromatic oklch color: Y = L³. */
+    function luminance(color: string): number {
+      const match = /^oklch\(([\d.]+)(%?) 0 0\)$/.exec(color);
+
+      if (!match?.[1]) {
+        throw new Error(`Not an achromatic oklch color: ${color}`);
+      }
+
+      const lightness = Number(match[1]) / (match[2] === '%' ? 100 : 1);
+
+      return lightness ** 3;
+    }
+
+    function contrast(a: string, b: string): number {
+      const [light, dark] = [luminance(a), luminance(b)].sort((x, y) => y - x) as [number, number];
+
+      return (light + 0.05) / (dark + 0.05);
+    }
+
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`is neutral-500 and has at least 3:1 against the background in ${scheme} mode`, () => {
+        const ring = backgroundOf(box(host, scheme, 'var(--arn-ring)'));
+        const background = backgroundOf(box(host, scheme, 'var(--arn-background)'));
+
+        expect(ring).toBe(resolved('neutral-500'));
+        expect(contrast(ring, background)).toBeGreaterThanOrEqual(3);
+      });
+    }
+  });
+
   it('the radius scale derives from --arn-radius', () => {
     const element = box(host, '', 'none');
     const radiusOf = (value: string): number => {

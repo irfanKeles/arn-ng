@@ -47,7 +47,9 @@
   /* Dark border and input are white with alpha in shadcn; the palette has no equivalent */
   --arn-border: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%));
   --arn-input: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 15%));
-  --arn-ring: light-dark(var(--arn-neutral-400), var(--arn-neutral-500));
+
+  /* Light: neutral-500, not shadcn's neutral-400 (2.6:1 on white, below WCAG 1.4.11's 3:1) */
+  --arn-ring: light-dark(var(--arn-neutral-500), var(--arn-neutral-500));
 
   /*
    * Radius: -sm…-4xl are steps of the scale, not component sizes (xs-xl).

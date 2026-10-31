@@ -96,7 +96,7 @@ Yok.
 - Backdrop tıklaması host `(click)` dinleyicisindedir (şablonda tıklanabilir `div` a11y lint'ine takılır; klavye karşılığı Esc).
 - Dil değiştiricinin 3a'da GÖRÜNÜR etkisi yok: `messages` okuyan bileşen henüz yok.
 - Dağıtım (barındırma, `base href`) Faz 5'e bırakıldı.
-- `--arn-ring` (neutral-400) açık temada beyaz üstünde yaklaşık 2.5:1'dir; shadcn değeridir, docs'ta değiştirilmedi.
+- Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](tokens.md) §7).
 
 ### 3b-3e için boşluklar
 
