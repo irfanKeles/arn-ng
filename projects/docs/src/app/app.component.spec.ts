@@ -397,7 +397,9 @@ describe('AppComponent', () => {
 
       expectNear(body.bottom, host.bottom);
       expectNear(content.height, body.height);
-      expect(content.height).toBeGreaterThan(side.height);
+      // The sidebar stays as tall as its list and sticks; main stretches to the body's height
+      expect(getComputedStyle(sidebar(element)).alignSelf).toBe('start');
+      expect(getComputedStyle(sidebar(element)).position).toBe('sticky');
       expectNear(content.left, side.right);
       expect(getComputedStyle(main(element)).borderInlineStartWidth).toBe('1px');
       expect(getComputedStyle(sidebar(element)).borderInlineEndWidth).toBe('0px');
