@@ -18,10 +18,10 @@ Adım 3b-1'de yazıldı. Hiçbir sayfada kullanılmıyor (dolgu örneği yok, SK
 
 ### Örnek kodunun kaynağı: derlenen dosyanın kendisi
 
-Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir. Sayfa bileşeni örneği hem bileşen olarak hem metin olarak import eder:
+Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir; stili varsa üçüncü dosya `<ad>.example.css` (`styleUrl`). Sayfa bileşeni örneği hem bileşen olarak hem metin olarak import eder:
 
-- `import html from './x.example.html?source' with { loader: 'text' };` (aynısı `.ts` için)
-- `<docs-example [html]="html" [ts]="ts"><docs-x-example /></docs-example>`
+- `import html from './x.example.html?source' with { loader: 'text' };` (aynısı `.ts` ve `.css` için)
+- `<docs-example [html]="html" [ts]="ts" [css]="css"><docs-x-example /></docs-example>`; `css` isteğe bağlıdır, verilmezse CSS sekmesi yoktur
 
 | Parça | Neden |
 |---|---|
@@ -36,7 +36,7 @@ Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir. Sayfa 
 
 | Parça | Görev |
 |---|---|
-| `code/docs-highlight.ts` | Shiki'yi import eden TEK dosya. `createHighlighterCore` + `createCssVariablesTheme` (`shiki/core`), `createJavaScriptRegexEngine` (`shiki/engine/javascript`, wasm yok), diller `shiki/langs/{html,typescript,css}.mjs`. Highlighter modül düzeyinde tektir (servis TestBed başına yeniden oluşur; Shiki çoklu örnekte uyarır). Çıktıyı `DocsCodeToken[]`'e çevirir; satır sonu da bir token'dır, içerikler toplanınca kod çıkar |
+| `code/docs-highlight.ts` | Shiki'yi import eden TEK dosya. `createHighlighterCore` + `createCssVariablesTheme` (`shiki/core`), `createJavaScriptRegexEngine` (`shiki/engine/javascript`, wasm yok), diller `shiki/langs/{html,typescript,css,shellscript}.mjs` (`shellscript` 3c Installation komutları için). Highlighter modül düzeyinde tektir (servis TestBed başına yeniden oluşur; Shiki çoklu örnekte uyarır). Çıktıyı `DocsCodeToken[]`'e çevirir; satır sonu da bir token'dır, içerikler toplanınca kod çıkar |
 | `DOCS_HIGHLIGHT_LOADER` | Varsayılanı `import('./docs-highlight')`: ayrı chunk (`docs-highlight`, 636.09 kB ham / 82.78 kB aktarım). Spec'ler sahte / bekleyen / başarısız yükleyici verir |
 | `DocsHighlighterService.load()` | Sözü bir kez alır; sunucuda, indirme hatasında ve yükleyici fırlatınca `null` |
 | `CodeBlockComponent` | `ngOnChanges`'te `load().then(...)` → `signal`. `effect()` / `afterNextRender` / `rxjs-interop` yok. Girdi değiştiyse geç gelen sonuç atılır; `highlight` fırlatırsa düz metin kalır |
@@ -69,7 +69,7 @@ Yok (uygulama).
 |---|---|
 | Demo | `<ng-content>`; örnek bileşen gerçekten çalışır |
 | Kodu göster | Disclosure düğmesi: `aria-expanded`, `aria-controls` (bölge hep DOM'da, `hidden`). Metin "Show code" / "Hide code" |
-| Sekmeler | `role=tablist` (`aria-label="Example code"`), `tab` (HTML, TS), tek `tabpanel` (`aria-labelledby` seçili sekme). `aria-selected`, `aria-controls`, roving `tabindex`. Ok tuşları (RTL'de ters, uçlarda sarar), Home / End; odaklanan sekme seçilir |
+| Sekmeler | `role=tablist` (`aria-label="Example code"`), `tab` (HTML, TS, `css` verilmişse CSS), tek `tabpanel` (`aria-labelledby` seçili sekme). `aria-selected`, `aria-controls`, roving `tabindex`. Ok tuşları (RTL'de ters, uçlarda sarar), Home / End; odaklanan sekme seçilir. Sekme listesi `computed`'dır (`tabs()`), gezinti de onu kullanır; seçili sekme listeden çıkarsa HTML'e dönülür |
 | Kod alanı | `<pre role="group" tabindex="0" aria-label="HTML code">`: klavyeyle kaydırılır (axe `scrollable-region-focusable`). Kaydırma gerekmese de odaklanabilir (taşmayı ölçmek gözlemci gerektirirdi) |
 | Kopyala | Gerçek `<button>`, seçili sekmenin kodu. Sonuç düğme metninde ("Copied" / "Copy failed") ve `LiveAnnouncer` ile. Pano yoksa da "Copy failed". Zamanlayıcı yok: durum sekme değişince veya blok kapanınca sıfırlanır |
 | Pano | `DOCS_CLIPBOARD`: `DOCUMENT.defaultView?.navigator.clipboard`, `isPlatformBrowser`, try/catch; yoksa `null` |
@@ -86,22 +86,22 @@ Yok.
 ## 7. Kısıtlar ve kararlar
 
 - **Sekme klavyesi elle yazıldı** (`event.key`). CDK `ListKeyManager` kullanımdan kalkmış `keyCode`'u okur; spec onu `no-deprecated` ihlali olmadan üretemez. SKILL §8'deki CDK tercihinden bilinçli sapma (§16).
-- **Tek `tabpanel`:** iki sekme aynı paneli denetler; panel adı seçili sekmeden gelir.
-- **Bundle (prod, ölçüldü):** blok hiçbir sayfada yokken initial 248.16 kB, dosya adları öncekiyle aynı; örnek ve Shiki dizgeleri `dist/docs`'ta yok. Tembel bir sayfa kullanınca (Overview'da geçici önizlemeyle ölçüldü) initial 252.07 kB (+3.91 kB ham, +2.0 kB aktarım), `docs-highlight` ayrı tembel chunk (636.09 kB ham / 82.78 kB aktarım). Initial'daki artış Shiki değil: esbuild'in ana paketle ortak kullanılan CDK parçalarını ve yardımcılarını ortak chunk'lara ayırması; bütçe uyarısı yok.
+- **Tek `tabpanel`:** bütün sekmeler aynı paneli denetler; panel adı seçili sekmeden gelir.
+- **Bundle (prod, ölçüldü):** blok hiçbir sayfada yokken initial 248.16 kB, dosya adları öncekiyle aynı; örnek ve Shiki dizgeleri `dist/docs`'ta yok. Tembel bir sayfa kullanınca (Overview'da geçici önizlemeyle ölçüldü) initial 252.07 kB (+3.91 kB ham, +2.0 kB aktarım), `docs-highlight` ayrı tembel chunk (636.09 kB ham / 82.78 kB aktarım). Initial'daki artış Shiki değil: esbuild'in ana paketle ortak kullanılan CDK parçalarını ve yardımcılarını ortak chunk'lara ayırması; bütçe uyarısı yok. `shellscript` eklenince (3c-1a, `main.ts`'e geçici `import()` ile ölçüldü) initial aynı kaldı, `docs-highlight` 636.09 → 677.55 kB ham (82.78 → 87.69 kB aktarım).
 - Shiki sürüm yükseltmesinde tema değişken adları değişebilir; `highlighter.service.spec.ts` gerçek Shiki'nin kullandığı her rengin kod bloğunda tanımlı olduğunu `code-block.component.spec.ts` sınar.
-- Örnek dosya adı kalıbı: `<ad>.example.ts` / `.html`, selector `docs-<ad>-example`. Gösterilen TS `templateUrl` ile HTML'e işaret eder; kopyalayan iki dosyayı da alır.
+- Örnek dosya adı kalıbı: `<ad>.example.ts` / `.html` / (isteğe bağlı) `.css`, selector `docs-<ad>-example`. Gösterilen TS `templateUrl` ve `styleUrl` ile diğer dosyalara işaret eder; kopyalayan hepsini alır. Stil örneğin çalışması için gerekiyorsa (ör. ripple'da `position: relative`) CSS dosyası zorunludur: görünmeyen stil "kopyalanınca çalışır" kuralını bozar.
 - Reddedilenler: elle yazılmış string, `raw-loader`, `angular.json` `loader` seçeneği, Shiki çift tema, `codeToHtml` + `innerHTML`, oniguruma wasm, precompiled diller.
 
 ## 8. Testler
 
-Docs Karma hedefi esbuild ile koşar (`builderMode: application`). Fixture: `example/testing/basic.example.{ts,html}` ve `example-host.ts` (yalnız spec'ler import eder). `testing/dom.ts`'e `nextTask()` eklendi (kuyruktaki söz geri çağrılarından sonra çözülür; süreye bağlı değil).
+Docs Karma hedefi esbuild ile koşar (`builderMode: application`). Fixture: `example/testing/basic.example.{ts,html}`, stilli `styled.example.{ts,html,css}` ve `example-host.ts` (`ExampleHostComponent`, `StyledExampleHostComponent`) (yalnız spec'ler import eder). `testing/dom.ts`'e `nextTask()` eklendi (kuyruktaki söz geri çağrılarından sonra çözülür; süreye bağlı değil).
 
 | Spec | Kapsam |
 |---|---|
-| `code/highlighter.service.spec.ts` | Tek yükleme, istenene kadar yüklememe, indirme hatası / fırlatan yükleyici / sunucu → `null`; gerçek Shiki ile üç dil: metin değişmez, birden çok stil, her renk bir `var(--docs-code-*)`; tek highlighter |
+| `code/highlighter.service.spec.ts` | Tek yükleme, istenene kadar yüklememe, indirme hatası / fırlatan yükleyici / sunucu → `null`; gerçek Shiki ile dört dil (`shellscript` dahil): metin değişmez, birden çok stil, her renk bir `var(--docs-code-*)`; tek highlighter |
 | `code/code-block.component.spec.ts` | Yüklenene kadar düz metin; token'lara geçişte metin ve boyut aynı (±1px); renk değişkeni ve italik / kalın sınıfları; yükleme hatası ve fırlatan highlight → düz metin; geç gelen sonuç atılır; odaklanabilir ve adlı; 320px'te sayfa taşmaz; RTL'de `ltr`; kod rozeti stili uygulanmaz; gerçek Shiki'nin kullandığı her değişken tanımlı; axe |
 | `example/clipboard.spec.ts` | Tarayıcıda `navigator.clipboard`, sunucuda `null` |
-| `example/example.component.spec.ts` | Demo çalışır; disclosure; gösterilen kod fixture dosyalarının metni; sekme rolleri, ilişkiler, roving tabindex, ok / Home / End, RTL'de ters; kopyalama başarı / ret / pano yok (elle yazılmış sahte pano ve duyurucu); 320px; hedef boyutu (compact); axe: light / dark / RTL / compact × kod gizli, renklendirilmiş HTML ve TS |
+| `example/example.component.spec.ts` | Demo çalışır; disclosure; gösterilen kod fixture dosyalarının metni; sekme rolleri, ilişkiler, roving tabindex, ok / Home / End, RTL'de ters; kopyalama başarı / ret / pano yok (elle yazılmış sahte pano ve duyurucu); 320px; hedef boyutu (compact); axe: light / dark / RTL / compact × kod gizli, renklendirilmiş HTML ve TS. CSS'li örnek: üç sekme ve ilişkileri, üç dosyanın metni (`styleUrl`), stil demoya uygulanır, ok tuşlarıyla üç sekmede iki uçta sarma, Home / End, RTL'de ters, CSS kopyalama, compact hedef boyutu, axe dört mod × renklendirilmiş CSS. CSS'siz davranış ve spec'leri değişmedi |
 
 Boşluklar: gerçek pano izni, gerçek ekran okuyucu duyurusu ve tarayıcıda görsel görünüm otomatik sınanmadı.
 

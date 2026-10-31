@@ -4,6 +4,7 @@ import { createCssVariablesTheme, createHighlighterCore } from 'shiki/core';
 import { createJavaScriptRegexEngine } from 'shiki/engine/javascript';
 import css from 'shiki/langs/css.mjs';
 import html from 'shiki/langs/html.mjs';
+import shellscript from 'shiki/langs/shellscript.mjs';
 import typescript from 'shiki/langs/typescript.mjs';
 import type { DocsCodeToken, DocsHighlight } from './docs-code';
 
@@ -19,7 +20,7 @@ async function create(): Promise<DocsHighlight> {
   const highlighter = await createHighlighterCore({
     // Colors are CSS variables (`--docs-code-*`, defined in styles.css), not values.
     themes: [createCssVariablesTheme({ name: THEME, variablePrefix: '--docs-code-' })],
-    langs: [html, typescript, css],
+    langs: [html, typescript, css, shellscript],
     engine: createJavaScriptRegexEngine(),
   });
 

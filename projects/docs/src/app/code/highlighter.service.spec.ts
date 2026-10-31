@@ -83,6 +83,10 @@ describe('DocsHighlighterService', () => {
         code: "import { signal } from '@angular/core';\n\n// A counter\nexport const count = signal(0);\n",
       },
       { language: 'css', code: '.docs-page {\n  color: var(--arn-foreground);\n}\n' },
+      {
+        language: 'shellscript',
+        code: '# Install the package\nnpm install @arn-ng/ui @angular/cdk --save\n',
+      },
     ];
 
     async function load(): Promise<DocsHighlight> {

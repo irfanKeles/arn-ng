@@ -6,7 +6,7 @@ import { CodeBlockComponent } from '../code/code-block.component';
 import type { DocsCodeLanguage } from '../code/docs-code';
 import { DOCS_CLIPBOARD } from './clipboard';
 
-type ExampleTabId = 'html' | 'ts';
+type ExampleTabId = 'html' | 'ts' | 'css';
 type CopyState = 'idle' | 'copied' | 'failed';
 
 interface ExampleTab {
@@ -17,7 +17,7 @@ interface ExampleTab {
 
 const HTML_TAB: ExampleTab = { id: 'html', label: 'HTML', language: 'html' };
 const TS_TAB: ExampleTab = { id: 'ts', label: 'TS', language: 'typescript' };
-const TABS: readonly ExampleTab[] = [HTML_TAB, TS_TAB];
+const CSS_TAB: ExampleTab = { id: 'css', label: 'CSS', language: 'css' };
 
 const COPY_LABELS: Record<CopyState, string> = {
   idle: 'Copy code',
@@ -28,8 +28,9 @@ const COPY_LABELS: Record<CopyState, string> = {
 let nextId = 0;
 
 /**
- * An example: the running demo (projected content) and, behind "Show code", its template and class
- * in tabs with a copy button. `html` and `ts` are the texts of the files the demo is compiled from.
+ * An example: the running demo (projected content) and, behind "Show code", its template, class
+ * and, if it has one, stylesheet in tabs with a copy button. `html`, `ts` and `css` are the texts of
+ * the files the demo is compiled from.
  */
 @Component({
   selector: 'docs-example',
@@ -49,18 +50,33 @@ export class ExampleComponent {
   readonly html = input.required<string>();
   /** The text of the example's component file. */
   readonly ts = input.required<string>();
+  /** The text of the example's stylesheet; without it there is no CSS tab. */
+  readonly css = input<string>();
 
-  protected readonly tabs = TABS;
+  protected readonly tabs = computed<readonly ExampleTab[]>(() =>
+    this.css() === undefined ? [HTML_TAB, TS_TAB] : [HTML_TAB, TS_TAB, CSS_TAB],
+  );
   protected readonly codeId = `${this.id}-code`;
   protected readonly panelId = `${this.id}-panel`;
   protected readonly open = signal(false);
-  protected readonly active = signal<ExampleTabId>('html');
+  private readonly selected = signal<ExampleTabId>('html');
+  /** The selected tab; back to the first one if the selected tab goes away. */
+  protected readonly activeTab = computed(
+    () => this.tabs().find((tab) => tab.id === this.selected()) ?? HTML_TAB,
+  );
+  protected readonly active = computed(() => this.activeTab().id);
   protected readonly copyState = signal<CopyState>('idle');
   protected readonly copyLabel = computed(() => COPY_LABELS[this.copyState()]);
-  protected readonly activeTab = computed(() => (this.active() === 'html' ? HTML_TAB : TS_TAB));
-  protected readonly activeCode = computed(() =>
-    this.active() === 'html' ? this.html() : this.ts(),
-  );
+  protected readonly activeCode = computed(() => {
+    switch (this.active()) {
+      case 'html':
+        return this.html();
+      case 'ts':
+        return this.ts();
+      case 'css':
+        return this.css() ?? '';
+    }
+  });
 
   protected tabId(id: ExampleTabId): string {
     return `${this.id}-tab-${id}`;
@@ -72,14 +88,15 @@ export class ExampleComponent {
   }
 
   protected select(id: ExampleTabId): void {
-    this.active.set(id);
+    this.selected.set(id);
     this.copyState.set('idle');
   }
 
   /** Arrow keys, Home and End move between the tabs; the tab that gets focus is selected. */
   protected onTabKeydown(event: KeyboardEvent): void {
+    const tabs = this.tabs();
     const rtl = this.directionality.value === 'rtl';
-    const current = TABS.findIndex((tab) => tab.id === this.active());
+    const current = tabs.findIndex((tab) => tab.id === this.active());
     let index: number;
 
     switch (event.key) {
@@ -93,13 +110,13 @@ export class ExampleComponent {
         index = 0;
         break;
       case 'End':
-        index = TABS.length - 1;
+        index = tabs.length - 1;
         break;
       default:
         return;
     }
 
-    const tab = TABS[(index + TABS.length) % TABS.length];
+    const tab = tabs[(index + tabs.length) % tabs.length];
 
     if (!tab) {
       return;

@@ -1,0 +1,6 @@
+.badge {
+  padding-inline: calc(var(--arn-spacing) * 2);
+  border-radius: var(--arn-radius);
+  background: var(--arn-secondary);
+  color: var(--arn-secondary-foreground);
+}

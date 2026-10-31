@@ -1,15 +1,24 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
+import type { Type } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { ArnConfigService, provideArn, type ArnConfig } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../ui/testing/a11y';
 import { DocsHighlighterService } from '../code/highlighter.service';
 import { nextTask, query, queryAs, resetDocument, text } from '../testing/dom';
 import { DOCS_CLIPBOARD, type DocsClipboard } from './clipboard';
-import { BASIC_EXAMPLE_HTML, BASIC_EXAMPLE_TS, ExampleHostComponent } from './testing/example-host';
+import {
+  BASIC_EXAMPLE_HTML,
+  BASIC_EXAMPLE_TS,
+  ExampleHostComponent,
+  STYLED_EXAMPLE_CSS,
+  STYLED_EXAMPLE_HTML,
+  STYLED_EXAMPLE_TS,
+  StyledExampleHostComponent,
+} from './testing/example-host';
 
 describe('ExampleComponent', () => {
   interface Example {
-    fixture: ComponentFixture<ExampleHostComponent>;
+    fixture: ComponentFixture<unknown>;
     element: HTMLElement;
     announced: string[];
     settle: () => Promise<void>;
@@ -17,6 +26,7 @@ describe('ExampleComponent', () => {
 
   function setup(
     clipboard: DocsClipboard | null = { writeText: () => Promise.resolve() },
+    host: Type<unknown> = ExampleHostComponent,
   ): Example {
     const announced: string[] = [];
 
@@ -37,7 +47,7 @@ describe('ExampleComponent', () => {
       ],
     });
 
-    const fixture = TestBed.createComponent(ExampleHostComponent);
+    const fixture = TestBed.createComponent(host);
 
     fixture.detectChanges();
 
@@ -416,6 +426,169 @@ describe('ExampleComponent', () => {
         await TestBed.inject(DocsHighlighterService).load();
         await example.settle();
 
+        await expectNoA11yViolations(example.element);
+      });
+    }
+  });
+
+  describe('with a CSS file', () => {
+    function setupStyled(): Example {
+      return setup(undefined, StyledExampleHostComponent);
+    }
+
+    it('adds a third tab after HTML and TS, with the same relations', async () => {
+      const example = setupStyled();
+
+      await openCode(example);
+
+      const panel = query(example.element, '[role="tabpanel"]');
+      const css = tab(example.element, 'CSS');
+
+      expect(tabs(example.element).map(text)).toEqual(['HTML', 'TS', 'CSS']);
+      expect(css.getAttribute('aria-selected')).toBe('false');
+      expect(css.tabIndex).toBe(-1);
+      expect(css.getAttribute('aria-controls')).toBe(panel.id);
+
+      css.click();
+      await example.settle();
+
+      expect(selected(example.element)).toBe('CSS');
+      expect(css.tabIndex).toBe(0);
+      expect(panel.getAttribute('aria-labelledby')).toBe(css.id);
+      expect(query(example.element, 'pre').getAttribute('aria-label')).toBe('CSS code');
+    });
+
+    it('shows each file exactly as it is compiled; the class points to the stylesheet', async () => {
+      const example = setupStyled();
+
+      await openCode(example);
+
+      expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_HTML);
+
+      tab(example.element, 'TS').click();
+      await example.settle();
+
+      expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_TS);
+      expect(STYLED_EXAMPLE_TS).toContain("styleUrl: './styled.example.css'");
+
+      tab(example.element, 'CSS').click();
+      await example.settle();
+
+      expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_CSS);
+    });
+
+    it('applies the stylesheet to the demo', () => {
+      const { element } = setupStyled();
+      const badge = query(element, 'docs-styled-example .badge');
+
+      expect(getComputedStyle(badge).borderTopLeftRadius).not.toBe('0px');
+    });
+
+    it('moves through all three tabs with the arrow keys and wraps at both ends', async () => {
+      const example = setupStyled();
+
+      await openCode(example);
+      tab(example.element, 'HTML').focus();
+
+      const visited: string[] = [];
+
+      for (let step = 0; step < 3; step++) {
+        await press(example, 'ArrowRight');
+        visited.push(selected(example.element));
+      }
+
+      expect(visited).toEqual(['TS', 'CSS', 'HTML']);
+
+      await press(example, 'ArrowLeft');
+
+      expect(selected(example.element)).toBe('CSS');
+      expect(document.activeElement).toBe(tab(example.element, 'CSS'));
+    });
+
+    it('jumps to HTML and CSS with Home and End', async () => {
+      const example = setupStyled();
+
+      await openCode(example);
+      tab(example.element, 'HTML').focus();
+      await press(example, 'End');
+
+      expect(selected(example.element)).toBe('CSS');
+      expect(document.activeElement).toBe(tab(example.element, 'CSS'));
+
+      await press(example, 'Home');
+
+      expect(selected(example.element)).toBe('HTML');
+      expect(document.activeElement).toBe(tab(example.element, 'HTML'));
+    });
+
+    it('reverses the arrow keys in a right-to-left page', async () => {
+      const example = setupStyled();
+
+      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
+      await openCode(example);
+      tab(example.element, 'HTML').focus();
+      await press(example, 'ArrowLeft');
+
+      expect(selected(example.element)).toBe('TS');
+
+      await press(example, 'ArrowRight');
+      await press(example, 'ArrowRight');
+
+      expect(selected(example.element)).toBe('CSS');
+    });
+
+    it('copies the stylesheet when the CSS tab is selected', async () => {
+      const copied: string[] = [];
+      const example = setup(
+        {
+          writeText: (value) => {
+            copied.push(value);
+
+            return Promise.resolve();
+          },
+        },
+        StyledExampleHostComponent,
+      );
+
+      await openCode(example);
+      tab(example.element, 'CSS').click();
+      await example.settle();
+      copyButton(example.element).click();
+      await example.settle();
+
+      expect(copied).toEqual([STYLED_EXAMPLE_CSS]);
+    });
+
+    it('keeps every tab at least 24px tall in compact mode', async () => {
+      const example = setupStyled();
+
+      TestBed.inject(ArnConfigService).update({ density: 'compact' });
+      await openCode(example);
+
+      expect(tabs(example.element).length).toBe(3);
+
+      for (const button of tabs(example.element)) {
+        expect(button.getBoundingClientRect().height).toBeGreaterThanOrEqual(24);
+      }
+    });
+
+    for (const mode of [
+      { name: 'light', config: { colorScheme: 'light' } },
+      { name: 'dark', config: { colorScheme: 'dark' } },
+      { name: 'RTL', config: { direction: 'rtl' } },
+      { name: 'compact', config: { density: 'compact' } },
+    ] as const satisfies readonly { name: string; config: ArnConfig }[]) {
+      it(`has no violations in ${mode.name} mode with highlighted CSS`, async () => {
+        const example = setupStyled();
+
+        TestBed.inject(ArnConfigService).update(mode.config);
+        await openCode(example);
+        tab(example.element, 'CSS').click();
+        await example.settle();
+        await TestBed.inject(DocsHighlighterService).load();
+        await example.settle();
+
+        expect(example.element.querySelectorAll('pre span').length).toBeGreaterThan(3);
         await expectNoA11yViolations(example.element);
       });
     }
