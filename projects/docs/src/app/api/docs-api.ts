@@ -37,9 +37,13 @@ export interface DocsApiToken {
   readonly description: string;
 }
 
-/** One API table; the kind decides the caption and the columns. */
+/**
+ * One API table; the kind decides the caption and the columns. `properties` has the columns of
+ * `inputs`, for fields that are not template inputs (e.g. the `ArnConfig` object).
+ */
 export type DocsApiTable =
   | { readonly kind: 'inputs'; readonly rows: readonly DocsApiInput[] }
+  | { readonly kind: 'properties'; readonly rows: readonly DocsApiInput[] }
   | { readonly kind: 'outputs'; readonly rows: readonly DocsApiOutput[] }
   | { readonly kind: 'methods'; readonly rows: readonly DocsApiMethod[] }
   | { readonly kind: 'slots'; readonly rows: readonly DocsApiSlot[] };

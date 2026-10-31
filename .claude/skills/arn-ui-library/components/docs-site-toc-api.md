@@ -61,7 +61,7 @@ Sayfa `<docs-api-table [table]="{ kind: 'inputs', rows }">` (kind: `inputs` / `o
 | `apiMismatches(type, { inputs, outputs }): string[]` | Saf karşılaştırma: `reflectComponentType` (19'da kararlı) ile gerçek `templateName`'ler (alias ve `model()`'in `<ad>Change` output'u dahil) ↔ tablo adları. Eksik, fazla, tekrar eden ad satır satır; boş liste = uyumlu |
 | `expectApiMatchesComponent` | İnce sarmalayıcı: `expect(apiMismatches(...)).toEqual([])`. Sayfa spec'i her bileşen için çağırır (SKILL §13 "eski doküman yasak") |
 
-**Boşluk:** directive'ler `reflectComponentType` ile okunamaz (`null`); `apiMismatches` bunu tek satırlık sorun olarak döndürür. Directive sayfaları (ripple, 3c) için doğrulama yolu o sayfada kararlaştırılır. Yalnız ad karşılaştırılır; tip, varsayılan ve açıklama elle tutulur.
+Directive'ler (`reflectComponentType` → `null`) 3c-1b'den beri ɵdir ile okunur; Styling tablosu `tokenMismatches` ile doğrulanır; `properties` türü: [docs-site-pages.md](docs-site-pages.md). Yalnız ad karşılaştırılır; tip, varsayılan ve açıklama elle tutulur.
 
 Henüz hiçbir sayfa kullanmıyor (bileşen yok); ilk kullanım 3c ripple / Faz 4 button.
 
@@ -117,7 +117,7 @@ Yok.
 | `api/docs-table.spec.ts` | Saf görünüm: her kind'in başlığı ve sütunları, hücre türleri, boş varsayılan, sütun başına bir hücre; token tablosu |
 | `api/api-table.component.spec.ts` | Caption bölgeyi adlandırır; `scope` col / row; kod ve düz metin hücreleri; "—" + "None"; girdi değişimi; benzersiz caption id; 320px: sayfa taşmaz, yalnız bölge taşar (`overflow-x: auto`), bölge `tabindex=0` ile odak alır ve kayan elemandır; RTL'de kod `ltr` + `isolate`, hücre `start`; axe light / dark / RTL / compact + 320px |
 | `api/token-table.component.spec.ts` | "CSS tokens" başlığı, sütunlar, adlar ve varsayılan kod olarak; axe |
-| `api/testing/expect-api.spec.ts` | `apiMismatches`: uyumlu → boş, sıra önemsiz; eksik girdi, fazla girdi, yanlış ad, `model()`'in `valueChange`'i eksik, fazla output, tekrar eden satır, tablo yok → dolu liste; directive → tek satır; sarmalayıcı uyumlu tabloda geçer |
+| `api/testing/expect-api.spec.ts` | `apiMismatches`: uyumlu → boş, sıra önemsiz; eksik girdi, fazla girdi, yanlış ad, `model()`'in `valueChange`'i eksik, fazla output, tekrar eden satır, tablo yok → dolu liste; sarmalayıcı uyumlu tabloda geçer. Directive grubu: [docs-site-pages.md](docs-site-pages.md) §8 |
 
 Sidebar seçicileri `app.component.spec.ts`'te `nav[aria-label="Documentation"]` ile daraltıldı (ikinci `nav` yüzünden).
 

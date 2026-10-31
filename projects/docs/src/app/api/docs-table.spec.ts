@@ -58,6 +58,19 @@ describe('apiTableView', () => {
     expect(slots.rows[0]?.cells).toEqual([{ text: 'An icon.', code: false }]);
   });
 
+  it('lays out properties like inputs, under a "Properties" caption', () => {
+    const rows = [
+      { name: 'size', type: 'ArnSize', default: "'md'", description: 'The size.' },
+      { name: 'messages', type: 'ArnDeepPartial<ArnMessages>', description: 'Texts.' },
+    ];
+    const properties = apiTableView({ kind: 'properties', rows });
+    const inputs = apiTableView({ kind: 'inputs', rows });
+
+    expect(properties.caption).toBe('Properties');
+    expect(properties.columns).toEqual(inputs.columns);
+    expect(properties.rows).toEqual(inputs.rows);
+  });
+
   it('keeps one cell per column after the name', () => {
     const view = apiTableView({
       kind: 'outputs',

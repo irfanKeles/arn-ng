@@ -1,4 +1,4 @@
-import type { DocsApiTable, DocsApiToken } from './docs-api';
+import type { DocsApiInput, DocsApiTable, DocsApiToken } from './docs-api';
 
 /** A cell: code is set in monospace and read left to right; empty text means "none". */
 export interface DocsTableCell {
@@ -27,18 +27,25 @@ function prose(text: string): DocsTableCell {
   return { text, code: false };
 }
 
-/** The view of an API table (inputs, outputs, methods or slots). */
+/** Inputs and properties: name, type, default and description. */
+function typedView(caption: string, rows: readonly DocsApiInput[]): DocsTableView {
+  return {
+    caption,
+    columns: ['Name', 'Type', 'Default', 'Description'],
+    rows: rows.map((row) => ({
+      name: row.name,
+      cells: [code(row.type), code(row.default), prose(row.description)],
+    })),
+  };
+}
+
+/** The view of an API table (inputs, properties, outputs, methods or slots). */
 export function apiTableView(table: DocsApiTable): DocsTableView {
   switch (table.kind) {
     case 'inputs':
-      return {
-        caption: 'Inputs',
-        columns: ['Name', 'Type', 'Default', 'Description'],
-        rows: table.rows.map((row) => ({
-          name: row.name,
-          cells: [code(row.type), code(row.default), prose(row.description)],
-        })),
-      };
+      return typedView('Inputs', table.rows);
+    case 'properties':
+      return typedView('Properties', table.rows);
     case 'outputs':
       return {
         caption: 'Outputs',
