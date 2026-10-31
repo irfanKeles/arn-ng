@@ -63,7 +63,7 @@ Sayfa `<docs-api-table [table]="{ kind: 'inputs', rows }">` (kind: `inputs` / `o
 
 Directive'ler (`reflectComponentType` → `null`) 3c-1b'den beri ɵdir ile okunur; Styling tablosu `tokenMismatches` ile doğrulanır; `properties` türü: [docs-site-pages.md](docs-site-pages.md). Yalnız ad karşılaştırılır; tip, varsayılan ve açıklama elle tutulur.
 
-Henüz hiçbir sayfa kullanmıyor (bileşen yok); ilk kullanım 3c ripple / Faz 4 button.
+İlk kullanım 3c Ripple sayfası (Inputs + CSS tokens); ilk bileşen sayfası Faz 4 button.
 
 CDK: yok (`MediaMatcher` viewport token'ında).
 

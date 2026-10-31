@@ -27,7 +27,7 @@ Tek tipli veri hem sidebar'ı hem lazy route'ları üretir.
 | Parça | Görev |
 |---|---|
 | `DocsNavCategory` `{ id, title, pages }`, `DocsNavPage` `{ slug, title, loadComponent }` | Sözleşme. `slug` site genelinde benzersiz, URL düz: `/<slug>`; boş slug ana sayfa |
-| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar (3a: Getting started → Overview) |
+| `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages.md](docs-site-pages.md) |
 | `visibleCategories(nav)` | Sayfasız kategoriyi atar (başlığı gösterilmez) |
 | `buildRoutes(nav)` | Sayfa başına `{ path, pathMatch: 'full', title, loadComponent }`; başlık `"<title> · arn-ng"` |
 | `app.routes.ts` | `buildRoutes(DOCS_NAV)` + `**` → 404 (gezintide listelenmez) |
@@ -66,7 +66,7 @@ Bileşen token'ı yok. Docs CSS'i yalnız `theme.css`'te tanımlı `--arn-*` tok
 
 Sayfa içeriği tipografisi globaldir (`styles.css`, `.docs-page …`): kabuğun kapsüllenmiş stili route bileşeninin içine ulaşamaz.
 
-Satır içi kod rozeti (`.docs-page :not(pre) > code`; kod bloklarına uygulanmaz) `inline-block`'tur: satır sonunda bölünmez (inline iken tireden sonra kırılıyordu), kapsayıcıdan genişse kendi içinde sarılır (`max-inline-size: 100%` + `border-box` + `overflow-wrap: break-word`; `anywhere` min-content'i tek karaktere indirip tablo sütununu ezerdi). Dikey padding yok, yükseklik `--arn-text-sm-line-height`'tan (satırı büyütmesin). `direction: ltr` taşır (RTL'de `@` ve `/` yer değiştirmesin); `unicode-bidi` gerekmez, atomik kutu dış paragrafta tek nötr nesnedir.
+Satır içi kod rozeti (`.docs-page :not(pre) > code`; kod bloklarına uygulanmaz) `inline-block`'tur: satır sonunda bölünmez (inline iken tireden sonra kırılıyordu), kapsayıcıdan genişse kendi içinde sarılır (`max-inline-size: 100%` + `border-box` + `overflow-wrap: break-word`; `anywhere` min-content'i tek karaktere indirip tablo sütununu ezerdi). Dikey padding yok, yükseklik `--arn-text-sm-line-height`'tan (satırı büyütmesin). `direction: ltr` taşır (RTL'de `@` ve `/` yer değiştirmesin); `unicode-bidi` gerekmez, atomik kutu dış paragrafta tek nötr nesnedir. Kendi metin rengini taşır (`--arn-foreground`): `.docs-lead` gibi silik metinde miras renk `--arn-muted` üstünde ≈4.3:1 kalıyordu (axe, Ripple sayfası 3c'de yakaladı).
 
 ## 4. Override rehberi
 

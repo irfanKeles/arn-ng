@@ -1,0 +1,116 @@
+<h1>Ripple</h1>
+
+<p class="docs-lead">
+  The <code>arnRipple</code> directive draws a wave from the pointer when an element is pressed. It
+  is off by default.
+</p>
+
+<docs-section sectionId="import" heading="Import">
+  <docs-code-block [code]="importCode" language="typescript" label="Import" />
+
+  <p>
+    The directive's styles and tokens are part of the theme file, which the application adds once.
+    Without it the wave has no style.
+  </p>
+
+  <docs-code-block [code]="themeCode" language="css" label="Theme" />
+</docs-section>
+
+<docs-section sectionId="basic" heading="Basic">
+  <p>
+    Put <code>arnRipple</code> on the element that is pressed. The element must be positioned (<code
+      >position: relative</code
+    >): the wave fills the nearest positioned ancestor, and the directive writes no style on its
+    host. The corners follow the host's <code>border-radius</code>.
+  </p>
+
+  <docs-example [html]="basic.html" [ts]="basic.ts" [css]="basic.css">
+    <docs-ripple-basic-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="turning-it-on" heading="Turning it on">
+  <p>
+    The ripple follows the <code>ripple</code> configuration: the application's
+    <code>provideArn()</code>, the nearest <code>arnConfig</code> section, or
+    <code>ArnConfigService</code> at runtime. The default is off.
+  </p>
+
+  <docs-code-block [code]="configCode" language="typescript" label="Configuration" />
+
+  <p>
+    <strong>An empty attribute is always on.</strong>&ngsp;<code>&lt;button arnRipple&gt;</code>
+    sets the input to <code>true</code>, and a value on the element is stronger than any
+    configuration, so that button ripples even where the configuration turns the ripple off. In the
+    same way <code>[arnRipple]="false"</code> is always off. Only an input that is not given
+    (<code>undefined</code>) follows the configuration. Components that use the ripple will pass
+    their own input through, so leaving it unbound there means "follow the configuration".
+  </p>
+
+  <p>Clear the checkbox below: the first button stops, the other two keep their own value.</p>
+
+  <docs-example [html]="config.html" [ts]="config.ts" [css]="config.css">
+    <docs-ripple-config-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="color" heading="Color">
+  <p>
+    The wave is the element's text color at 12%. <code>arnRippleColor</code> sets another color for
+    one element, used exactly as given: include the transparency in the value.
+  </p>
+
+  <docs-example [html]="color.html" [ts]="color.ts" [css]="color.css">
+    <docs-ripple-color-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="centered" heading="Centered">
+  <p>
+    With <code>arnRippleCentered</code> the wave starts from the middle of the element, wherever it
+    is pressed. It suits small, round targets such as icon buttons.
+  </p>
+
+  <docs-example [html]="centered.html" [ts]="centered.ts" [css]="centered.css">
+    <docs-ripple-centered-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="accessibility" heading="Accessibility">
+  <ul>
+    <li>
+      <strong>Pointer only.</strong> A mouse button, touch or pen press draws the wave; Enter, Space
+      and a programmatic <code>click()</code> do not. The focus ring is the keyboard's feedback.
+    </li>
+    <li>
+      <strong>Reduced motion.</strong> With <code>prefers-reduced-motion: reduce</code> no wave is
+      drawn. The preference is read on every press, so a change applies at once.
+    </li>
+    <li>
+      <strong>Hidden from assistive technology.</strong> The wave and its container carry
+      <code>aria-hidden="true"</code> and take no pointer events; the element's role, name and focus
+      do not change.
+    </li>
+    <li>
+      <strong>The element still needs a name.</strong> An icon-only button gets one with
+      <code>aria-label</code>, as in the centered example.
+    </li>
+  </ul>
+</docs-section>
+
+<docs-section sectionId="api" heading="API">
+  <docs-api-table [table]="inputs" />
+
+  <p>The directive has no outputs and no public methods.</p>
+</docs-section>
+
+<docs-section sectionId="styling" heading="Styling">
+  <docs-token-table [rows]="tokens" />
+
+  <p>
+    The tokens can be changed for the whole page or for one part of it; a color for a single element
+    is <code>arnRippleColor</code>.
+  </p>
+
+  <docs-code-block [code]="overrideCode" language="css" label="Overriding the tokens" />
+</docs-section>

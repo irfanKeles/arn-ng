@@ -81,6 +81,7 @@ body {
 /*
  * Inline code badge (not code blocks). An atomic box: it moves to the next line whole, and wraps
  * inside itself only when it is wider than its container. Code reads left to right in RTL too.
+ * The badge sets its own text color: muted text (.docs-lead) on --arn-muted is below 4.5:1.
  */
 .docs-page :not(pre) > code {
   display: inline-block;
@@ -89,6 +90,7 @@ body {
   padding-inline: var(--arn-spacing);
   border-radius: calc(var(--arn-radius) * 0.6);
   background: var(--arn-muted);
+  color: var(--arn-foreground);
   font-family: var(--arn-font-mono);
   font-size: var(--arn-text-sm);
   line-height: var(--arn-text-sm-line-height);

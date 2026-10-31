@@ -1,0 +1,26 @@
+/* The wave fills the nearest positioned ancestor, so the button must be positioned */
+.icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  padding: 0;
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: 50%;
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  cursor: pointer;
+}
+
+.icon {
+  inline-size: var(--arn-control-icon-size-md);
+  block-size: var(--arn-control-icon-size-md);
+}

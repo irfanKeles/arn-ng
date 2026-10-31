@@ -33,6 +33,18 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
       },
     ],
   },
+  {
+    id: 'directives',
+    title: 'Directives',
+    pages: [
+      {
+        slug: 'ripple',
+        title: 'Ripple',
+        loadComponent: () =>
+          import('../pages/ripple/ripple-page.component').then((m) => m.RipplePageComponent),
+      },
+    ],
+  },
 ];
 
 /** The categories that have at least one page. */

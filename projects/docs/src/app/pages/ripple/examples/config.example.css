@@ -1,0 +1,32 @@
+.ripple-option {
+  display: flex;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: center;
+  margin-block-end: calc(var(--arn-spacing) * 3);
+  font-size: var(--arn-text-sm);
+}
+
+.ripple-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 2);
+}
+
+/* The wave fills the nearest positioned ancestor, so the button must be positioned */
+.ripple-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-md) * var(--arn-density));
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  font: inherit;
+  font-size: var(--arn-control-font-size-md);
+  cursor: pointer;
+}

@@ -35,6 +35,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
 - [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [x] API ve Styling tablo bileşenleri (adım 3b-2): `docs-api-table`, `docs-token-table`, spec doğrulaması `apiMismatches` (`components/docs-site-toc-api.md`)
+- [x] Ripple sayfası (adım 3c): `/ripple`, dört örnek (CSS sekmeli), API ve Styling tabloları doğrulamalı (`components/docs-site-pages.md`)
 - [ ] Giriş sayfaları: Kurulum, Yapılandırma, Tema, Erişilebilirlik
 - [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
 - [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü

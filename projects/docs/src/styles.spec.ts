@@ -116,6 +116,20 @@ describe('global styles: inline code', () => {
     expect(splits()).toEqual([]);
   });
 
+  it('keeps the foreground color inside muted text, for contrast on its background', () => {
+    const badge = paragraph('', packageName);
+    const probe = create('span');
+
+    badge.parentElement?.classList.add('docs-lead');
+    probe.style.color = 'var(--arn-foreground)';
+    page.append(probe);
+
+    expect(getComputedStyle(badge.parentElement ?? page).color).not.toBe(
+      getComputedStyle(probe).color,
+    );
+    expect(getComputedStyle(badge).color).toBe(getComputedStyle(probe).color);
+  });
+
   it('leaves code blocks alone', () => {
     const block = create('pre');
     const code = create('code', 'const answer = 42;');

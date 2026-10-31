@@ -1,0 +1,12 @@
+<label class="ripple-option">
+  <input type="checkbox" [checked]="enabled()" (change)="toggle($event)" />
+  Ripple on in this section
+</label>
+
+<div class="ripple-row" arnConfig [ripple]="enabled()">
+  <button type="button" class="ripple-button" [arnRipple]="followConfig">
+    Follows the section
+  </button>
+  <button type="button" class="ripple-button" arnRipple>Always on</button>
+  <button type="button" class="ripple-button" [arnRipple]="false">Always off</button>
+</div>
