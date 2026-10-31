@@ -1,0 +1,12 @@
+<ul class="sizes">
+  @for (size of sizes; track size) {
+    <li class="size">
+      <span #box class="box" [attr.data-size]="size">
+        <span class="box-name">{{ size }}</span>
+        @if (heights()[size]; as height) {
+          <span class="box-height">{{ height }}px</span>
+        }
+      </span>
+    </li>
+  }
+</ul>

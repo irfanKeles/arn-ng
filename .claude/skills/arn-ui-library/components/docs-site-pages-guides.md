@@ -1,4 +1,4 @@
-# docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration)
+# docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming)
 
 <!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Spec yardımcıları: docs-site-pages.md. Ana dosya: docs-site.md. Kurallar: ../SKILL.md §13, §16, §18. -->
 
@@ -6,13 +6,13 @@
 
 | Alan | Değer |
 |---|---|
-| Selector | `docs-ripple-page`, `docs-installation-page`, `docs-configuration-page`; örnekler `docs-ripple-{basic,config,color,centered}-example`, `docs-configuration-{locale,sections}-example` |
+| Selector | `docs-ripple-page`, `docs-installation-page`, `docs-configuration-page`, `docs-theming-page`; örnekler `docs-ripple-{basic,config,color,centered}-example`, `docs-configuration-{locale,sections}-example`, `docs-theming-{dark-mode,sizes,density,override}-example` |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (sayfalar) |
-| Sınıf adları | `RipplePageComponent`, `InstallationPageComponent`, `ConfigurationPageComponent`, örnek bileşenleri; veri `RIPPLE_INPUTS`, `RIPPLE_TOKENS`, `LIBRARY_PEERS`, `CONFIG_PROPERTIES`, `CONFIG_SERVICE_METHODS` |
-| Dosya yolları | `projects/docs/src/app/pages/{ripple,installation,configuration}/` (sayfa + `examples/` + `*.api.ts` / `*.data.ts`) |
+| Sınıf adları | `RipplePageComponent`, `InstallationPageComponent`, `ConfigurationPageComponent`, `ThemingPageComponent`, örnek bileşenleri; veri `RIPPLE_INPUTS`, `RIPPLE_TOKENS`, `LIBRARY_PEERS`, `CONFIG_PROPERTIES`, `CONFIG_SERVICE_METHODS`, `THEMING_TOKEN_GROUPS` |
+| Dosya yolları | `projects/docs/src/app/pages/{ripple,installation,configuration,theming}/` (sayfa + `examples/` + `*.api.ts` / `*.data.ts` / `*.tokens.ts`), `pages/token-coverage.spec.ts` |
 
-Gezinti: Getting started → Overview, Installation; Guides → Configuration; Directives → Ripple. Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
+Gezinti: Getting started → Overview, Installation; Guides → Configuration, Theming; Directives → Ripple. Her sayfa spec'i 320px'te belge taşmasını sınar (`expectNoPageOverflow`, [docs-site-pages.md](docs-site-pages.md)). Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
 
 ## 2. Mimari ve CDK
 
@@ -51,7 +51,23 @@ Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-a
 | Tuzak | Density / colorScheme / direction CSS ile çalışır: `applyToDocument` ya da bölüm olmadan görsel etki yok; `<html lang>` yazılmaz |
 | Dil örneği | `locale.example`: `injectArnConfig()` → `locale()`, `messages().common` (ok, cancel, confirm), `datePicker.monthNames` / `dayNamesShort`. Başlıktaki Language Türkçe'ye geçince anında değişir (docs-site.md §7'deki boşluk kapandı) |
 | Bölüm örneği | `sections.example` önceki örneğin bileşenini üç yerde kullanır (bölümün içinde okumak için bileşen gerekir; TS sekmesi bunu söyler): uygulama, yalnız `locale="de-DE"` (adlar Almanca, metinler UYGULAMANINKİ), `locale="tr-TR"` + `ARN_MESSAGES_TR` (her zaman Türkçe) |
-| Bağlantılar | `/installation`, `/ripple`; Theming / Accessibility henüz yok |
+| Bağlantılar | `/installation`, `/ripple`, `/theming`; Accessibility henüz yok |
+
+### Theming (`/theming`)
+
+Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `overriding`. Kaynak `theme.css`, [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md). SKILL §13'ün "Yoğunluk" başlığı bu sayfanın bölümüdür.
+
+| Konu | Karar |
+|---|---|
+| Tablolar | `theming.tokens.ts`: yedi grup (palet, anlamlı renk, radius, tipografi, boşluk ve çizgi, kontrol boyutları, density), her biri kendi başlığıyla (`docs-token-table`'a `caption` girdisi; varsayılan "CSS tokens", Ripple değişmedi). Palet / radius / tipografi / boşluk "The theme file"da: altı bölümde yerleri yoktu, belgesiz bırakılmadı |
+| Doğrulama | Her grup `tokenMismatches(rows, scan, inScope)`; kapsamlar `:root`'u böler (renk = başka grubun ve sayfanın kapsamadığı her şey). Varsayılanlar boşluğu sadeleştirilmiş `theme.css` metninde `<ad>: <değer>;` (font yığınları çok satırlı) |
+| Dark mode örneği | İki bölüm, `colorScheme="light"` ve `"dark"`; her biri kendini token'larla boyar (tema boyamaz), anlamlı renk kutucukları |
+| Sizes örneği | Sahte bileşen YOK: her boyut için host formülüyle boyutlanan kesik kenarlı kutu ve `ResizeObserver` ile ölçülen gerçek yükseklik (`ngAfterViewInit` + `DestroyRef`; `afterNextRender` yok). `box-sizing: border-box` (yoksa kenarlık 2px ekliyordu; host kod örneğinde de var: Faz 4 kenarlıklı bileşen notu) |
+| Density örneği | Önceki örneğin bileşeni `density="comfortable"` ve `"compact"` bölümlerinde; ölçü canlı, başlıktaki Density de anında yansır |
+| Override örneği | `.brand` `--arn-primary` ve `--arn-radius`'ı ezer (`!important` / `::ng-deep` yok; spec CSS metninde arar). Tuzak görünür: `calc(var(--arn-radius) * 0.8)` izler, `--arn-radius-md` izlemez |
+| Bağlantılar | `/configuration`; Configuration ve Installation'dan Theming'e |
+
+**Token kapsamı değişmezi** (`pages/token-coverage.spec.ts`): `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da açık izin listesinde (nerede belgelendiği notuyla) olmalı; token tek sayfada belgelenir; listedeki her ad temada var ve hiçbir sayfada yok. Bugün listede yalnız `--arn-z-*` (Overlay sayfası gelene kadar, tokens.md §3). Yeni sayfanın tabloları `DOCUMENTED`'a eklenir.
 
 ### axe ile bulunan kusur (Ripple)
 
@@ -76,7 +92,7 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 ## 7. Kısıtlar ve kararlar
 
 - Sayfa metni yalnız koddan doğrulanan iddiaları taşır (ör. "kök entry point boş": `public-api.ts`; "provideArn'sız varsayılan": `ARN_ROOT_CONFIG` `optional`).
-- **Bundle (prod, ölçüldü):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
+- **Bundle (prod, ölçüldü):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. Theming ile 259.90 → 260.09 kB ham (72.96 → 73.02 kB aktarım; `main` +0.11 nav, ortak parça +0.08); Theming parçası 32.83 kB ham / 7.56 kB aktarım. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
 
 ## 8. Testler
 
@@ -88,6 +104,10 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 | `pages/configuration/configuration-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/installation`, `/ripple`), dört öncelik seviyesi, CSS tuzağı; alanlar = `ArnConfigDirective` girdileri, varsayılanlar, servis metotları; Properties + Methods; iki örnek; axe dört mod |
 | `pages/configuration/examples/locale.example.spec.ts` | İngilizce varsayılan; Türkçe'ye anında geçiş (Tamam · Vazgeç · Onayla, Ocak, Paz); yalnız `de-DE` adları değiştirir; axe |
 | `pages/configuration/examples/sections.example.spec.ts` | Bölüm başlıkla adlı; üç sütun; uygulama Türkçe olunca `de-DE` metinleri miras alır, `tr-TR` sabit; axe |
+| `pages/theming/theming-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar + `/configuration`, dört örnek, tuzak metni; yedi grup × (`tokenMismatches` + temadaki varsayılan); yedi ayrı başlık; 320px; axe dört mod |
+| `pages/theming/examples/*.example.spec.ts` | sizes: beş kutu, yükseklik token'a eşit ve gösterilen, density canlı (compact md 31.5, xs 24); density: iki bölüm, 24/32/36/40/48 ve 24/28/31.5/35/42, yazı aynı; dark-mode: `.light` / `.dark`, bölüm ve primary kutucuğu kendi şemasında, sayfa koyuyken de; override: sınıf, `!important` / `::ng-deep` yok, primary yalnız `.brand`'de, `calc` köşesi izler, `-md` izlemez; hepsinde axe |
+| `pages/token-coverage.spec.ts` | `:root`'taki her `--arn-*` bir tabloda ya da izin listesinde; tek sayfada; liste dürüst |
+| Sayfa spec'leri (dördü) | 320px'te belge taşmaz (`expectNoPageOverflow`) |
 | `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground`; `.docs-note` kenar + ton |
 | `app.component.spec.ts` | Dört sayfa sidebar'da; açık çekmece EN AZ gövde boyu (üç kategoriyle kısa sayfadan uzun: eşitlik varsayımı düzeltildi) |
 

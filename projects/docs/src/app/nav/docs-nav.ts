@@ -53,6 +53,12 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
             (m) => m.ConfigurationPageComponent,
           ),
       },
+      {
+        slug: 'theming',
+        title: 'Theming',
+        loadComponent: () =>
+          import('../pages/theming/theming-page.component').then((m) => m.ThemingPageComponent),
+      },
     ],
   },
   {

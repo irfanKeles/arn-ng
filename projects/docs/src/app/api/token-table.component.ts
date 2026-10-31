@@ -12,6 +12,8 @@ import { DocsTableComponent } from './docs-table.component';
 })
 export class TokenTableComponent {
   readonly rows = input.required<readonly DocsApiToken[]>();
+  /** Names the table and its scroll region; give each table on a page its own. */
+  readonly caption = input('CSS tokens');
 
-  protected readonly view = computed(() => tokenTableView(this.rows()));
+  protected readonly view = computed(() => tokenTableView(this.rows(), this.caption()));
 }

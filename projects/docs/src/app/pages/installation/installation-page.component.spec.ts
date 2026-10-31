@@ -8,6 +8,7 @@ import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
 import { CodeBlockComponent } from '../../code/code-block.component';
 import { query, resetDocument, text } from '../../testing/dom';
 import { unknownInternalLinks } from '../../testing/links';
+import { expectNoPageOverflow } from '../../testing/page-overflow';
 import { DocsTocService } from '../../toc/docs-toc.service';
 import { A11Y_MODES } from '../../testing/render-example';
 import { InstallationPageComponent } from './installation-page.component';
@@ -73,12 +74,14 @@ describe('InstallationPageComponent', () => {
       expect(unknownInternalLinks((await render()).element)).toEqual([]);
     });
 
-    it('links to the Configuration page for the details', async () => {
+    it('links to the Configuration and Theming pages for the details', async () => {
       const { element } = await render();
+      const hrefs = Array.from(element.querySelectorAll('a[href]')).map((link) =>
+        link.getAttribute('href'),
+      );
 
-      expect(
-        Array.from(element.querySelectorAll('a[href]')).map((link) => link.getAttribute('href')),
-      ).toContain('/configuration');
+      expect(hrefs).toContain('/configuration');
+      expect(hrefs).toContain('/theming');
     });
 
     it('has no example blocks, only code blocks', async () => {
@@ -149,6 +152,14 @@ describe('InstallationPageComponent', () => {
       expect(ArnConfigService).toBeDefined();
       expect(ArnRippleDirective).toBeDefined();
       expect(ARN_MESSAGES_TR.common?.cancel).toBe('Vazgeç');
+    });
+  });
+
+  describe('layout', () => {
+    it('does not make a 320px page scroll sideways', async () => {
+      const { fixture, element } = await render();
+
+      await expectNoPageOverflow(element, () => fixture.whenStable());
     });
   });
 

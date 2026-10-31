@@ -1,0 +1,123 @@
+<h1>Theming</h1>
+
+<p class="docs-lead">
+  Colors, sizes and density are CSS custom properties in one file,
+  <code>&#64;arn-ng/ui/theme.css</code>. Change a token and every component that uses it follows.
+</p>
+
+<docs-section sectionId="theme-file" heading="The theme file">
+  <p>
+    Import the theme once, after which every token is available on <code>:root</code>. It defines
+    tokens, the color schemes and the few classes the library needs; it paints none of your
+    elements, the page included. The values follow shadcn/ui's neutral theme.
+  </p>
+
+  <docs-code-block [code]="importCode" language="css" label="Theme" />
+
+  <p>
+    Tokens come in layers. The <strong>palette</strong> holds raw values;
+    <strong>semantic</strong> tokens such as <code>--arn-primary</code> point to the palette and are
+    what components use. A component computes its own tokens, such as its height, on its own element
+    from the semantic ones. The shared scales:
+  </p>
+
+  <docs-token-table [rows]="paletteTokens" caption="Palette" />
+  <docs-token-table [rows]="radiusTokens" caption="Radius" />
+  <docs-token-table [rows]="typographyTokens" caption="Typography" />
+  <docs-token-table [rows]="spacingTokens" caption="Spacing and lines" />
+
+  <p>
+    <code>--arn-radius-sm</code> and <code>--arn-text-sm</code> are steps of a scale, not the
+    <code>sm</code> size of a component.
+  </p>
+</docs-section>
+
+<docs-section sectionId="color-tokens" heading="Color tokens">
+  <p>
+    The semantic colors have shadcn/ui's names with the <code>--arn-</code> prefix (<code
+      >--arn-primary</code
+    >
+    is shadcn's <code>--primary</code>). Each one has a light and a dark value in a single
+    <code>light-dark()</code>.
+  </p>
+
+  <docs-token-table [rows]="colorTokens" caption="Semantic colors" />
+</docs-section>
+
+<docs-section sectionId="dark-mode" heading="Dark mode">
+  <p>
+    Without a class the theme follows the system's preference. <code>.dark</code> or
+    <code>.light</code> on an element forces a scheme for everything inside it, and they nest. The
+    <code>colorScheme</code> setting writes these classes for you, on <code>&lt;html&gt;</code> with
+    <code>applyToDocument</code> or on a section with <code>arnConfig</code> (see
+    <a routerLink="/configuration">Configuration</a>).
+  </p>
+
+  <docs-code-block [code]="schemeCode" language="css" label="Color schemes" />
+
+  <p>Two sections, one light and one dark, with the same tokens:</p>
+
+  <docs-example [html]="dark.html" [ts]="dark.ts" [css]="dark.css">
+    <docs-theming-dark-mode-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="sizes" heading="Sizes">
+  <p>
+    Components come in five sizes, <code>xs</code> to <code>xl</code>, <code>md</code> by default.
+    One set of control tokens gives each size its height, inline padding, font size, icon size and
+    gap, so a button, an input and a select of the same size line up. A component applies them to
+    its own element:
+  </p>
+
+  <docs-code-block [code]="hostCode" language="css" label="A component's host" />
+
+  <p>
+    The boxes below are sized exactly that way and show the height the browser gives them. No height
+    drops below <code>--arn-control-min-size</code>, 24px, the WCAG 2.2 minimum target size.
+  </p>
+
+  <docs-example [html]="sizes.html" [ts]="sizes.ts" [css]="sizes.css">
+    <docs-theming-sizes-example />
+  </docs-example>
+
+  <docs-token-table [rows]="sizeTokens" caption="Control sizes" />
+</docs-section>
+
+<docs-section sectionId="density" heading="Density">
+  <p>
+    Density makes controls shorter and narrower without making their text smaller.
+    <code>data-density="compact"</code> on an element sets <code>--arn-density</code> to 0.875 for
+    everything inside it; the factor applies to height and inline padding only, and the 24px floor
+    still holds, so <code>xs</code> keeps its height. The <code>density</code> setting writes the
+    attribute, like the color scheme.
+  </p>
+
+  <docs-example [html]="density.html" [ts]="density.ts" [css]="density.css">
+    <docs-theming-density-example />
+  </docs-example>
+
+  <docs-token-table [rows]="densityTokens" caption="Density" />
+</docs-section>
+
+<docs-section sectionId="overriding" heading="Overriding tokens">
+  <p>
+    Set a token after the theme import to change it everywhere, or on a class to change it for one
+    part of the page. No <code>!important</code> is needed: the same specificity and a later rule
+    are enough.
+  </p>
+
+  <docs-code-block [code]="overrideCode" language="css" label="Overriding" />
+
+  <p>
+    <strong>Derived tokens do not follow a base changed in a part of the page.</strong> A
+    <code>var()</code> is resolved where the token is defined, on <code>:root</code>, so changing
+    <code>--arn-radius</code> on <code>.brand</code> leaves <code>--arn-radius-md</code> as it was.
+    Compute from the base where you use it, as components do: below, the first corner follows
+    <code>.brand</code>, the second keeps the theme's radius.
+  </p>
+
+  <docs-example [html]="override.html" [ts]="override.ts" [css]="override.css">
+    <docs-theming-override-example />
+  </docs-example>
+</docs-section>

@@ -7,6 +7,7 @@ import { expectApiMatchesComponent } from '../../api/testing/expect-api';
 import { THEME_CSS, themeStyleSheet } from '../../api/testing/theme-source';
 import { scanTokens, tokenMismatches } from '../../api/testing/token-mismatches';
 import { unknownInternalLinks } from '../../testing/links';
+import { expectNoPageOverflow } from '../../testing/page-overflow';
 import { query, queryAs, resetDocument, text } from '../../testing/dom';
 import { DocsTocService } from '../../toc/docs-toc.service';
 import basicCss from './examples/basic.example.css?source' with { loader: 'text' };
@@ -156,6 +157,14 @@ describe('RipplePageComponent', () => {
         ...RIPPLE_INPUTS.map((row) => row.name),
         ...RIPPLE_TOKENS.map((row) => row.name),
       ]);
+    });
+  });
+
+  describe('layout', () => {
+    it('does not make a 320px page scroll sideways', async () => {
+      const { fixture, element } = await render();
+
+      await expectNoPageOverflow(element, () => fixture.whenStable());
     });
   });
 

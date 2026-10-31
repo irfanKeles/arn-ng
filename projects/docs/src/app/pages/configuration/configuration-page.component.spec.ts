@@ -5,6 +5,7 @@ import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
 import { apiMismatches } from '../../api/testing/expect-api';
 import { query, resetDocument, text } from '../../testing/dom';
 import { unknownInternalLinks } from '../../testing/links';
+import { expectNoPageOverflow } from '../../testing/page-overflow';
 import { A11Y_MODES } from '../../testing/render-example';
 import { DocsTocService } from '../../toc/docs-toc.service';
 import { ConfigurationPageComponent } from './configuration-page.component';
@@ -72,6 +73,7 @@ describe('ConfigurationPageComponent', () => {
       expect(unknownInternalLinks(element)).toEqual([]);
       expect(hrefs).toContain('/installation');
       expect(hrefs).toContain('/ripple');
+      expect(hrefs).toContain('/theming');
     });
 
     it('states the four levels of precedence, strongest first', async () => {
@@ -161,6 +163,14 @@ describe('ConfigurationPageComponent', () => {
       expect(
         Array.from(examples).map((example) => example.querySelector('*:first-child > *')?.tagName),
       ).toEqual(['DOCS-CONFIGURATION-LOCALE-EXAMPLE', 'DOCS-CONFIGURATION-SECTIONS-EXAMPLE']);
+    });
+  });
+
+  describe('layout', () => {
+    it('does not make a 320px page scroll sideways', async () => {
+      const { fixture, element } = await render();
+
+      await expectNoPageOverflow(element, () => fixture.whenStable());
     });
   });
 

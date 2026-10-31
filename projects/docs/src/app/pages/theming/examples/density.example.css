@@ -1,0 +1,17 @@
+.densities {
+  display: grid;
+  gap: calc(var(--arn-spacing) * 4);
+}
+
+.density {
+  min-inline-size: 0;
+  padding: calc(var(--arn-spacing) * 3);
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+}
+
+.density-title {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-semibold);
+}

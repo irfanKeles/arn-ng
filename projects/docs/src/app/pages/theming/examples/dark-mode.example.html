@@ -1,0 +1,20 @@
+<div class="schemes">
+  @for (scheme of ['light', 'dark']; track scheme) {
+    <section
+      class="scheme"
+      [attr.aria-labelledby]="'scheme-' + scheme"
+      arnConfig
+      [colorScheme]="scheme === 'dark' ? 'dark' : 'light'"
+    >
+      <h3 [id]="'scheme-' + scheme" class="scheme-title">colorScheme="{{ scheme }}"</h3>
+      <ul class="swatches">
+        @for (token of tokens; track token) {
+          <li class="swatch-row">
+            <span class="swatch" [style.background]="'var(' + token + ')'"></span>
+            <code>{{ token }}</code>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+</div>

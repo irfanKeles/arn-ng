@@ -1,0 +1,44 @@
+.schemes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: calc(var(--arn-spacing) * 4);
+}
+
+/* The theme paints nothing: each section paints itself with the tokens */
+.scheme {
+  min-inline-size: 0;
+  padding: calc(var(--arn-spacing) * 3);
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+}
+
+.scheme-title {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-semibold);
+}
+
+.swatches {
+  display: grid;
+  gap: calc(var(--arn-spacing) * 1.5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--arn-text-sm);
+}
+
+.swatch-row {
+  display: flex;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: center;
+}
+
+.swatch {
+  flex: none;
+  inline-size: calc(var(--arn-spacing) * 6);
+  block-size: calc(var(--arn-spacing) * 6);
+  border: var(--arn-border-width) solid var(--arn-foreground);
+  border-radius: calc(var(--arn-radius) * 0.6);
+}

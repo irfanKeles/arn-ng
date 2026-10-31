@@ -43,6 +43,7 @@ Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri (`ArnSize`, `ArnDensity`
 - Density yalnızca yükseklik ve `padding-inline`'a uygulanır. Yazı, ikon ve gap'e uygulanmaz.
 - `--arn-<bileşen>-height` `max()`'li değeri taşır; taban yalnızca yüksekliğe uygulanır.
 - Radius adımı host'ta `--arn-radius`'tan hesaplanır; `--arn-radius-md` KULLANILMAZ (container'da tabanı izlemez).
+- Kenarlıklı host `box-sizing: border-box` olmalı: `content-box`'ta kenarlık yüksekliğe eklenir (1px kenarlıkla md 36 → 38px; Theming sayfasının ölçen örneği yakaladı, 3c). Faz 4 button / input bunu host'ta yazar.
 
 ## 3. Token'lar
 
@@ -116,4 +117,4 @@ Yok.
 - Kod: `projects/ui/theme.css`
 - Ana dosya: [tokens.md](tokens.md)
 - Kaynaklar: https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/button.tsx , https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/input.tsx , https://www.w3.org/TR/WCAG22/#target-size-minimum
-- Doküman sayfası: Faz 3 (Yoğunluk, Tema ve token'lar)
+- Doküman sayfası: `/theming` ("Sizes", "Density"; [docs-site-pages-guides.md](docs-site-pages-guides.md))

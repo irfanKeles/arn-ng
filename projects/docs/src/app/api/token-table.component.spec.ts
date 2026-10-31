@@ -37,6 +37,20 @@ describe('TokenTableComponent', () => {
     );
   });
 
+  it('takes its own caption, which also names the region', async () => {
+    const fixture = TestBed.createComponent(TokenTableComponent);
+
+    fixture.componentRef.setInput('rows', TOKENS);
+    fixture.componentRef.setInput('caption', 'Radius');
+    await fixture.whenStable();
+
+    const element = fixture.nativeElement as HTMLElement;
+    const caption = query(element, 'caption');
+
+    expect(text(caption)).toBe('Radius');
+    expect(query(element, '[role="region"]').getAttribute('aria-labelledby')).toBe(caption.id);
+  });
+
   it('sets the default as code', async () => {
     const element = await create();
 

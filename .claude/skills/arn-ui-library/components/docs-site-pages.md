@@ -9,8 +9,8 @@
 | Selector | Yok |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (spec yardımcıları + tablo türü) |
-| Sınıf adları | `apiMismatches` (directive desteğiyle), `directiveTemplateNames`, `scanTokens`, `tokenMismatches`, `themeStyleSheet`, `unknownInternalLinks`, `docsPaths`, `renderExample`, `A11Y_MODES`; tipler `DocsApiTemplateNames`, `DocsTokenScan`, `RenderedExample`; tablo türü `properties` |
-| Dosya yolları | `projects/docs/src/app/api/testing/` (`expect-api.ts`, `token-mismatches.ts`, `theme-source.ts`), `testing/links.ts`, `testing/render-example.ts`, `api/docs-api.ts`, `api/docs-table.ts` |
+| Sınıf adları | `apiMismatches` (directive desteğiyle), `directiveTemplateNames`, `scanTokens`, `tokenMismatches`, `themeStyleSheet`, `unknownInternalLinks`, `docsPaths`, `renderExample`, `A11Y_MODES`, `pageOverflow`, `expectNoPageOverflow`; tipler `DocsApiTemplateNames`, `DocsTokenScan`, `RenderedExample`; tablo türü `properties` |
+| Dosya yolları | `projects/docs/src/app/api/testing/` (`expect-api.ts`, `token-mismatches.ts`, `theme-source.ts`), `testing/links.ts`, `testing/render-example.ts`, `testing/page-overflow.ts`, `api/docs-api.ts`, `api/docs-table.ts` |
 
 Adım 3c-1b ve sonrası. Yardımcılar yalnız spec'lerde kullanılır (`properties` bir tablo türü); üretim paketine girmez. Sayfalar (Ripple, Installation, Configuration…): [docs-site-pages-guides.md](docs-site-pages-guides.md).
 
@@ -54,6 +54,12 @@ Angular 19'da ɵdir: `inputs: { arnRipple: ['arnRipple', 1, null], … }`, `outp
 
 `testing/render-example.ts` (Configuration ile ortak oldu, önce Ripple klasöründeydi): `provideArn({ applyToDocument: true })` + isteğe bağlı config ile render; `A11Y_MODES` light / dark / RTL / compact. Ripple'a özgü işaretçi ve klavye yardımcıları `pages/ripple/examples/ripple-example.testing.ts`'te kalır (ortakları yeniden dışa açar).
 
+### Sayfa taşması: `pageOverflow`, `expectNoPageOverflow`
+
+`testing/page-overflow.ts`. Her sayfa spec'inde (ve bundan sonraki her sayfada) "320px'te sayfa taşmaz" testi. Eleman yerinden alınır, taban ölçülür (`max(scrollWidth, clientWidth)`: Karma'nın Jasmine raporlayıcısı pencereden birkaç px geniş), sonra **pencerenin sağ kenarına yaslı** 320px'lik kapsayıcıya konur ve `document.documentElement.scrollWidth`'in tabandan büyümediği ölçülür. Sağ kenara yaslamak şart: Karma penceresi ~734px; ortada duran 320px kapsayıcıdan kaçan metin pencere içinde kalır ve belgeyi genişletmez (ilk sürüm 3c fix'teki hatayı bu yüzden kaçırdı; yaslı sürüm 63px yakaladı). `.docs-page.scrollWidth` ölçülmez: kaydırma kapsayıcısından kaçan mutlak eleman atalarını genişletmez. Yalnız LTR.
+
+Örnek bloğuna önleyici `position: relative` VERİLMEZ (karar): konumsuz host, örnek CSS'inde eksik `position: relative`'i görünür kılar; konumlamak "kopyalanınca çalışır" kuralının ihlalini maskelerdi.
+
 ## 3. Token'lar
 
 Yok.
@@ -87,6 +93,7 @@ Yok.
 | `api/testing/token-mismatches.spec.ts` | Fixture CSS: `@layer`, `@media` içinde `@supports`, seçici listesi, iç içe kural, `:root` dışı tanım, `--docs-*` atlanır; karşılaştırma: uyumlu, sıra, eksik, bilinmeyen, tekrar / kapsam dışı / `--arn-` olmayan, yalnız `:root` dışı, hem `:root` hem dışı; gerçek `theme.css`: metin okunur, ripple token'ları uyumlu, `:root` dışı yalnız `--arn-density` |
 | `api/docs-table.spec.ts` | `properties`: başlık "Properties", sütun ve satırlar `inputs` ile aynı |
 | `testing/links.spec.ts` | Slug → yol; gerçek gezinti; var olan sayfa (fragment / sorgu ile) kabul; dış bağlantı atlanır; olmayan sayfa, çıplak fragment ve göreli yol → dolu liste |
+| `testing/page-overflow.spec.ts` | Sarılan metin 0; kendi kapsayıcısında kayan geniş içerik 0; konumsuz kaydırma kapsayıcısından kaçan mutlak eleman > 0, kapsayıcı konumlanınca 0; eleman yerine döner |
 
 ## 9. Bağlantılar
 

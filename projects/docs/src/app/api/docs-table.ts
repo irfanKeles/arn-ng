@@ -73,10 +73,13 @@ export function apiTableView(table: DocsApiTable): DocsTableView {
   }
 }
 
-/** The view of the Styling table: the component's CSS tokens. */
-export function tokenTableView(rows: readonly DocsApiToken[]): DocsTableView {
+/** The view of a Styling table: CSS tokens, under a caption that tells several tables apart. */
+export function tokenTableView(
+  rows: readonly DocsApiToken[],
+  caption = 'CSS tokens',
+): DocsTableView {
   return {
-    caption: 'CSS tokens',
+    caption,
     columns: ['Name', 'Default', 'Description'],
     rows: rows.map((row) => ({
       name: row.name,

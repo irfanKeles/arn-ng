@@ -1,0 +1,74 @@
+.sizes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: flex-start;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/*
+ * A box sized like a component host: height and inline padding follow density, the font does not.
+ * border-box: the border is part of the height, as it must be for a bordered control.
+ */
+.box {
+  box-sizing: border-box;
+  display: inline-flex;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: center;
+  border: var(--arn-border-width) dashed var(--arn-muted-foreground);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-muted);
+  color: var(--arn-foreground);
+  white-space: nowrap;
+}
+
+.box-name {
+  font-weight: var(--arn-font-weight-semibold);
+}
+
+.box[data-size='xs'] {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-xs) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-xs) * var(--arn-density));
+  font-size: var(--arn-control-font-size-xs);
+}
+
+.box[data-size='sm'] {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  font-size: var(--arn-control-font-size-sm);
+}
+
+.box[data-size='md'] {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-md) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-md) * var(--arn-density));
+  font-size: var(--arn-control-font-size-md);
+}
+
+.box[data-size='lg'] {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-lg) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-lg) * var(--arn-density));
+  font-size: var(--arn-control-font-size-lg);
+}
+
+.box[data-size='xl'] {
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-xl) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-xl) * var(--arn-density));
+  font-size: var(--arn-control-font-size-xl);
+}

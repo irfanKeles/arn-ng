@@ -99,7 +99,7 @@ describe('AppComponent', () => {
 
       expect(
         Array.from(element.querySelectorAll(`${SIDEBAR_NAV} a`)).map((link) => text(link)),
-      ).toEqual(['Overview', 'Installation', 'Configuration', 'Ripple']);
+      ).toEqual(['Overview', 'Installation', 'Configuration', 'Theming', 'Ripple']);
     });
 
     it('starts with a skip link that moves focus to main', async () => {
@@ -507,7 +507,7 @@ describe('AppComponent', () => {
         `header a, header button, header select, ${SIDEBAR_NAV} a`,
       );
 
-      expect(targets.length).toBe(10);
+      expect(targets.length).toBe(11);
 
       for (const target of Array.from(targets)) {
         expect(target.getBoundingClientRect().height).toBeGreaterThanOrEqual(minimum);

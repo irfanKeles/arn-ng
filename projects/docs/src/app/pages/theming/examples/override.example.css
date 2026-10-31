@@ -1,0 +1,44 @@
+/* Overriding semantic tokens for one part of the page: a class, nothing forced */
+.brand {
+  --arn-primary: light-dark(oklch(45% 0.18 265deg), oklch(78% 0.12 265deg));
+  --arn-primary-foreground: light-dark(var(--arn-white), var(--arn-neutral-950));
+  --arn-radius: 0.125rem;
+}
+
+.panels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+  gap: calc(var(--arn-spacing) * 4);
+}
+
+.panel {
+  min-inline-size: 0;
+  padding: calc(var(--arn-spacing) * 3);
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+}
+
+.panel-title {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  font-size: var(--arn-text-sm);
+  font-weight: var(--arn-font-weight-semibold);
+}
+
+.primary {
+  margin-block: 0 calc(var(--arn-spacing) * 2);
+  padding: calc(var(--arn-spacing) * 2) calc(var(--arn-spacing) * 3);
+  background: var(--arn-primary);
+  color: var(--arn-primary-foreground);
+  font-family: var(--arn-font-mono);
+  font-size: var(--arn-text-xs);
+}
+
+/* Computed here, from the base in effect here: follows .brand's --arn-radius */
+.follows {
+  border-radius: calc(var(--arn-radius) * 0.8);
+}
+
+/* A step resolved on :root: keeps the theme's radius inside .brand too */
+.step {
+  border-radius: var(--arn-radius-md);
+}
