@@ -1,10 +1,34 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
-import { query, queryAs } from '../../testing/dom';
+import { query, queryAs, resetDocument } from '../../testing/dom';
+import { expectNoPageOverflow } from '../../testing/page-overflow';
+import { A11Y_MODES } from '../../testing/render-example';
 import { DocsTocService } from '../../toc/docs-toc.service';
 import { OverviewPageComponent } from './overview-page.component';
 
 describe('OverviewPageComponent', () => {
+  interface Page {
+    fixture: ComponentFixture<OverviewPageComponent>;
+    element: HTMLElement;
+  }
+
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideArn({ applyToDocument: true })] });
+  });
+
+  afterEach(() => {
+    resetDocument(document);
+  });
+
+  async function render(): Promise<Page> {
+    const fixture = TestBed.createComponent(OverviewPageComponent);
+
+    await fixture.whenStable();
+
+    return { fixture, element: fixture.nativeElement as HTMLElement };
+  }
+
   function create(): HTMLElement {
     const fixture = TestBed.createComponent(OverviewPageComponent);
 
@@ -61,7 +85,24 @@ describe('OverviewPageComponent', () => {
     expect(create().classList.contains('docs-page')).toBe(true);
   });
 
-  it('has no accessibility violations', async () => {
-    await expectNoA11yViolations(create());
+  describe('layout', () => {
+    it('does not make a 320px page scroll sideways', async () => {
+      const { fixture, element } = await render();
+
+      await expectNoPageOverflow(element, () => fixture.whenStable());
+    });
+  });
+
+  describe('accessibility', () => {
+    for (const mode of A11Y_MODES) {
+      it(`has no violations in ${mode.name} mode`, async () => {
+        const { fixture, element } = await render();
+
+        TestBed.inject(ArnConfigService).update(mode.config);
+        await fixture.whenStable();
+
+        await expectNoA11yViolations(element);
+      });
+    }
   });
 });

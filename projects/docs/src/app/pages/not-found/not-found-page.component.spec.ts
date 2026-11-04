@@ -1,9 +1,12 @@
-import { TestBed } from '@angular/core/testing';
+import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
+import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
 import { routes } from '../../app.routes';
 import { query, queryAs, resetDocument, text } from '../../testing/dom';
+import { expectNoPageOverflow } from '../../testing/page-overflow';
+import { A11Y_MODES } from '../../testing/render-example';
 import { NotFoundPageComponent } from './not-found-page.component';
 
 describe('NotFoundPageComponent', () => {
@@ -17,8 +20,21 @@ describe('NotFoundPageComponent', () => {
     return harness.routeNativeElement;
   }
 
+  async function render(): Promise<{
+    fixture: ComponentFixture<NotFoundPageComponent>;
+    element: HTMLElement;
+  }> {
+    const fixture = TestBed.createComponent(NotFoundPageComponent);
+
+    await fixture.whenStable();
+
+    return { fixture, element: fixture.nativeElement as HTMLElement };
+  }
+
   beforeEach(() => {
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.configureTestingModule({
+      providers: [provideRouter(routes), provideArn({ applyToDocument: true })],
+    });
   });
 
   afterEach(() => {
@@ -57,11 +73,24 @@ describe('NotFoundPageComponent', () => {
     expect(getComputedStyle(icon).scale).toBe('-1 1');
   });
 
-  it('has no accessibility violations', async () => {
-    const fixture = TestBed.createComponent(NotFoundPageComponent);
+  describe('layout', () => {
+    it('does not make a 320px page scroll sideways', async () => {
+      const { fixture, element } = await render();
 
-    fixture.detectChanges();
+      await expectNoPageOverflow(element, () => fixture.whenStable());
+    });
+  });
 
-    await expectNoA11yViolations(fixture.nativeElement as HTMLElement);
+  describe('accessibility', () => {
+    for (const mode of A11Y_MODES) {
+      it(`has no violations in ${mode.name} mode`, async () => {
+        const { fixture, element } = await render();
+
+        TestBed.inject(ArnConfigService).update(mode.config);
+        await fixture.whenStable();
+
+        await expectNoA11yViolations(element);
+      });
+    }
   });
 });

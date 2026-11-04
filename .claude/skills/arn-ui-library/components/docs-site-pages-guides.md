@@ -118,13 +118,13 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 | `pages/configuration/examples/locale.example.spec.ts` | İngilizce varsayılan; Türkçe'ye anında geçiş (Tamam · Vazgeç · Onayla, Ocak, Paz); yalnız `de-DE` adları değiştirir; axe |
 | `pages/configuration/examples/sections.example.spec.ts` | Bölüm başlıkla adlı; üç sütun; uygulama Türkçe olunca `de-DE` metinleri miras alır, `tr-TR` sabit; axe |
 | `pages/theming/theming-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar + `/configuration`, dört örnek, tuzak metni; yedi grup × (`tokenMismatches` + temadaki varsayılan); yedi ayrı başlık; 320px; axe dört mod |
-| `pages/theming/examples/*.example.spec.ts` | sizes: beş kutu, yükseklik token'a eşit ve gösterilen, density canlı (compact md 31.5, xs 24); density: iki bölüm, 24/32/36/40/48 ve 24/28/31.5/35/42, yazı aynı; dark-mode: `.light` / `.dark`, bölüm ve primary kutucuğu kendi şemasında, sayfa koyuyken de; override: sınıf, `!important` / `::ng-deep` yok, primary yalnız `.brand`'de, `calc` köşesi izler, `-md` izlemez; hepsinde axe |
+| `pages/theming/examples/*.example.spec.ts` | sizes: beş kutu, yükseklik token'a eşit ve gösterilen, density canlı (compact md ve xs); density: iki bölüm, beş yükseklik, yazı aynı. Beklenen yükseklikler `controlHeight` (`sizes.example.testing.ts`) ile `max(1.5rem, yükseklik × density) × kök font-size`'tan hesaplanır, 16px'e bağlı sabit yok; dark-mode: `.light` / `.dark`, bölüm ve primary kutucuğu kendi şemasında, sayfa koyuyken de; override: sınıf, `!important` / `::ng-deep` yok, primary yalnız `.brand`'de, `calc` köşesi izler, `-md` izlemez; hepsinde axe |
 | `pages/token-coverage.spec.ts` | `:root`'taki her `--arn-*` bir tabloda ya da izin listesinde; tek sayfada; liste dürüst |
 | `pages/accessibility/accessibility-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/theming`, `/configuration`, `/ripple`); örnek ve tablo yok, beş kod bloğu; "No components yet", "guarantee" yok; dört sınır; halka kontrastı temadan hesaplanır (4.7 / 4.2), 24px ve 3px temada; 320px; axe dört mod |
-| Sayfa spec'leri (beşi) | 320px'te belge taşmaz (`expectNoPageOverflow`) |
+| Sayfa spec'leri (yedisi: bu beşi + Overview, 404) | 320px'te belge taşmaz (`expectNoPageOverflow`, varsayılan modda ayrı `it`: yardımcı yalnız LTR); axe dört mod (`A11Y_MODES`, `ArnConfigService.update`) |
 | `app.component.spec.ts` (3c sonu) | Altı sayfa, 12 hedef. Düzen testi özellik tabanlı (ayrı test commit'i): sidebar `align-self: start` + `position: sticky`; `main` gövdeye, gövde kabuğun altına eşit. Yükseklik karşılaştırması kaldırıldı: uzun listede `main` sidebar'a esniyor, sonuç pencereye bağlıydı (CI #25) |
 | `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground`; `.docs-note` kenar + ton |
-| `app.component.spec.ts` | Dört sayfa sidebar'da; açık çekmece EN AZ gövde boyu (üç kategoriyle kısa sayfadan uzun: eşitlik varsayımı düzeltildi) |
+| `app.component.spec.ts` | Açık çekmece özellik tabanlı: gövde `position: relative`, sidebar `position: absolute` + `min-block-size: 100%` (computed değer `100%`); yükseklik karşılaştırması yok |
 
 Boşluklar: gerçek `prefers-reduced-motion`, dokunmatik basış ve başlıktaki Language seçicisinin tarayıcıda örneği değiştirmesi elle sınanır (spec `ArnConfigService`'i doğrudan çağırır).
 

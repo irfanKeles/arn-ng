@@ -120,7 +120,7 @@ Yok.
 | `settings/docs-settings.service.spec.ts` | Yaz/oku, geri yükleme, geçersiz / yanlış tipli / bozuk kayıt, `getItem` ve `setItem` fırlatınca, depo yokken, sunucuda `DOCS_STORAGE`, `appConfig` ile açılışta uygulama |
 | `shell/viewport.spec.ts` | Token tarayıcıda media query'yi, sunucuda `false` verir |
 | `app.component.spec.ts` | Landmark'lar, skip link, gezintide odak ve başlık, çekmece (aç/kapa, Esc, backdrop, odak, `inert`, genişleyince kapanma), düzen (body kabuğun altına iner, ayırıcı `main`'de ve RTL'de sidebar tarafında, dar modda yok, çekmece tam yükseklik), hedef boyutu, axe: light / dark / RTL / compact × geniş, çekmece kapalı, çekmece açık |
-| `pages/**/…spec.ts` | 404 bilinmeyen URL'de, dönüş bağlantısı, RTL'de ok `scale: -1 1`; Overview tek `h1`; axe |
+| `pages/**/…spec.ts` | 404 bilinmeyen URL'de, dönüş bağlantısı, RTL'de ok `scale: -1 1`; Overview tek `h1`; ikisinde 320px taşma ve axe dört mod (`A11Y_MODES`) |
 | `src/styles.spec.ts` | Kod rozeti (düz DOM, 320px kapsayıcı): satır sonunda bölünmez, geniş rozet içinde sarılır ve kaydırma üretmez, tablo sütununu ezmez, satır yüksekliğini değiştirmez (±1px), RTL'de `ltr`, `pre > code` etkilenmez |
 
 Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (koyu tema; bulunan iki kusur 3a-fix'te giderildi: ayırıcı, kod rozeti). Kalan: gerçek pencere yeniden boyutlandırma ve gerçek SSR sınanmadı.
