@@ -10,8 +10,13 @@ const NAV: readonly DocsNavCategory[] = [
     id: 'guides',
     title: 'Guides',
     pages: [
-      { slug: '', title: 'Home', loadComponent: () => Promise.resolve(FixturePage) },
-      { slug: 'ripple', title: 'Ripple', loadComponent: () => Promise.resolve(FixturePage) },
+      { slug: '', title: 'Home', sections: [], loadComponent: () => Promise.resolve(FixturePage) },
+      {
+        slug: 'ripple',
+        title: 'Ripple',
+        sections: [],
+        loadComponent: () => Promise.resolve(FixturePage),
+      },
     ],
   },
 ];

@@ -19,8 +19,18 @@ const FIXTURE: readonly DocsNavCategory[] = [
     id: 'guides',
     title: 'Guides',
     pages: [
-      { slug: 'first', title: 'First', loadComponent: () => Promise.resolve(FirstPage) },
-      { slug: 'second', title: 'Second', loadComponent: () => Promise.resolve(SecondPage) },
+      {
+        slug: 'first',
+        title: 'First',
+        sections: [],
+        loadComponent: () => Promise.resolve(FirstPage),
+      },
+      {
+        slug: 'second',
+        title: 'Second',
+        sections: [],
+        loadComponent: () => Promise.resolve(SecondPage),
+      },
     ],
   },
   { id: 'empty', title: 'Empty', pages: [] },

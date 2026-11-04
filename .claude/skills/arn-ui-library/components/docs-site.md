@@ -26,7 +26,8 @@ Tek tipli veri hem sidebar'ı hem lazy route'ları üretir.
 
 | Parça | Görev |
 |---|---|
-| `DocsNavCategory` `{ id, title, pages }`, `DocsNavPage` `{ slug, title, loadComponent }` | Sözleşme. `slug` site genelinde benzersiz, URL düz: `/<slug>`; boş slug ana sayfa |
+| `DocsNavCategory` `{ id, title, pages }`, `DocsNavPage` `{ slug, title, sections, loadComponent }` | Sözleşme. `slug` site genelinde benzersiz, URL düz: `/<slug>`; boş slug ana sayfa |
+| `sections` (`DocsNavSection` `{ id, heading }`, zorunlu, sayfa sırasıyla) | Arama için sayfanın `docs-section`'ları (sayfalar lazy, çalışma zamanında okunamaz); `nav/docs-nav-sections.spec.ts` her sayfayı render edip veriyle birebir karşılaştırır |
 | `DOCS_NAV` | Yalnız gerçekten var olan sayfalar: Getting started → Overview, Installation; Guides → Configuration, Theming, Accessibility; Directives → Ripple (3c). 3c sayfaları: [docs-site-pages-guides.md](docs-site-pages-guides.md), spec yardımcıları: [docs-site-pages.md](docs-site-pages.md) |
 | `visibleCategories(nav)` | Sayfasız kategoriyi atar (başlığı gösterilmez) |
 | `buildRoutes(nav)` | Sayfa başına `{ path, pathMatch: 'full', title, loadComponent }`; başlık `"<title> · arn-ng"` |

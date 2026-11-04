@@ -16,12 +16,16 @@ const FIXTURE: readonly DocsNavCategory[] = [
     id: 'start',
     title: 'Start',
     pages: [
-      { slug: '', title: 'Home', loadComponent: load },
-      { slug: 'install', title: 'Install', loadComponent: load },
+      { slug: '', title: 'Home', sections: [], loadComponent: load },
+      { slug: 'install', title: 'Install', sections: [], loadComponent: load },
     ],
   },
   { id: 'empty', title: 'Empty', pages: [] },
-  { id: 'forms', title: 'Forms', pages: [{ slug: 'input', title: 'Input', loadComponent: load }] },
+  {
+    id: 'forms',
+    title: 'Forms',
+    pages: [{ slug: 'input', title: 'Input', sections: [], loadComponent: load }],
+  },
 ];
 
 describe('SidebarComponent', () => {
