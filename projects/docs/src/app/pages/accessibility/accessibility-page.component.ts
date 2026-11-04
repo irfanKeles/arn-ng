@@ -6,7 +6,7 @@ import { DocsSectionComponent } from '../../toc/docs-section.component';
 /** The focus ring contrast the page states; the page spec recomputes it from the theme. */
 export const RING_CONTRAST = { light: '4.7', dark: '4.2' } as const;
 
-const TARGET_CODE = `/* A component's height never drops below 24px, compact included */
+const TARGET_CODE = `/* A component's height must not drop below 24px, compact included */
 :host {
   block-size: max(
     var(--arn-control-min-size),
@@ -14,12 +14,12 @@ const TARGET_CODE = `/* A component's height never drops below 24px, compact inc
   );
 }`;
 
-const FOCUS_CODE = `/* The ring is shown for keyboard focus, not for a mouse click */
+const FOCUS_CODE = `/* The ring must show for keyboard focus, not for a mouse click */
 :host:focus-visible {
   outline: var(--arn-ring-width) solid var(--arn-ring);
 }`;
 
-const MOTION_CODE = `/* An animation can always be turned off by the user's preference */
+const MOTION_CODE = `/* Every animation must stop under the user's reduce-motion preference */
 @media (prefers-reduced-motion: reduce) {
   :host {
     animation: none;

@@ -26,7 +26,7 @@ Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibil
 | Tuzak | "An empty attribute is always on": boş attribute `true`'dur ve config'i ezer; yalnız `undefined` izler. `config` örneği: `[arnRipple]="followConfig"`, `arnRipple`, `[arnRipple]="false"`, bölüm onay kutusuyla |
 | Ad / renk | İkon düğmesi `aria-label="Add item"`, SVG `aria-hidden`; `arnRippleColor` `--arn-primary`'den `color-mix` |
 | Tablolar | Inputs `expectApiMatchesComponent(ArnRippleDirective, …)`; CSS tokens `tokenMismatches(… '--arn-ripple-')` + varsayılanlar `theme.css` metninde |
-| Bağlantı | "Turning it on" → `/configuration` |
+| Bağlantı | "Turning it on" → `/configuration`; "Accessibility" bölümü → `/accessibility` (spec bölüme bağlı arar) |
 
 ### Installation (`/installation`)
 
@@ -65,7 +65,7 @@ Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `over
 | Sizes örneği | Sahte bileşen YOK: her boyut için host formülüyle boyutlanan kesik kenarlı kutu ve `ResizeObserver` ile ölçülen gerçek yükseklik (`ngAfterViewInit` + `DestroyRef`; `afterNextRender` yok). `box-sizing: border-box` (yoksa kenarlık 2px ekliyordu; host kod örneğinde de var: Faz 4 kenarlıklı bileşen notu) |
 | Density örneği | Önceki örneğin bileşeni `density="comfortable"` ve `"compact"` bölümlerinde; ölçü canlı, başlıktaki Density de anında yansır |
 | Override örneği | `.brand` `--arn-primary` ve `--arn-radius`'ı ezer (`!important` / `::ng-deep` yok; spec CSS metninde arar). Tuzak görünür: `calc(var(--arn-radius) * 0.8)` izler, `--arn-radius-md` izlemez |
-| Bağlantılar | `/configuration`; Configuration ve Installation'dan Theming'e |
+| Bağlantılar | `/configuration`; "Sizes" → `/accessibility` (spec bölüme bağlı arar); Configuration ve Installation'dan Theming'e |
 
 ### Accessibility (`/accessibility`)
 
@@ -73,12 +73,12 @@ Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `
 
 | Konu | Karar |
 |---|---|
-| Dil | "Garanti" değil kural: başta `role="note"` "No components yet … These are rules"; başlık "What every component must meet". Spec metinde "guarantee" geçmediğini sınar |
+| Dil | "Garanti" değil kural: başta `role="note"` "No components yet … These are rules"; başlık "What every component must meet". Henüz olmayan bileşenler "must" / "will" ile anlatılır, şimdiki zamanla değil; bugün olan yalnız doğrulananla ("What exists today already does"). Testing metni gerçek kapsamı söyler (kütüphanede axe: config, overlay, ripple; docs: 17 sayfa/örnek spec'i + kabuk dört modda; klavye/odak testleri: overlay, kod sekmeleri, çekmece). Kontrast başka kütüphaneyle değil WCAG'le kıyaslanır. Spec metinde "guarantee" ve "shadcn" geçmediğini sınar |
 | Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (theme.spec.ts yöntemi) yeniden hesaplar ve metinde arar |
 | Token'lar | Tablo YOK (kapsam değişmezi iki sayfada belgelemeyi yasaklar); `/theming`'e bağlanır. Spec `docs-token-table` / `docs-api-table` olmadığını sınar |
 | axe örneği | Kütüphanenin iç test yardımcısı; kod yorumu paketin parçası olmadığını söyler |
 | Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok; Karma gerçek tuşla kaydırmayı sınayamaz; ripple klavyede dalga çizmez (karar) |
-| Bağlantılar | `/ripple`, `/configuration`, `/theming` |
+| Bağlantılar | `/ripple`, `/configuration`, `/theming`; Theming (Sizes) ve Ripple (Accessibility) buraya bağlanır |
 
 **Token kapsamı değişmezi** (`pages/token-coverage.spec.ts`): `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da açık izin listesinde (nerede belgelendiği notuyla) olmalı; token tek sayfada belgelenir; listedeki her ad temada var ve hiçbir sayfada yok. Bugün listede yalnız `--arn-z-*` (Overlay sayfası gelene kadar, tokens.md §3). Yeni sayfanın tabloları `DOCUMENTED`'a eklenir.
 
@@ -111,16 +111,16 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 
 | Spec | Kapsam |
 |---|---|
-| `pages/ripple/ripple-page.component.spec.ts` | `h1`, sayfa sınıfı, bölüm sırası, iç bağlantılar + `/configuration`, tuzak metni, dört örnek × HTML / TS / CSS, `position: relative`, API / token / varsayılan eşleşmesi, tablo başlıkları, axe dört mod |
+| `pages/ripple/ripple-page.component.spec.ts` | `h1`, sayfa sınıfı, bölüm sırası, iç bağlantılar + `/configuration` + Accessibility bölümünde `/accessibility`, tuzak metni, dört örnek × HTML / TS / CSS, `position: relative`, API / token / varsayılan eşleşmesi, tablo başlıkları, axe dört mod |
 | `pages/ripple/examples/*.example.spec.ts` | basic: ad, konum, basışta dalga, klavyede yok; config: bölüm açık / kapalı; color: verilen renk; centered: `aria-label`, merkez, compact ≥24px; axe dört mod |
 | `pages/installation/installation-page.component.spec.ts` | `h1`, durum notu, bölüm sırası, iç bağlantılar + `/configuration`, beş kod bloğu, peer'lar `package.json`'la, diller, Verdaccio adımları, entry point'ler, axe |
 | `pages/configuration/configuration-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/installation`, `/ripple`), dört öncelik seviyesi, CSS tuzağı; alanlar = `ArnConfigDirective` girdileri, varsayılanlar, servis metotları; Properties + Methods; iki örnek; axe dört mod |
 | `pages/configuration/examples/locale.example.spec.ts` | İngilizce varsayılan; Türkçe'ye anında geçiş (Tamam · Vazgeç · Onayla, Ocak, Paz); yalnız `de-DE` adları değiştirir; axe |
 | `pages/configuration/examples/sections.example.spec.ts` | Bölüm başlıkla adlı; üç sütun; uygulama Türkçe olunca `de-DE` metinleri miras alır, `tr-TR` sabit; axe |
-| `pages/theming/theming-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar + `/configuration`, dört örnek, tuzak metni; yedi grup × (`tokenMismatches` + temadaki varsayılan); yedi ayrı başlık; 320px; axe dört mod |
+| `pages/theming/theming-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar + `/configuration` + Sizes'ta `/accessibility`, dört örnek, tuzak metni; yedi grup × (`tokenMismatches` + temadaki varsayılan); yedi ayrı başlık; 320px; axe dört mod |
 | `pages/theming/examples/*.example.spec.ts` | sizes: beş kutu, yükseklik token'a eşit ve gösterilen, density canlı (compact md ve xs); density: iki bölüm, beş yükseklik, yazı aynı. Beklenen yükseklikler `controlHeight` (`sizes.example.testing.ts`) ile `max(1.5rem, yükseklik × density) × kök font-size`'tan hesaplanır, 16px'e bağlı sabit yok; dark-mode: `.light` / `.dark`, bölüm ve primary kutucuğu kendi şemasında, sayfa koyuyken de; override: sınıf, `!important` / `::ng-deep` yok, primary yalnız `.brand`'de, `calc` köşesi izler, `-md` izlemez; hepsinde axe |
 | `pages/token-coverage.spec.ts` | `:root`'taki her `--arn-*` bir tabloda ya da izin listesinde; tek sayfada; liste dürüst |
-| `pages/accessibility/accessibility-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/theming`, `/configuration`, `/ripple`); örnek ve tablo yok, beş kod bloğu; "No components yet", "guarantee" yok; dört sınır; halka kontrastı temadan hesaplanır (4.7 / 4.2), 24px ve 3px temada; 320px; axe dört mod |
+| `pages/accessibility/accessibility-page.component.spec.ts` | `h1`, bölüm sırası, bağlantılar (`/theming`, `/configuration`, `/ripple`); örnek ve tablo yok, beş kod bloğu; "No components yet", "guarantee" yok; halka "at least 3:1", "shadcn" yok; dört sınır; halka kontrastı temadan hesaplanır (4.7 / 4.2), 24px ve 3px temada; 320px; axe dört mod |
 | Sayfa spec'leri (yedisi: bu beşi + Overview, 404) | 320px'te belge taşmaz (`expectNoPageOverflow`, varsayılan modda ayrı `it`: yardımcı yalnız LTR); axe dört mod (`A11Y_MODES`, `ArnConfigService.update`) |
 | `app.component.spec.ts` (3c sonu) | Altı sayfa, 12 hedef. Düzen testi özellik tabanlı (ayrı test commit'i): sidebar `align-self: start` + `position: sticky`; `main` gövdeye, gövde kabuğun altına eşit. Yükseklik karşılaştırması kaldırıldı: uzun listede `main` sidebar'a esniyor, sonuç pencereye bağlıydı (CI #25) |
 | `src/styles.spec.ts` | Rozet silik metinde `--arn-foreground`; `.docs-note` kenar + ton |

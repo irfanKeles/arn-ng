@@ -76,6 +76,12 @@ describe('RipplePageComponent', () => {
       expect(unknownInternalLinks(await create())).toEqual([]);
     });
 
+    it('links to the Accessibility page from its Accessibility section', async () => {
+      expect(
+        (await create()).querySelector('docs-section:has(#accessibility) a[href="/accessibility"]'),
+      ).not.toBeNull();
+    });
+
     it('links to the Configuration page where it explains turning it on', async () => {
       const section = query(await create(), 'docs-section:has(#turning-it-on)');
 

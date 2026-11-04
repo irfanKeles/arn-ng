@@ -62,6 +62,14 @@ describe('ThemingPageComponent', () => {
       ).toContain('/configuration');
     });
 
+    it('links to Accessibility from the Sizes section', async () => {
+      const { element } = await render();
+
+      expect(
+        element.querySelector('docs-section:has(#sizes) a[href="/accessibility"]'),
+      ).not.toBeNull();
+    });
+
     it('shows the four examples in their sections', async () => {
       const { element } = await render();
       const host = (id: string): string | undefined =>

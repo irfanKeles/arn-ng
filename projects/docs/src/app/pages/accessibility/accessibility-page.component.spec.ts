@@ -97,6 +97,13 @@ describe('AccessibilityPageComponent', () => {
       );
     });
 
+    it('compares the ring with WCAG, not with other libraries', async () => {
+      const ring = section((await render()).element, 'focus-ring');
+
+      expect(ring).toContain('at least 3:1');
+      expect(ring).not.toContain('shadcn');
+    });
+
     it('lists the known limits honestly', async () => {
       const limits = section((await render()).element, 'known-limits');
 
