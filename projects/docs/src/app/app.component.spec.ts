@@ -437,11 +437,14 @@ describe('AppComponent', () => {
 
       await openDrawer(shell);
 
-      // min-block-size: 100%; a long list makes it taller than a short page
-      expect(sidebar(shell.element).getBoundingClientRect().height).toBeGreaterThanOrEqual(
-        query(shell.element, '.docs-body').getBoundingClientRect().height - 1,
-      );
-      expect(getComputedStyle(sidebar(shell.element)).borderInlineEndWidth).toBe('1px');
+      // Positioned against the body (position: relative) and at least as tall as it; a long list
+      // makes it taller than a short page
+      const style = getComputedStyle(sidebar(shell.element));
+
+      expect(getComputedStyle(query(shell.element, '.docs-body')).position).toBe('relative');
+      expect(style.position).toBe('absolute');
+      expect(style.minBlockSize).toBe('100%');
+      expect(style.borderInlineEndWidth).toBe('1px');
     });
   });
 

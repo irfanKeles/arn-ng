@@ -3,6 +3,7 @@ import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { ArnConfigService, provideArn, type ArnConfig } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../ui/testing/a11y';
 import { query, resetDocument, text } from '../testing/dom';
+import { expectNoPageOverflow } from '../testing/page-overflow';
 import { ApiTableComponent } from './api-table.component';
 import type { DocsApiTable } from './docs-api';
 
@@ -169,11 +170,8 @@ describe('ApiTableComponent', () => {
       // An empty default renders a visually hidden "None" (position: absolute). Its cell starts
       // past the window's right edge; unless the region is its containing block, the text escapes
       // the region's overflow and widens the document, which .docs-page.scrollWidth does not see.
-      // Measured against the document before rendering: Karma's own reporter is wider than the
-      // window by a couple of pixels.
       const root = document.documentElement;
-      const before = root.scrollWidth;
-      const { element } = await setup(
+      const { fixture, element } = await setup(
         {
           kind: 'inputs',
           rows: [
@@ -188,9 +186,10 @@ describe('ApiTableComponent', () => {
       );
       const hidden = query(element, 'tbody td .docs-visually-hidden');
 
+      // The precondition is checked first: the helper moves the element and puts it back
       expect(text(hidden)).toBe('None');
       expect(hidden.getBoundingClientRect().left).toBeGreaterThan(root.clientWidth);
-      expect(root.scrollWidth).toBeLessThanOrEqual(Math.max(before, root.clientWidth));
+      await expectNoPageOverflow(element, () => fixture.whenStable());
     });
 
     it('is the scroll container, and keyboard users can focus it to scroll', async () => {

@@ -2,7 +2,7 @@ import { expectNoA11yViolations } from '../../../../../../ui/testing/a11y';
 import { query, resetDocument, text } from '../../../testing/dom';
 import { A11Y_MODES, renderExample } from '../../../testing/render-example';
 import { ThemingDensityExampleComponent } from './density.example';
-import { heights, measured } from './sizes.example.testing';
+import { COMPACT, controlHeight, heights, measured } from './sizes.example.testing';
 
 describe('ThemingDensityExampleComponent', () => {
   function sections(element: HTMLElement): HTMLElement[] {
@@ -30,7 +30,7 @@ describe('ThemingDensityExampleComponent', () => {
     ]);
   });
 
-  it('scales height by 0.875 in the compact section, keeps xs at 24px and the text size', async () => {
+  it('scales height by 0.875 in the compact section, keeps xs at 1.5rem and the text size', async () => {
     const { fixture, element } = await renderExample(ThemingDensityExampleComponent);
     const [comfortable, compact] = sections(element);
 
@@ -44,8 +44,12 @@ describe('ThemingDensityExampleComponent', () => {
     const shown = (section: HTMLElement): string[] =>
       Object.values(heights(section)).map((height) => height.shown);
 
-    expect(shown(comfortable)).toEqual(['24px', '32px', '36px', '40px', '48px']);
-    expect(shown(compact)).toEqual(['24px', '28px', '31.5px', '35px', '42px']);
+    const sizes = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
+    const expected = (density: number): string[] =>
+      sizes.map((size) => `${String(controlHeight(element, size, density))}px`);
+
+    expect(shown(comfortable)).toEqual(expected(1));
+    expect(shown(compact)).toEqual(expected(COMPACT));
     expect(getComputedStyle(query(compact, '.box[data-size="md"]')).fontSize).toBe(
       getComputedStyle(query(comfortable, '.box[data-size="md"]')).fontSize,
     );

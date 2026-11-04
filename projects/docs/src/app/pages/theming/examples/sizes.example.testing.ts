@@ -20,6 +20,31 @@ export async function measured(
   }
 }
 
+/** `--arn-control-height-<size>` in rem (theme.css). */
+const CONTROL_HEIGHTS = { xs: 1.5, sm: 2, md: 2.25, lg: 2.5, xl: 3 } as const;
+
+/** `--arn-control-min-size` in rem (theme.css). */
+const CONTROL_MIN_SIZE = 1.5;
+
+/** `--arn-density` in compact density. */
+export const COMPACT = 0.875;
+
+/**
+ * The height in px a box of `size` should have at `density`, from the root font size of
+ * `element`'s document, rounded to one decimal like the example shows it:
+ * max(min size, height × density).
+ */
+export function controlHeight(
+  element: HTMLElement,
+  size: keyof typeof CONTROL_HEIGHTS,
+  density = 1,
+): number {
+  const rem = parseFloat(getComputedStyle(element.ownerDocument.documentElement).fontSize);
+  const height = Math.max(CONTROL_MIN_SIZE, CONTROL_HEIGHTS[size] * density) * rem;
+
+  return Math.round(height * 10) / 10;
+}
+
 /** Size → the height the box shows, and the height it has. */
 export function heights(root: HTMLElement): Record<string, { shown: string; actual: number }> {
   return Object.fromEntries(
