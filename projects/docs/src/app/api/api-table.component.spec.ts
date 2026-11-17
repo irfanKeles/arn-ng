@@ -113,7 +113,7 @@ describe('ApiTableComponent', () => {
       const { element } = await setup();
       const cells = Array.from(element.querySelectorAll('tbody tr:first-child td'));
 
-      expect(cells.map((cell) => cell.querySelector('code')?.textContent?.trim() ?? null)).toEqual([
+      expect(cells.map((cell) => cell.querySelector('code')?.textContent.trim() ?? null)).toEqual([
         "'xs' | 'sm' | 'md' | 'lg' | 'xl'",
         "'md'",
         null,
