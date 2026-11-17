@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, DOCUMENT } from '@angular/core';
 import { deepMerge, sanitizeConfig } from './config.merge';
 import { ARN_CONFIG_SCOPE, ARN_ROOT_OVERRIDES, type ArnConfigRef } from './config.scope';
 import type {

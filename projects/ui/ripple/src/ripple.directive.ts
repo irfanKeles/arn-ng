@@ -1,4 +1,4 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   booleanAttribute,
   Directive,
@@ -8,6 +8,7 @@ import {
   PLATFORM_ID,
   Renderer2,
   type OnDestroy,
+  DOCUMENT,
 } from '@angular/core';
 import { injectArnConfig } from '@arn-ng/ui/core';
 import {

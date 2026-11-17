@@ -7,7 +7,7 @@ import {
   type PositionStrategy,
 } from '@angular/cdk/overlay';
 import { ComponentPortal, TemplatePortal } from '@angular/cdk/portal';
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
+import { isPlatformBrowser } from '@angular/common';
 import {
   DestroyRef,
   ElementRef,
@@ -18,6 +18,7 @@ import {
   TemplateRef,
   type Type,
   type ViewContainerRef,
+  DOCUMENT,
 } from '@angular/core';
 import { devWarn } from '../config/dev-mode';
 import { ArnOverlayRef, OverlayRefImpl } from './overlay-ref';

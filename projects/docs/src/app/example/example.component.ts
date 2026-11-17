@@ -1,7 +1,15 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { Directionality } from '@angular/cdk/bidi';
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, input, signal } from '@angular/core';
+
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  inject,
+  input,
+  signal,
+  DOCUMENT,
+} from '@angular/core';
 import { CodeBlockComponent } from '../code/code-block.component';
 import type { DocsCodeLanguage } from '../code/docs-code';
 import { DOCS_CLIPBOARD } from './clipboard';

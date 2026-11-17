@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { inject, InjectionToken } from '@angular/core';
+import { inject, InjectionToken, DOCUMENT } from '@angular/core';
 
 /** Used when `--arn-ripple-duration` is missing (theme.css not loaded) or cannot be parsed. */
 export const FALLBACK_DURATION_MS = 450;
