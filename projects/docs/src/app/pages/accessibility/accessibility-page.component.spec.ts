@@ -3,6 +3,7 @@ import { provideRouter } from '@angular/router';
 import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
 import { THEME_CSS } from '../../api/testing/theme-source';
+import { contrastRatio } from '../../testing/contrast';
 import { query, resetDocument, text } from '../../testing/dom';
 import { unknownInternalLinks } from '../../testing/links';
 import { expectNoPageOverflow } from '../../testing/page-overflow';
@@ -115,17 +116,6 @@ describe('AccessibilityPageComponent', () => {
   });
 
   describe('numbers', () => {
-    /** Relative luminance of a computed achromatic oklch color: Y = L³ (as in theme.spec.ts). */
-    function luminance(color: string): number {
-      const match = /^oklch\(([\d.]+)(%?) 0 0\)$/.exec(color);
-
-      if (!match?.[1]) {
-        throw new Error(`Not an achromatic oklch color: ${color}`);
-      }
-
-      return (Number(match[1]) / (match[2] === '%' ? 100 : 1)) ** 3;
-    }
-
     function resolved(scheme: string, token: string): string {
       const probe = document.createElement('div');
 
@@ -142,11 +132,10 @@ describe('AccessibilityPageComponent', () => {
 
     for (const scheme of ['light', 'dark'] as const) {
       it(`states the ${scheme} ring contrast the theme gives`, async () => {
-        const [a, b] = [
-          luminance(resolved(scheme, '--arn-ring')),
-          luminance(resolved(scheme, '--arn-background')),
-        ].sort((x, y) => y - x) as [number, number];
-        const contrast = ((a + 0.05) / (b + 0.05)).toFixed(1);
+        const contrast = contrastRatio(
+          resolved(scheme, '--arn-ring'),
+          resolved(scheme, '--arn-background'),
+        ).toFixed(1);
 
         expect(contrast).toBe(RING_CONTRAST[scheme]);
         expect(section((await render()).element, 'focus-ring')).toContain(`${contrast}:1`);
