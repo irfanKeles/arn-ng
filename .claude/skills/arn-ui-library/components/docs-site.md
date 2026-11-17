@@ -6,7 +6,7 @@
 
 | Alan | Değer |
 |---|---|
-| Selector | `docs-root` (kabuk), `docs-sidebar`, `docs-settings`, `docs-overview-page`, `docs-not-found-page` |
+| Selector | `docs-root` (kabuk), `docs-sidebar` (arama dahil: [docs-site-search.md](docs-site-search.md)), `docs-settings`, `docs-overview-page`, `docs-not-found-page` |
 | Entry point | Yok (uygulama). Kütüphaneyi `@arn-ng/ui/core`, `@arn-ng/ui/locales/tr`, `@arn-ng/ui/theme.css` olarak tüketir |
 | Tür | ortak yapı (Angular uygulaması, zoneless) |
 | Sınıf adları | `AppComponent`, `SidebarComponent`, `SettingsComponent`, `DocsSettingsService`; token'lar `DOCS_STORAGE`, `DOCS_NARROW_VIEWPORT` |
@@ -80,8 +80,9 @@ Yok (uygulama). Hedef yüksekliği her yerde aynı ifade: `max(var(--arn-control
 | Skip link | İlk eleman, yalnız odakta görünür. `(click)` ile `preventDefault` + `<main>`'e odak (`<base href>` yüzünden çıplak `#fragment` ana sayfaya giderdi) |
 | Landmark'lar | `header`, `nav[aria-label="Documentation"]`, `main` |
 | Aktif sayfa | `routerLinkActive` + `ariaCurrentWhenActive="page"` (`exact`); arka plan + renk + kalınlık |
-| Route değişimi | `NavigationEnd`'de odak `<main>`'e, başlık route `title`'ından. İlk gezintide ve yalnız fragment değişince odak taşınmaz. `<main>` kabukta hep vardır, bu yüzden senkron (`afterNextRender` yok) |
-| Çekmece | Başlığın altında açılan disclosure (modal değil, odak tuzağı yok; başlık kullanılabilir kalır). Düğme `aria-expanded` + `aria-controls`; açılınca odak ilk bağlantıya, kapanınca düğmeye; Esc, backdrop ve gezinti kapatır; açıkken `<main>` `inert` |
+| Route değişimi | `NavigationEnd`'de odak `<main>`'e (URL'de fragment varsa o bölümün başlığına), başlık route `title`'ından. İlk gezintide ve yalnız fragment değişince odak taşınmaz. `<main>` kabukta hep vardır, bu yüzden senkron (`afterNextRender` yok) |
+| Çekmece | Başlığın altında açılan disclosure (modal değil, odak tuzağı yok; başlık kullanılabilir kalır). Düğme `aria-expanded` + `aria-controls`; açılınca odak ilk bağlantıya (bağlantı yoksa arama alanına), kapanınca düğmeye; Esc, backdrop ve gezinti kapatır; açıkken `<main>` `inert` |
+| Arama | Sidebar'da, nav'ın üstünde `role="search"`; bölüm bağlantısında odak başlığa (çekmece önce kapanır). Ayrıntı: [docs-site-search.md](docs-site-search.md) |
 | Odak halkası | Global `:focus-visible` (`--arn-ring-width`, `--arn-ring`) |
 | RTL | Mantıksal CSS; yön bildiren tek simge (404 geri oku) `arn-rtl-mirror` taşır. Çekmecede kaydırma animasyonu yok (fiziksel `translate` gerektirirdi) |
 
@@ -105,7 +106,7 @@ Yok.
 |---|---|
 | 3b | Bitti. 3b-1: örnek bloğu ve kod renklendirme ([docs-site-examples.md](docs-site-examples.md)). 3b-2: "On this page", API ve Styling tabloları ([docs-site-toc-api.md](docs-site-toc-api.md)) |
 | 3c | Bitti: Ripple, Installation, Configuration (dil değiştiricinin etkisi burada), Theming, Accessibility ([docs-site-pages-guides.md](docs-site-pages-guides.md)) |
-| 3d | Arama (sidebar'da) |
+| 3d | Bitti: sidebar araması ([docs-site-search.md](docs-site-search.md)) |
 | 3e | Zoneless değerlendirmesi: gerçek tarayıcıda gözlem, CDK tabanlı bileşenlerle davranış |
 | Faz 5 | Overview'daki yayın durumu ifadesi ("has not been published to npm yet") 0.1.0 yayınıyla YANLIŞ olur; güncellenecek (ROADMAP Faz 5) |
 
@@ -116,7 +117,7 @@ Yok.
 | Spec | Kapsam |
 |---|---|
 | `nav/docs-nav.spec.ts` | Benzersiz slug ve kategori kimliği, her slug'a tek route, bileşenler çözülür, boş kategori yok; fixture ile `visibleCategories` / `buildRoutes` |
-| `shell/sidebar/…spec.ts` | Fixture'dan başlıklar ve bağlantılar, boş kategori gizli, `aria-current`, `focusFirstLink`, axe |
+| `shell/sidebar/…spec.ts` | Fixture'dan başlıklar ve bağlantılar, boş kategori gizli, `aria-current`, `focusFirstLink`, axe; arama testleri [docs-site-search.md](docs-site-search.md) §8 |
 | `shell/settings/…spec.ts` | Dört etiketli `<select>`; her biri servisi günceller ve `<html>`'e yansır; Türkçe ve İngilizce'ye dönüş (metinler + `Intl` adları); depoya yazım; listede olmayan değer; axe |
 | `settings/docs-settings.service.spec.ts` | Yaz/oku, geri yükleme, geçersiz / yanlış tipli / bozuk kayıt, `getItem` ve `setItem` fırlatınca, depo yokken, sunucuda `DOCS_STORAGE`, `appConfig` ile açılışta uygulama |
 | `shell/viewport.spec.ts` | Token tarayıcıda media query'yi, sunucuda `false` verir |

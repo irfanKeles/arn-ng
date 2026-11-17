@@ -31,7 +31,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 ## Faz 3 — Doküman sitesi iskeleti
 - [x] Sidebar (kategorili): kabuk, tek tipli gezinti verisi (`docs-nav.ts`), küçük ekranda çekmece, 404 (adım 3a; `components/docs-site.md`)
 - [x] Sayfa içi gezinti, "bu sayfada" (adım 3b-2): `docs-section` + `DocsTocService`, geniş ekranda (≥80rem) üçüncü sütun (`components/docs-site-toc-api.md`)
-- [ ] Arama (adım 3d)
+- [x] Arama (adım 3d): sidebar'da, sayfa ve bölüm başlıklarını filtreler (`DocsNavPage.sections` + bayatlık spec'i), `role="status"` duyurusu, bölüm bağlantısında odak başlığa (`components/docs-site-search.md`)
 - [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
 - [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
 - [x] API ve Styling tablo bileşenleri (adım 3b-2): `docs-api-table`, `docs-token-table`, spec doğrulaması `apiMismatches` (`components/docs-site-toc-api.md`)
@@ -49,7 +49,7 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
 - [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md)
-- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md)
+- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). `--arn-input` 1.4.11 kontrastı (açık ≈1.3:1; dark'ta beyaz %15) kararı bekliyor (docs araması bu yüzden `--arn-muted-foreground` kullanıyor). Docs araması yerel `<input>`'tan `arnInput`'a geçer
 - [ ] checkbox
 - [ ] select
 - [ ] dialog

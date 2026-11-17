@@ -77,7 +77,7 @@ Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `
 | Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (theme.spec.ts yöntemi) yeniden hesaplar ve metinde arar |
 | Token'lar | Tablo YOK (kapsam değişmezi iki sayfada belgelemeyi yasaklar); `/theming`'e bağlanır. Spec `docs-token-table` / `docs-api-table` olmadığını sınar |
 | axe örneği | Kütüphanenin iç test yardımcısı; kod yorumu paketin parçası olmadığını söyler |
-| Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok; Karma gerçek tuşla kaydırmayı sınayamaz; ripple klavyede dalga çizmez (karar) |
+| Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok (aramanın sonuç duyurusu dahil, 3d); Karma gerçek tuşla kaydırmayı sınayamaz; ripple klavyede dalga çizmez (karar) |
 | Bağlantılar | `/ripple`, `/configuration`, `/theming`; Theming (Sizes) ve Ripple (Accessibility) buraya bağlanır |
 
 **Token kapsamı değişmezi** (`pages/token-coverage.spec.ts`): `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da açık izin listesinde (nerede belgelendiği notuyla) olmalı; token tek sayfada belgelenir; listedeki her ad temada var ve hiçbir sayfada yok. Bugün listede yalnız `--arn-z-*` (Overlay sayfası gelene kadar, tokens.md §3). Yeni sayfanın tabloları `DOCUMENTED`'a eklenir.
