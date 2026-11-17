@@ -9,13 +9,5 @@
     "rootDir": "../.."
   },
   "files": ["src/test-setup.ts"],
-  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"],
-  "angularCompilerOptions": {
-    "extendedDiagnostics": {
-      "checks": {
-        "nullishCoalescingNotNullable": "suppress",
-        "optionalChainNotNullable": "suppress"
-      }
-    }
-  }
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }

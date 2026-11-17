@@ -7,13 +7,5 @@
     "types": ["jasmine"]
   },
   "files": ["testing/test-setup.ts"],
-  "include": ["**/*.spec.ts", "**/*.d.ts"],
-  "angularCompilerOptions": {
-    "extendedDiagnostics": {
-      "checks": {
-        "nullishCoalescingNotNullable": "suppress",
-        "optionalChainNotNullable": "suppress"
-      }
-    }
-  }
+  "include": ["**/*.spec.ts", "**/*.d.ts"]
 }
