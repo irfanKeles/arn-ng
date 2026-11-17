@@ -27,13 +27,24 @@
           },
           "defaultConfiguration": "production"
         },
-        "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+        "test-build": {
+          "builder": "@angular/build:application",
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
-            "main": "projects/ui/testing/test-setup.ts",
-            "styles": ["projects/ui/theme.css"],
-            "karmaConfig": "projects/ui/karma.conf.js"
+            "polyfills": [],
+            "styles": ["projects/ui/theme.css"]
+          }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "ui:test-build",
+            "tsConfig": "projects/ui/tsconfig.spec.json",
+            "setupFiles": ["projects/ui/testing/test-setup.ts"],
+            "browsers": ["chromium"],
+            "browserViewport": "800x600",
+            "coverageInclude": ["projects/ui/**/*.ts"],
+            "coverageReporters": ["html", "text-summary"]
           }
         }
       }
@@ -81,6 +92,9 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "testing": {
+              "polyfills": []
             }
           },
           "defaultConfiguration": "production"
@@ -101,20 +115,15 @@
           "builder": "@angular/build:extract-i18n"
         },
         "test": {
-          "builder": "@angular-devkit/build-angular:karma",
+          "builder": "@angular/build:unit-test",
           "options": {
-            "builderMode": "application",
-            "main": "projects/docs/src/test-setup.ts",
+            "buildTarget": "docs:build:development,testing",
             "tsConfig": "projects/docs/tsconfig.spec.json",
-            "assets": [
-              {
-                "glob": "**/*",
-                "input": "projects/docs/public"
-              }
-            ],
-            "styles": ["projects/docs/src/styles.css"],
-            "scripts": [],
-            "karmaConfig": "projects/docs/karma.conf.js"
+            "setupFiles": ["projects/docs/src/test-setup.ts"],
+            "browsers": ["chromium"],
+            "browserViewport": "800x600",
+            "coverageInclude": ["projects/docs/src/**/*.ts"],
+            "coverageReporters": ["html", "text-summary"]
           }
         }
       }

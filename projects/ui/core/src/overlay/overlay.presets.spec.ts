@@ -395,7 +395,7 @@ describe('ArnOverlayService: presets', () => {
 
   describe('invalid use', () => {
     it('a connected preset without an origin throws', () => {
-      expect(() => trigger.open('popover', { origin: undefined })).toThrowError(/needs "origin"/);
+      expect(() => trigger.open('popover', { origin: undefined })).toThrow(/needs "origin"/);
       expect(overlayContainer().childElementCount).toBe(0);
     });
 
@@ -404,7 +404,7 @@ describe('ArnOverlayService: presets', () => {
 
       expect(() =>
         overlay.open(trigger.panel(), { preset: 'modal', injector: trigger.injector }),
-      ).toThrowError(/needs "viewContainerRef"/);
+      ).toThrow(/needs "viewContainerRef"/);
     });
   });
 });

@@ -4,8 +4,8 @@
   "compilerOptions": {
     "module": "esnext",
     // TypeScript 6 defaults: no automatic @types, and rootDir is this folder, but the specs
-    // need Jasmine's globals and import the shared helpers from ../ui/testing
-    "types": ["jasmine"],
+    // need Vitest's globals and import the shared helpers from ../ui/testing
+    "types": ["vitest/globals"],
     "rootDir": "../..",
     "paths": {
       "@arn-ng/ui/*": ["../ui/*/src/public-api.ts"]

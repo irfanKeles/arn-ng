@@ -14,7 +14,7 @@ concurrency:
 
 jobs:
   ci:
-    # Sabit: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti; Karma imajdaki Chrome'a dayanır
+    # Sabit: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti; Playwright'ın --with-deps kurulumu sürüme bağlı
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -29,9 +29,9 @@ jobs:
 
       - run: npm ci
 
-      # Karma testleri runner imajındaki Chrome'u kullanır; yoksa burada net hatayla düşer
-      - name: Chrome sürümü
-        run: google-chrome --version
+      # Vitest browser mode Playwright'ın Chromium'unda koşar; imajdaki Chrome'a dayanmaz
+      - name: Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
       - run: npm run lint
       - run: npm run format:check
