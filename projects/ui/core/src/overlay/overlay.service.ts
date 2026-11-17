@@ -125,6 +125,9 @@ export class ArnOverlayService {
       panelClass: ['arn-overlay-pane', `arn-overlay-pane-${layer}`],
       direction: directionality,
       disposeOnNavigation: true,
+      // CDK 21+ renders overlays in the browser top layer (popover="manual") by default, where
+      // z-index has no effect. The --arn-z-* layer contract (theme.css) needs the overlay container.
+      usePopover: false,
     });
     const host = overlayRef.hostElement;
     const pane = overlayRef.overlayElement;
