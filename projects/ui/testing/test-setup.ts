@@ -1,4 +1,4 @@
-import { provideExperimentalZonelessChangeDetection } from '@angular/core';
+import { provideZonelessChangeDetection } from '@angular/core';
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { BrowserTestingModule, platformBrowserTesting } from '@angular/platform-browser/testing';
 
@@ -10,6 +10,6 @@ getTestBed().initTestEnvironment(BrowserTestingModule, platformBrowserTesting(),
 // All tests run zoneless: zone.js is not loaded into the test environment (SKILL §4).
 beforeEach(() => {
   TestBed.configureTestingModule({
-    providers: [provideExperimentalZonelessChangeDetection()],
+    providers: [provideZonelessChangeDetection()],
   });
 });
