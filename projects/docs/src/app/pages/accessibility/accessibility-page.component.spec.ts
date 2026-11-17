@@ -110,6 +110,7 @@ describe('AccessibilityPageComponent', () => {
 
       expect(limits).toContain('Automated checks find only part of the problems.');
       expect(limits).toContain('No screen reader testing yet.');
+      expect(limits).toContain("the result count the documentation's search announces");
       expect(limits).toContain('Real key presses are not simulated.');
       expect(limits).toContain('The ripple ignores the keyboard by design.');
     });

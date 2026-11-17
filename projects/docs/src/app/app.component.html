@@ -37,7 +37,12 @@
   [class.docs-drawer-open]="drawerVisible()"
   [class.docs-with-toc]="tocVisible()"
 >
-  <docs-sidebar id="docs-sidebar" class="docs-sidebar" [categories]="nav" />
+  <docs-sidebar
+    id="docs-sidebar"
+    class="docs-sidebar"
+    [categories]="nav"
+    (sectionSelected)="onSectionSelected($event)"
+  />
 
   @if (drawerVisible()) {
     <div class="docs-backdrop"></div>

@@ -2,6 +2,89 @@
   display: block;
 }
 
+.docs-search {
+  padding-block: calc(var(--arn-spacing) * 6) 0;
+  padding-inline: calc(var(--arn-spacing) * 4);
+}
+
+.docs-search-field {
+  display: flex;
+  gap: var(--arn-spacing);
+  align-items: center;
+}
+
+/* Bordered host: border-box, or the border adds to the height (no reset in the library) */
+.docs-search-input {
+  box-sizing: border-box;
+  flex-grow: 1;
+  min-inline-size: 0;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  border: var(--arn-border-width) solid var(--arn-muted-foreground);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  font: inherit;
+  font-size: var(--arn-text-sm);
+  appearance: none;
+}
+
+.docs-search-input::placeholder {
+  color: var(--arn-muted-foreground);
+}
+
+/* One clear button in every browser: ours */
+.docs-search-input::-webkit-search-cancel-button {
+  appearance: none;
+}
+
+.docs-search-clear {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding: 0;
+  border: 0;
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: transparent;
+  color: var(--arn-muted-foreground);
+  cursor: pointer;
+}
+
+.docs-search-clear:hover {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}
+
+.docs-search-clear-icon {
+  inline-size: var(--arn-control-icon-size-sm);
+  block-size: var(--arn-control-icon-size-sm);
+}
+
+/* Always in the DOM (a live region must exist before it changes); no space while it is empty */
+.docs-search-status {
+  margin: 0;
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-sm);
+  line-height: var(--arn-text-sm-line-height);
+}
+
+.docs-search-status:not(:empty) {
+  margin-block-start: calc(var(--arn-spacing) * 2);
+}
+
 .docs-nav {
   padding-block: calc(var(--arn-spacing) * 6);
   padding-inline: calc(var(--arn-spacing) * 4);
@@ -40,6 +123,29 @@
 .docs-nav-link:hover {
   background: var(--arn-accent);
   color: var(--arn-accent-foreground);
+}
+
+/* A page shown only for its matching sections: context, not a link (no hover, no pointer) */
+.docs-nav-label {
+  display: flex;
+  align-items: center;
+  min-block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding-inline: calc(var(--arn-control-padding-inline-sm) * var(--arn-density));
+  color: var(--arn-muted-foreground);
+  font-size: var(--arn-text-xs);
+  font-weight: var(--arn-font-weight-medium);
+}
+
+.docs-nav-sections {
+  display: grid;
+  gap: var(--arn-spacing);
+  margin: 0;
+  padding-block: 0;
+  padding-inline: calc(var(--arn-spacing) * 3) 0;
+  list-style: none;
 }
 
 /* The current page: background, color and weight (not color alone) */

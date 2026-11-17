@@ -1,18 +1,77 @@
+<div class="docs-search" role="search">
+  <label class="docs-visually-hidden" for="docs-search-input">Search the documentation</label>
+  <div class="docs-search-field">
+    <input
+      #searchInput
+      id="docs-search-input"
+      class="docs-search-input"
+      type="search"
+      placeholder="Search"
+      autocomplete="off"
+      [value]="query()"
+      (input)="onInput($event)"
+      (keydown.escape)="onEscape($event)"
+    />
+    @if (query() !== '') {
+      <button type="button" class="docs-search-clear" aria-label="Clear search" (click)="clear()">
+        <svg
+          class="docs-search-clear-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    }
+  </div>
+  <p class="docs-search-status" role="status">{{ status() }}</p>
+</div>
+
 <nav class="docs-nav" aria-label="Documentation">
-  @for (category of visible(); track category.id) {
-    <h2 class="docs-nav-heading" [id]="'docs-nav-' + category.id">{{ category.title }}</h2>
-    <ul class="docs-nav-list" [attr.aria-labelledby]="'docs-nav-' + category.id">
-      @for (page of category.pages; track page.slug) {
+  @for (result of results(); track result.category.id) {
+    <h2 class="docs-nav-heading" [id]="'docs-nav-' + result.category.id">
+      {{ result.category.title }}
+    </h2>
+    <ul class="docs-nav-list" [attr.aria-labelledby]="'docs-nav-' + result.category.id">
+      @for (item of result.pages; track item.page.slug) {
         <li>
-          <a
-            class="docs-nav-link"
-            routerLinkActive="docs-nav-link-active"
-            ariaCurrentWhenActive="page"
-            [routerLink]="'/' + page.slug"
-            [routerLinkActiveOptions]="{ exact: true }"
-          >
-            {{ page.title }}
-          </a>
+          @if (item.titleMatch) {
+            <a
+              class="docs-nav-link"
+              routerLinkActive="docs-nav-link-active"
+              ariaCurrentWhenActive="page"
+              [routerLink]="link(item.page)"
+              [routerLinkActiveOptions]="{ exact: true }"
+            >
+              {{ item.page.title }}
+            </a>
+          } @else {
+            <!-- Shown for its sections only: context, not a result -->
+            <span class="docs-nav-label" [attr.aria-current]="current(item.page)">
+              {{ item.page.title }}
+            </span>
+          }
+          @if (item.sections.length > 0) {
+            <ul class="docs-nav-sections">
+              @for (section of item.sections; track section.id) {
+                <li>
+                  <a
+                    class="docs-nav-link"
+                    [routerLink]="link(item.page)"
+                    [fragment]="section.id"
+                    (click)="selectSection($event, item.page, section)"
+                  >
+                    {{ section.heading }}
+                  </a>
+                </li>
+              }
+            </ul>
+          }
         </li>
       }
     </ul>

@@ -1,3 +1,4 @@
+import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -12,10 +13,11 @@ import {
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DOCS_NAV, DOCS_SITE_NAME } from './nav/docs-nav';
 import { SettingsComponent } from './shell/settings/settings.component';
-import { SidebarComponent } from './shell/sidebar/sidebar.component';
+import { SidebarComponent, type DocsSectionSelection } from './shell/sidebar/sidebar.component';
 import { DOCS_NARROW_VIEWPORT, DOCS_TOC_VIEWPORT } from './shell/viewport';
 import { DocsTocComponent } from './toc/docs-toc.component';
 import { DocsTocService } from './toc/docs-toc.service';
+import { focusSection } from './toc/focus-section';
 
 /**
  * The site shell: header with the switchers, sidebar, the page and, on a wide viewport, "On this
@@ -35,6 +37,7 @@ import { DocsTocService } from './toc/docs-toc.service';
 })
 export class AppComponent {
   private readonly changeDetector = inject(ChangeDetectorRef);
+  private readonly document = inject(DOCUMENT);
   private readonly main = viewChild.required<ElementRef<HTMLElement>>('main');
   private readonly drawerToggle = viewChild<ElementRef<HTMLButtonElement>>('drawerToggle');
   private readonly sidebar = viewChild.required(SidebarComponent);
@@ -106,9 +109,29 @@ export class AppComponent {
     }
   }
 
-  /** Moves focus to the page on a real page change, so the new content is announced. */
+  /**
+   * A section link of the sidebar was followed. On the current page the router only changes the
+   * fragment (or nothing, if it is already in the URL), so the heading is focused here; on another
+   * page `onNavigated` does it once the page is rendered.
+   */
+  protected onSectionSelected(selection: DocsSectionSelection): void {
+    if (selection.path !== this.path()) {
+      return;
+    }
+
+    // Not closeDrawer(): it moves focus to the drawer button, which would override the heading.
+    this.closeDrawerForPage();
+    focusSection(this.document, selection.id);
+  }
+
+  /**
+   * Moves focus on a real page change, so the new content is announced: to the section named by
+   * the fragment if there is one, otherwise to the page.
+   */
   private onNavigated(url: string): void {
     const path = url.split(/[?#]/)[0] ?? url;
+    // Not split(/[?#]/)[1]: with a query, that would be the query.
+    const fragment = url.split('#')[1];
     const previous = this.path();
 
     this.path.set(path);
@@ -118,12 +141,26 @@ export class AppComponent {
       return;
     }
 
-    if (this.drawerVisible()) {
-      this.drawerOpen.set(false);
-      // The page is inert while the drawer is open; render before focusing it.
+    this.closeDrawerForPage();
+
+    if (fragment) {
+      // The headings get their ids when the new page is rendered.
       this.changeDetector.detectChanges();
+
+      if (focusSection(this.document, fragment)) {
+        return;
+      }
     }
 
     this.main().nativeElement.focus();
+  }
+
+  /** Closes the drawer before focus moves into the page, which is inert while it is open. */
+  private closeDrawerForPage(): void {
+    if (this.drawerVisible()) {
+      this.drawerOpen.set(false);
+      // Render before focusing (the classes and inert sit on elements of this view).
+      this.changeDetector.detectChanges();
+    }
   }
 }

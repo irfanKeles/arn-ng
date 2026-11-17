@@ -2,6 +2,7 @@ import { DOCUMENT } from '@angular/common';
 import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DocsTocService } from './docs-toc.service';
+import { focusSection, isPlainClick } from './focus-section';
 
 /**
  * "On this page": links to the sections of the current page. The shell decides when it is shown
@@ -28,11 +29,8 @@ export class DocsTocComponent {
    * scrolls, which covers a click on the fragment that is already in the URL (the router ignores it).
    */
   protected focusSection(event: MouseEvent, id: string): void {
-    // A modified click opens the link elsewhere; the router ignores it too.
-    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
-      return;
+    if (isPlainClick(event)) {
+      focusSection(this.document, id);
     }
-
-    this.document.getElementById(id)?.focus();
   }
 }

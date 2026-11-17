@@ -7,7 +7,8 @@ import { AppComponent } from './app.component';
 import { routes } from './app.routes';
 import { DOCS_STORAGE } from './settings/docs-storage';
 import { DOCS_NARROW_VIEWPORT, DOCS_TOC_VIEWPORT } from './shell/viewport';
-import { query, queryAs, resetDocument, text } from './testing/dom';
+import { nextTask, query, queryAs, resetDocument, text } from './testing/dom';
+import { expectNoPageOverflow } from './testing/page-overflow';
 
 /** The sidebar; "On this page" is a second navigation landmark. */
 const SIDEBAR_NAV = 'nav[aria-label="Documentation"]';
@@ -69,6 +70,14 @@ describe('AppComponent', () => {
 
   async function pressEscape(shell: Shell): Promise<void> {
     document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await shell.fixture.whenStable();
+  }
+
+  async function search(shell: Shell, value: string): Promise<void> {
+    const field = queryAs(shell.element, 'docs-sidebar input', HTMLInputElement);
+
+    field.value = value;
+    field.dispatchEvent(new Event('input', { bubbles: true }));
     await shell.fixture.whenStable();
   }
 
@@ -153,6 +162,15 @@ describe('AppComponent', () => {
       expect(document.title).toBe('Page not found · arn-ng');
       expect(query(main(element), 'h1').textContent).toBe('Page not found');
       expect(query(element, `${SIDEBAR_NAV} a`).hasAttribute('aria-current')).toBe(false);
+    });
+
+    it('moves focus to the section named by the fragment, also after a query', async () => {
+      const { element, router, fixture } = await setup();
+
+      await router.navigateByUrl('/theming?x=1#density');
+      await fixture.whenStable();
+
+      expect(document.activeElement).toBe(query(element, 'h2#density'));
     });
 
     it('does not move focus when only the fragment changes', async () => {
@@ -448,6 +466,92 @@ describe('AppComponent', () => {
     });
   });
 
+  describe('search', () => {
+    function searchField(element: HTMLElement): HTMLInputElement {
+      return queryAs(element, 'docs-sidebar input', HTMLInputElement);
+    }
+
+    /** Follows a section link and waits for the router (the target page loads lazily). */
+    async function follow(shell: Shell, href: string): Promise<void> {
+      const target = href.split('#')[0] ?? href;
+
+      queryAs(shell.element, `${SIDEBAR_NAV} a[href="${href}"]`, HTMLAnchorElement).click();
+
+      for (let tries = 0; tries < 20 && !shell.router.url.startsWith(target); tries++) {
+        await nextTask();
+      }
+
+      await shell.fixture.whenStable();
+    }
+
+    for (const [where, url] of [
+      ['on the same page', '/theming'],
+      ['on another page', '/installation'],
+    ] as const) {
+      it(`closes the drawer and focuses the heading of a section ${where}`, async () => {
+        const shell = await setup({ narrow: true, url });
+
+        await openDrawer(shell);
+        await search(shell, 'density');
+        await follow(shell, '/theming#density');
+
+        expect(toggle(shell.element).getAttribute('aria-expanded')).toBe('false');
+        expect(main(shell.element).hasAttribute('inert')).toBe(false);
+        expect(document.activeElement).toBe(query(shell.element, 'h2#density'));
+      });
+
+      it(`focuses the heading of a section ${where} in a wide viewport`, async () => {
+        const shell = await setup({ url });
+
+        await search(shell, 'density');
+        await follow(shell, '/theming#density');
+
+        expect(document.activeElement).toBe(query(shell.element, 'h2#density'));
+      });
+    }
+
+    it('keeps the search when the drawer closes, and focuses it when it shows no link', async () => {
+      const shell = await setup({ narrow: true });
+
+      await openDrawer(shell);
+      await search(shell, 'zzz');
+      toggle(shell.element).click();
+      await shell.fixture.whenStable();
+      await openDrawer(shell);
+
+      expect(searchField(shell.element).value).toBe('zzz');
+      expect(document.activeElement).toBe(searchField(shell.element));
+    });
+
+    for (const [state, value, init, open] of [
+      ['clears a search', 'density', {}, true],
+      ['is left to a composing input method', 'density', { isComposing: true }, true],
+      ['closes the drawer from an empty search', '', {}, false],
+    ] as const) {
+      it(`Escape in the search field ${state}`, async () => {
+        const shell = await setup({ narrow: true });
+
+        await openDrawer(shell);
+        await search(shell, value);
+        searchField(shell.element).dispatchEvent(
+          new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true, ...init }),
+        );
+        await shell.fixture.whenStable();
+
+        expect(toggle(shell.element).getAttribute('aria-expanded')).toBe(String(open));
+      });
+    }
+
+    it('does not make a 320px page scroll sideways with the drawer open and a search', async () => {
+      const shell = await setup({ narrow: true });
+
+      await openDrawer(shell);
+      await search(shell, 'density');
+
+      await expectNoPageOverflow(shell.element, () => shell.fixture.whenStable());
+    });
+  });
+
   describe('accessibility', () => {
     const modes: readonly { name: string; config: ArnConfig }[] = [
       { name: 'light', config: { colorScheme: 'light' } },
@@ -492,6 +596,15 @@ describe('AppComponent', () => {
         const shell = await setupMode(true);
 
         await openDrawer(shell);
+
+        await expectNoA11yViolations(shell.element);
+      });
+
+      it(`has no violations in ${mode.name} mode with the drawer open and a search`, async () => {
+        const shell = await setupMode(true);
+
+        await openDrawer(shell);
+        await search(shell, 'density');
 
         await expectNoA11yViolations(shell.element);
       });
