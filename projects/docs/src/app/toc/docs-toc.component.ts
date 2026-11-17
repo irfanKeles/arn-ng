@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, input, DOCUMENT } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DocsTocService } from './docs-toc.service';
 import { focusSection, isPlainClick } from './focus-section';

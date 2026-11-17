@@ -2,7 +2,7 @@ import {
   ApplicationConfig,
   inject,
   provideAppInitializer,
-  provideExperimentalZonelessChangeDetection,
+  provideZonelessChangeDetection,
 } from '@angular/core';
 import { provideRouter, withInMemoryScrolling } from '@angular/router';
 import { provideArn } from '@arn-ng/ui/core';
@@ -12,8 +12,8 @@ import { DocsSettingsService } from './settings/docs-settings.service';
 
 export const appConfig: ApplicationConfig = {
   providers: [
-    // Experimental in Angular 19; the docs app runs zoneless to exercise the library that way.
-    provideExperimentalZonelessChangeDetection(),
+    // Stable since Angular 20.2; the docs app runs zoneless to exercise the library that way.
+    provideZonelessChangeDetection(),
     provideRouter(
       routes,
       withInMemoryScrolling({ scrollPositionRestoration: 'enabled', anchorScrolling: 'enabled' }),

@@ -2,8 +2,11 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": ".",
     "module": "esnext",
+    // TypeScript 6 defaults: no automatic @types, and rootDir is this folder, but the specs
+    // need Jasmine's globals and import the shared helpers from ../ui/testing
+    "types": ["jasmine"],
+    "rootDir": "../..",
     "paths": {
       "@arn-ng/ui/*": ["../ui/*/src/public-api.ts"]
     }

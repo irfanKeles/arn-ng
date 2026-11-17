@@ -1,5 +1,5 @@
-import { DOCUMENT, isPlatformBrowser } from '@angular/common';
-import { inject, InjectionToken, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { inject, InjectionToken, PLATFORM_ID, DOCUMENT } from '@angular/core';
 
 /**
  * Where the settings are kept: the browser's `localStorage`, or `null` when there is none (server,

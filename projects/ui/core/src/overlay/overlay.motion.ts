@@ -1,5 +1,4 @@
-import { DOCUMENT } from '@angular/common';
-import { inject, InjectionToken } from '@angular/core';
+import { inject, InjectionToken, DOCUMENT } from '@angular/core';
 
 /** Slack added to the fallback timer that removes the panel if an animation never settles. */
 const FALLBACK_MARGIN_MS = 50;

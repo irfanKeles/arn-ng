@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -9,6 +8,7 @@ import {
   inject,
   signal,
   viewChild,
+  DOCUMENT,
 } from '@angular/core';
 import { NavigationEnd, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { DOCS_NAV, DOCS_SITE_NAME } from './nav/docs-nav';

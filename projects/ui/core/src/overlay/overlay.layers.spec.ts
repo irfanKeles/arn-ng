@@ -57,6 +57,20 @@ describe('ArnOverlayService: layers', () => {
     expect(overlayContainer().childElementCount).toBe(0);
   });
 
+  it('keeps every preset out of the browser top layer, so the z-index tokens apply', () => {
+    trigger.open('dropdown');
+    trigger.open('popover');
+    trigger.open('modal');
+    trigger.open('tooltip');
+
+    // The whole document, not only the overlay container: a popover host may sit elsewhere
+    const hosts = Array.from(document.querySelectorAll('.arn-overlay-host'));
+
+    expect(hosts.length).toBe(4);
+    expect(hosts.filter((host) => host.hasAttribute('popover'))).toEqual([]);
+    expect(hosts.every((host) => host.parentElement === overlayContainer())).toBe(true);
+  });
+
   it('the tokens are ordered dropdown < popover < modal < toast < tooltip', () => {
     expect(layers.map(token)).toEqual(['1000', '1100', '1200', '1300', '1400']);
   });
