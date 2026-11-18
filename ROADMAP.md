@@ -23,13 +23,13 @@ Kurallar için `.claude/skills/arn-ui-library/SKILL.md` (doküman sitesi: `.clau
 ### Ön kararlar
 Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kararların hiçbirine bağlı DEĞİL; kararlar beklerken button yapılabilir.
 
-- [ ] Karar: `--arn-input` açık temada ≈1.3:1 (WCAG 1.4.11 3:1 ister); `--arn-ring` emsaliyle karara bağla (input, checkbox, select kenarlığı). Önce gelir: input, checkbox, select
+- [x] Karar: `--arn-input` kontrastı (eski ölçüm açık temada 1.26:1; WCAG 1.4.11 3:1 ister). Verildi: input, checkbox ve select kenarlığı için `--arn-input` artık iki temada ≥3:1 (açık `oklch(65% 0 0deg)`, koyu beyaz %40; decisions 2026-11)
 - [ ] Karar: Signal forms stratejisi (CVA'nın yerine geçmez; form bileşenlerinden önce). Önce gelir: input (ve form bileşenlerinin tamamı: input, checkbox, select)
 - [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
 
 ### Bileşenler ve doğrulama
 - [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
-- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). `--arn-input` 1.4.11 kontrastı (açık ≈1.3:1; dark'ta beyaz %15) kararı bekliyor (docs araması bu yüzden `--arn-muted-foreground` kullanıyor). Docs araması yerel `<input>`'tan `arnInput`'a geçer
+- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer
 - [ ] checkbox
 - [ ] select
 - [ ] dialog. Not: modal backdrop renk token'ı bununla gelir (bugün CDK'nın `cdk-overlay-dark-backdrop` rengi)

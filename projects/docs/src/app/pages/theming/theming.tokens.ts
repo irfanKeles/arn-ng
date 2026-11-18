@@ -116,8 +116,9 @@ export const COLOR_TOKENS: readonly DocsApiToken[] = [
   },
   {
     name: '--arn-input',
-    default: 'light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 15%))',
-    description: 'The border of form controls.',
+    default: 'light-dark(oklch(65% 0 0deg), oklch(100% 0 0deg / 40%))',
+    description:
+      'The border of form controls: at least 3:1 against the background in both schemes (darker than shadcn).',
   },
   {
     name: '--arn-ring',

@@ -39,7 +39,7 @@ Sıra: NFD → `\p{M}` sil → `toLowerCase()` → `ı` → `i` → boşlukları
 
 ## 4. Token'lar
 
-Yok. Yalnız `--arn-*`: input kenarlığı `--arn-muted-foreground` (spec iki temada ≥3:1 hesaplar). `--arn-input` KULLANILMAZ: açık temada beyaz üstünde ≈1.3:1 (WCAG 1.4.11'in altında), karar Faz 4'te (ROADMAP). Yükseklik bağlantılarla aynı ifade (`max(--arn-control-min-size, sm × density)`), `box-sizing: border-box`. Etiket bağlantıdan renkle ayrılamaz (bağlantılar da `--arn-muted-foreground`): `--arn-text-xs` + `--arn-font-weight-medium`, hover ve imleç yok.
+Yok. Yalnız `--arn-*`: input kenarlığı `--arn-muted-foreground` (spec iki temada ≥3:1 hesaplar). `--arn-input` henüz kullanılmaz: eski değeri açık temada beyaz üstünde 1.26:1'di; 2026-11'de ≥3:1'e yükseltildi (karar verildi, [decisions/2026-11.md](../../arn-ui-library/decisions/2026-11.md)). Arama Faz 4'te `arnInput`'a geçerken kenarlığı `--arn-input` olur. Yükseklik bağlantılarla aynı ifade (`max(--arn-control-min-size, sm × density)`), `box-sizing: border-box`. Etiket bağlantıdan renkle ayrılamaz (bağlantılar da `--arn-muted-foreground`): `--arn-text-xs` + `--arn-font-weight-medium`, hover ve imleç yok.
 
 ## 5. Davranış ve a11y
 
