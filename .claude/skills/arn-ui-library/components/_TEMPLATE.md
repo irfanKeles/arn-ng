@@ -57,7 +57,7 @@ Yükseklik token'ı max()'li değeri taşır (24px tabanı, WCAG 2.2 SC 2.5.8). 
 
 ## 6. Form uyumu
 
-<!-- ControlValueAccessor, desteklenen durumlar. Form elemanı değilse "Yok". -->
+<!-- FormValueControl / FormCheckboxControl, desteklenen durumlar, bilinen boşluklar (rules/forms-a11y.md). Form elemanı değilse "Yok". -->
 
 ## 7. Kısıtlar ve kararlar
 
