@@ -60,13 +60,14 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 
 ## Teknik backlog
 - [ ] Test hijyeni: `overlay.presets.spec.ts:139-149` düğme temizliği `afterEach`'e taşınmalı
-- [ ] CI: Ubuntu 26 imajında `npx playwright install --with-deps chromium` ve `test:ci` denemesi (24.04 imajının kaldırılma duyurusu gelirse öncelik kazanır)
-- [ ] CI süresi izleme: PR koşusu bir kez 10m23s'ye çıktı, main 1m46s; 5 dakikanın üstü tekrar ederse adım sürelerini ölç
+- [ ] CI: Ubuntu 26 imajında `npx playwright install --with-deps chromium` ve `test:ci` denemesi (24.04 imajının kaldırılma duyurusu gelirse öncelik kazanır). Güncelleme: `--with-deps` yavaşlığının kök nedeni bulundu (aşağıdaki madde); `ci/playwright-no-deps` PR'ı `--with-deps`'i kaldırıyor, böylece apt adımı imaj sürümüne bağlı olmaktan çıkıyor. PR CI'ında doğrulanacak; yeşil çıkarsa kapatılır.
+- [ ] CI süresi izleme: PR koşusu bir kez 10m23s'ye çıktı, main 1m46s; 5 dakikanın üstü tekrar ederse adım sürelerini ölç. Güncelleme: ölçüldü, kök neden apt mirror hızı. "Playwright Chromium" adımı 12 dakikaya çıkabiliyor; `--with-deps` apt ile 32.1 MB font/mesa paketini (fonts-ipafont-gothic, fonts-freefont-ttf, fonts-wqy-zenhei, fonts-unifont, xfonts-*, mesa güncellemeleri) yavaş bir Ubuntu mirror'ından çekiyor (bir koşuda 9m55s, 54 kB/s). Chromium'un asıl kütüphaneleri (libasound2, libnss3, libx11, libgbm1, libcairo2, libpango…) ubuntu-24.04 imajında zaten kurulu, tarayıcı indirmesi ~7 sn. Çözüm: `ci/playwright-no-deps` PR'ı (`npx playwright install chromium`, `timeout-minutes` 15 → 10). PR CI'ında doğrulanacak: toplam süre, Playwright adımının süresi, 755 test, Chromium başlıyor mu. Yeşil ve hızlı çıkarsa iki madde de kapatılır; Chromium eksik kütüphane hatasıyla düşerse yalnız eksik paket `apt-get install` ile tek tek kurulur.
 - [ ] Kök yapılandırma yorumlarının İngilizceye çevirisi (`eslint.config.mjs`, `.github/workflows/ci.yml`, `.github/dependabot.yml`, `projects/docs/src/test-setup.ts`) ve `eslint.config.mjs` mesajlarındaki `SKILL §N` atıflarının yeni kural dosyalarına çevrilmesi (`eslint.config.mjs:25` yorumu "Vitest'e geçişi kolaylaştırmak için" dahil)
 - [ ] Bayat yorumlar: `.github/dependabot.yml` ("Angular 19"), `projects/docs/src/app/pages/installation/installation.data.ts:34` ("Angular 19.2"), `projects/ui/README.md` (CLI 19.2.0 jenerik metni; Faz 5 README maddesiyle birlikte)
 - [ ] `config-direction`: `ambientDirection`'daki CDK 19 yedek dalını kaldır (peer `^22.0.0`)
 - [ ] Kök `dependencies`'teki kullanılmayan `zone.js`'i kaldır
 - [ ] Vitest çıktısında 7 "Pre-transform error" (`@arn-ng/ui` `./core` exports) uyarısı: kaynağını bul. Değişiklikten bağımsız, geri alınca da çıkıyor
+  - Bulgu (`ci/playwright-no-deps` dalı): uyarılar `./core` ve `./locales/tr` export'larının çözümlenememesi; `node_modules/@arn-ng/ui` `projects/ui`'ya junction. `test:ci` çıkış kodu 0, testler geçiyor. Main'de ayrıca ölçülmedi, yalnız bu dalda gözlendi
 - [ ] check-md betiğini repoya al (`tools/check-md.mjs`, bağımlılıksız: bağlantı + 150 satır limiti), npm script + CI adımı
 - [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli)
 - [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)

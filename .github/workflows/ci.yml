@@ -14,9 +14,10 @@ concurrency:
 
 jobs:
   ci:
-    # Sabit: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti; Playwright'ın --with-deps kurulumu sürüme bağlı
+    # Pinned: ubuntu-latest moved to Ubuntu 26 on 2026-10-19, and the browser's system libraries
+    # are not verified there yet (see the Ubuntu 26 trial item in ROADMAP.md)
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
         with:
@@ -30,8 +31,11 @@ jobs:
       - run: npm ci
 
       # Vitest browser mode Playwright'ın Chromium'unda koşar; imajdaki Chrome'a dayanmaz
+      # No --with-deps: the runner image already has the browser libraries; --with-deps pulls
+      # fonts and mesa updates through a mirror that was measured at 54 kB/s (up to 10 minutes).
+      # If a library is missing, Chromium fails to launch with a clear error.
       - name: Playwright Chromium
-        run: npx playwright install --with-deps chromium
+        run: npx playwright install chromium
 
       - run: npm run lint
       - run: npm run format:check
