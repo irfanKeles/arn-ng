@@ -1,6 +1,6 @@
 # ripple (`arnRipple`)
 
-<!-- En fazla 150 satır. Kurallar: ../SKILL.md bölüm 18. -->
+<!-- En fazla 150 satır. Kurallar: ../rules/component-files.md. -->
 
 ## 1. Özet
 
@@ -46,7 +46,7 @@ hostDirectives: [{
 
 ## 3. Token'lar
 
-`theme.css` `:root`'unda dururlar (directive'in stil dosyası olamaz; SKILL §5 "bileşen katmanı bileşenin stilinde" kuralından bilinçli sapma). Hiçbiri başka token'dan `var()` ile türemez, container tuzağı yoktur.
+`theme.css` `:root`'unda dururlar (directive'in stil dosyası olamaz; [../rules/styling.md](../rules/styling.md) "bileşen katmanı bileşenin stilinde" kuralından bilinçli sapma). Hiçbiri başka token'dan `var()` ile türemez, container tuzağı yoktur.
 
 | Ad | Varsayılan | Not |
 |---|---|---|
@@ -82,14 +82,14 @@ Yok.
 ## 7. Kısıtlar ve kararlar
 
 - **Ayrı entry point:** kullanmayan ödemez; core'a tek yönlü bağımlı.
-- **`afterNextRender` KULLANILMAZ:** Angular 19.2'de `@developerPreview` (SKILL §1). Yerine `isPlatformBrowser(inject(PLATFORM_ID))`.
+- **`afterNextRender` yok:** tarayıcıya özgü kurulum `isPlatformBrowser(inject(PLATFORM_ID))` ile korunur. İlk gerekçe (Angular 19.2'de `@developerPreview`) artık geçerli değil: Angular 22'de `afterNextRender` `@publicApi 20.0`; örüntü kalır ([../rules/angular.md](../rules/angular.md)).
 - **`effect()` yok:** config değişimine tepki verilmez, basışta okunur. Uçuştaki dalga config ya da reduced-motion değişince yarıda kesilmez.
 - **`arnRippleColor` olduğu gibi:** %12'ye sarmak reddedildi (tüketici saydamlık veremezdi, girdi ile CSS token'ı farklı davranırdı).
 - **Sönme bırakınca hemen:** "önce büyüme bitsin" (kısa dokunuş ~900 ms) ve ayrı sönme token'ı reddedildi.
 - **DOM doğrudan `Document` ile kurulur** (`createElement`, `remove`), Renderer2 ile değil: yalnız tarayıcıda çalışır ve kaldırma senkron kalır. Dinleyiciler Renderer2 ile.
 - **TS'te yedek değerler** (450 ms, `ease-out`): token okunamadığında; `theme.css` ile eşleşmelidir.
 - **Reduced-motion token'ı kopyadır:** core'daki `ARN_REDUCED_MOTION` dışa açık değil.
-- shadcn'de ripple yoktur; bizim ekimiz (SKILL §5).
+- shadcn'de ripple yoktur; bizim ekimiz ([../rules/styling.md](../rules/styling.md)).
 
 ## 8. Testler
 
@@ -120,4 +120,4 @@ Token ve sınıflar: `projects/ui/testing/theme.spec.ts` (`ripple` grubu, 6 test
 
 - Kod: `projects/ui/ripple/src/`, `projects/ui/theme.css`
 - İlgili: [config.md](config.md), [tokens.md](tokens.md)
-- Doküman sayfası: `/ripple` (`projects/docs/src/app/pages/ripple/`, [docs-site-pages-guides.md](docs-site-pages-guides.md)); bileşenle kullanımı Faz 4 (button)
+- Doküman sayfası: `/ripple` (`projects/docs/src/app/pages/ripple/`, [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md)); bileşenle kullanımı Faz 4 (button)

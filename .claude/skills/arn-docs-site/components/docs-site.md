@@ -1,6 +1,6 @@
 # docs-site (doküman sitesi kabuğu)
 
-<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Kurallar: ../SKILL.md §13, §18. -->
+<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Kurallar: ../SKILL.md, ../../arn-ui-library/rules/docs-page.md, ../../arn-ui-library/rules/component-files.md. -->
 
 ## 1. Özet
 
@@ -16,8 +16,8 @@ Site dili İngilizce'dir (arayüz ve içerik); `<html lang="en">` sabittir. Faz 
 
 ## 2. Mimari ve CDK
 
-- **Tüketim:** build ve Karma kök `tsconfig.json` `paths` ile `dist/ui`'yi kullanır (gerçek tüketici gibi; önce `npm run build:ui`). `projects/docs/tsconfig.json` YALNIZ editör ve ESLint içindir, `@arn-ng/ui/*`'ı kaynağa çözer: CI'da lint build'den önce koşar, `dist` yokken tipler çözülmez ve `strictTypeChecked` düşer (doğrulandı: 29 hata).
-- **Zoneless:** `provideExperimentalZonelessChangeDetection()` (19.2'de developer preview; SKILL §1'in "yalnız kararlı API" kuralı kütüphane içindir). `angular.json`'da docs `build.options.polyfills` (`zone.js`) kaldırıldı.
+- **Tüketim:** build ve testler (Vitest, `docs:build:development,testing` hedefi) kök `tsconfig.json` `paths` ile `dist/ui`'yi kullanır (gerçek tüketici gibi; önce `npm run build:ui`). `projects/docs/tsconfig.json` YALNIZ editör ve ESLint içindir, `@arn-ng/ui/*`'ı kaynağa çözer: CI'da lint build'den önce koşar, `dist` yokken tipler çözülmez ve `strictTypeChecked` düşer (doğrulandı: 29 hata). TypeScript 6 varsayılanları yüzünden `projects/docs/tsconfig.json` ve `tsconfig.spec.json` `types: ["vitest/globals"]` ve `rootDir: "../.."` taşır (spec'ler `../ui/testing`'i import eder).
+- **Zoneless:** `provideZonelessChangeDetection()` (`app.config.ts`; Angular 20.2'den beri `@publicApi`). `angular.json`'da docs build seçeneklerinde `polyfills` yok (`zone.js` yüklenmez); testler için `testing` konfigürasyonu `polyfills: []` verir.
 - **CDK:** yalnız `@angular/cdk/layout` `MediaMatcher`. Kütüphanenin overlay servisi KULLANILMAZ (çekmece düz CSS).
 
 ### Gezinti: `nav/docs-nav.ts`
@@ -39,7 +39,7 @@ Yeni sayfa: bileşeni `pages/<ad>/` altına yaz (host `class: 'docs-page'`), `DO
 
 Sıra: skip link → `<header>` (çekmece düğmesi, site adı, `<docs-settings>`) → `.docs-body` (`<docs-sidebar>`, backdrop, `<main id="docs-main" tabindex="-1">`, geniş ekranda `<docs-toc>`). "On this page" ve üçüncü sütun: [docs-site-toc-api.md](docs-site-toc-api.md).
 
-- **Dar/geniş modu CSS media query değil, TS belirler:** `DOCS_NARROW_VIEWPORT` (`Signal<boolean>`, `(width < 48rem)`, sunucuda `false`) → `.docs-body`'de `docs-narrow` / `docs-drawer-open` sınıfı. Kırılma noktası tek yerde (`shell/viewport.ts`); spec token'ı `signal` ile değiştirir (Karma penceresi 800px, media query ile çekmece sınanamazdı).
+- **Dar/geniş modu CSS media query değil, TS belirler:** `DOCS_NARROW_VIEWPORT` (`Signal<boolean>`, `(width < 48rem)`, sunucuda `false`) → `.docs-body`'de `docs-narrow` / `docs-drawer-open` sınıfı. Kırılma noktası tek yerde (`shell/viewport.ts`); spec token'ı `signal` ile değiştirir (test penceresi 800px genişlikte, Vitest `browserViewport: "800x600"`; media query ile çekmece sınanamazdı).
 - **Sınıflar host'ta DEĞİL, şablondaki elemanda:** `ChangeDetectorRef.detectChanges()` bileşenin host binding'lerini yenilemez; odak taşımadan önce sınıfın yazılmış olması gerekir.
 - **Ayırıcı `main`'dedir** (`border-inline-start`), sidebar'da değil: sidebar sticky için `align-self: start` taşır ve içeriği kadardır. Host flex sütun, `.docs-body` `flex-grow: 1` ile kalan yüksekliği doldurur. Dar modda çizgi yok; çekmece kendi kenarını taşır.
 - `drawerVisible = computed(() => narrow() && drawerOpen())`: pencere genişleyince çekmece kendiliğinden kapalı sayılır (`effect()` yok).
@@ -94,11 +94,11 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- `effect()`, `afterNextRender`, `rxjs-interop` kullanılmaz (kütüphaneyle aynı örüntü): router olaylarına elle abonelik + `DestroyRef`, odak öncesi `detectChanges()`.
+- `effect()`, `afterNextRender`, `rxjs-interop` kullanılmıyor (kütüphaneyle aynı örüntü; yasak değil, kararlılık kuralı: [rules/angular.md](../../arn-ui-library/rules/angular.md)): router olaylarına elle abonelik + `DestroyRef`, odak öncesi `detectChanges()`.
 - Backdrop tıklaması host `(click)` dinleyicisindedir (şablonda tıklanabilir `div` a11y lint'ine takılır; klavye karşılığı Esc).
 - Dil değiştiricinin görünür etkisi 3c'de geldi: Configuration sayfasının "Locale and messages" örneği `injectArnConfig()` ile `locale`, `messages().common` ve gün / ay adlarını gösterir; Türkçe seçilince anında değişir ([docs-site-pages-guides.md](docs-site-pages-guides.md)). Kütüphanede `messages` okuyan bileşen hâlâ yok (Faz 4).
 - Dağıtım (barındırma, `base href`) Faz 5'e bırakıldı.
-- Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](tokens.md) §7).
+- Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](../../arn-ui-library/components/tokens.md) §7).
 
 ### 3b-3e için boşluklar
 
@@ -112,7 +112,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/docs/src/app/**/*.spec.ts` (Karma, zoneless, Jasmine'e özgü API yok). axe yardımcısı kütüphaneninkidir (`projects/ui/testing/a11y.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`, `nextTask`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
+`projects/docs/src/app/**/*.spec.ts` (Vitest browser mode, zoneless). axe yardımcısı kütüphaneninkidir (`projects/ui/testing/a11y.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`, `nextTask`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
 
 | Spec | Kapsam |
 |---|---|
@@ -130,5 +130,5 @@ Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (k
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/`, `projects/docs/src/styles.css`, `projects/docs/tsconfig.json`, `angular.json` (docs)
-- İlgili: [docs-site-examples.md](docs-site-examples.md), [docs-site-toc-api.md](docs-site-toc-api.md), [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
+- İlgili: [docs-site-examples.md](docs-site-examples.md), [docs-site-toc-api.md](docs-site-toc-api.md), [config.md](../../arn-ui-library/components/config.md), [config-direction.md](../../arn-ui-library/components/config-direction.md), [locales.md](../../arn-ui-library/components/locales.md), [tokens.md](../../arn-ui-library/components/tokens.md), [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md)
 - Yerelde: `npm run build:ui` ardından `npm run serve:docs`

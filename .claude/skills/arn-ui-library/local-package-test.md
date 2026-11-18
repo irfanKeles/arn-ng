@@ -35,18 +35,19 @@ $env:npm_config_cache      = "$root\npm-cache"
    npm run build:ui
    Copy-Item -Recurse dist/ui "$root\pkg"; Set-Location "$root\pkg"
    npm pkg set version=0.0.0-local.1
-   npm pack --dry-run                      # dosya listesi: LICENSE, README.md, theme.css, *.d.ts, fesm2022, entry point klasörleri
+   npm pack --dry-run                      # dosya listesi: LICENSE, README.md, package.json, theme.css, fesm2022/, types/arn-ng-ui-*.d.ts (iç package.json'lar girmez)
    npm config get "@arn-ng:registry"       # $reg olmalı, değilse DUR
    npm publish --registry $reg --tag local
    ```
 4. **Tüketici**
    ```powershell
    Set-Location $root
-   npx -y @angular/cli@19 new consumer --skip-git --skip-tests --style=css --ssr=false --package-manager=npm
+   npx -y @angular/cli@22 new consumer --skip-git --skip-tests --style=css --ssr=false --package-manager=npm   # peer aralığındaki majör (şu an ^22.0.0)
    Set-Location consumer
    npm install @arn-ng/ui@0.0.0-local.1    # CDK peer olarak kendiliğinden kurulur; elle verme
+   npm ls @angular/cdk                      # peer'ın kurulduğunu gör (tuzaklara bak)
    ```
-   `src/app/app.component.ts` içinde sınanacak entry point'leri import et, bileşenleri `imports`'a ekleyip şablonda kullan, `src/styles.css`'e `@import '@arn-ng/ui/theme.css';` ekle, sonra `npx ng build` (çıktıdaki `styles-*.css` içinde `--arn-background` olmalı). Tiplerin gerçekten denetlendiğini görmek için bir input'a bilerek yanlış tip ver; build düşmeli.
+   Kök bileşen dosyasında (`src/app/` altında) sınanacak entry point'leri import et, bileşenleri `imports`'a ekleyip şablonda kullan, `src/styles.css`'e `@import '@arn-ng/ui/theme.css';` ekle, sonra `npx ng build` (çıktıdaki `styles-*.css` içinde `--arn-background` olmalı). Tiplerin gerçekten denetlendiğini görmek için bir input'a bilerek yanlış tip ver; build düşmeli.
 5. **Temizlik**
    - Verdaccio'yu durdur (Ctrl+C veya `Stop-Process -Id (Get-NetTCPConnection -LocalPort 4873 -State Listen).OwningProcess`).
    - `Remove-Item -Recurse -Force $root` (önce `$root`'un doğru klasör olduğuna bak).
@@ -56,9 +57,9 @@ $env:npm_config_cache      = "$root\npm-cache"
 
 - Geçici `npmrc` etkinken `npm view @arn-ng/ui --registry https://registry.npmjs.org/` de Verdaccio'ya gider. Gerçek npm'i kontrol etmek için: `Invoke-WebRequest https://registry.npmjs.org/@arn-ng%2fui` (yayından önce 404 beklenir).
 - Boş registry'de ilk yayın `--tag local` verilse bile `latest` etiketini de alır; yalnızca yerelde olduğu için önemsiz.
-- Angular CLI 19, Node 24'te "Unsupported" uyarısı verir; derlemeyi engellemez.
-- Kurulum `ERESOLVE` verirse peer aralığı tüketicinin Angular majörünü kapsamıyordur ya da üstten açık bırakılmıştır (`>=19.0.0` iken npm CDK 22'yi seçmişti; dördüncü çalıştırma). Aralık yalnız test edilmiş majörleri taşır (SKILL §3).
-- `dist/ui` içindeki iç `package.json`'lar (`core/package.json`, `locales/tr/package.json`) tarball'a GİRMEZ (ng-packagr `.npmignore`); yalnız workspace içi çözümleme içindir. Tüketici `exports`'tan çözer.
+- Kurulum `ERESOLVE` verirse peer aralığı tüketicinin Angular majörünü kapsamıyordur ya da üstten açık bırakılmıştır (`>=19.0.0` iken npm CDK 22'yi seçmişti; dördüncü çalıştırma). Aralık yalnız test edilmiş majörleri taşır ([rules/architecture.md](rules/architecture.md)).
+- `dist/ui` içindeki iç `package.json`'lar (`core/package.json`, `locales/tr/package.json`) tarball'a GİRMEZ (ng-packagr `.npmignore`); yalnız workspace içi çözümleme içindir. Tüketici `exports`'tan çözer. Tipler ng-packagr 22'de `types/arn-ng-ui-*.d.ts` altında toplanır.
+- Tüketici projede `npm ls`'e `--depth=0` verme: CDK peer olarak kendiliğinden kurulur ama tüketicinin `package.json`'ında olmadığı için üst düzeyde listelenmez. Görmek için `npm ls @angular/cdk`.
 - Henüz export'u olmayan entry point yalnızca "import çözülüyor"u kanıtlar. Bileşen derlemesi/linklemesi gerçek bir bileşenle sınanır.
 
 ## İlk çalıştırma (2026-10)
@@ -88,3 +89,7 @@ Peer'lar `>=19.0.0` → `^19.0.0` olunca yapıldı (sürüm `0.0.0-local.5`). Ka
 ## Yedinci çalıştırma (2026-10, `@arn-ng/ui/ripple`)
 
 Yeni entry point (`@arn-ng/ui/ripple`) eklenince yapıldı (46 dosya, sürüm `0.0.0-local.7`). `exports["./ripple"]` ng-packagr tarafından kendiliğinden üretildi, elle düzenleme gerekmedi. Kanıtlanan: Angular 19.2.25 tüketicide yalnız `npm install @arn-ng/ui@0.0.0-local.7` kurulumu bitiriyor (CDK 19.2.19 kendiliğinden); `import { ArnRippleDirective } from '@arn-ng/ui/ripple'` ve şablonda `<button arnRipple [arnRippleCentered]="true">` ile `[arnRipple]="on" arnRippleColor="…"` kullanan kodla `ng build` geçiyor (ripple'ın `@arn-ng/ui/core` import'u tüketicide çözülüyor); çıktı CSS'inde `--arn-ripple-color`, `.arn-ripple-container`, `.arn-ripple-wave`, çıktı JS'inde `arn-ripple-container` var. Build'i düşürenler (dördü de denendi): `ArnRippleDirective`'i `@arn-ng/ui/core`'dan import (TS2305), `@arn-ng/ui/ripple`'da olmayan ad (TS2305), `@arn-ng/ui/ripple/src/ripple.motion` derin import'u (TS2307 + "Could not resolve"), `[arnRippleColor]="5"` (NG2). Bulgu: tüketicinin CSS küçültücüsü `--arn-ripple-duration: 450ms`'yi `.45s` yapıyor; directive `ms` ve `s`'yi (baştaki sıfırsız da) ayrıştırdığı için sorun değil, spec bunu sabitler. Temizlik doğrulandı (geçici klasör yok, `.npmrc` yok, scope registry `undefined`, gerçek npm'de paket 404). Kanıtlanmayan: çalışma zamanı davranışı (tarayıcıda açılmadı; davranış Karma spec'lerinde), SSR, en güncel Angular / CDK 20+.
+
+## Sekizinci çalıştırma (2026-11, Angular 22)
+
+Peer'lar `^19.0.0` → `^22.0.0` olunca yapıldı (Verdaccio 6.11.2, sürüm `0.0.0-local.8`). Tarball 17 dosya: ng-packagr 22 tipleri `types/` altında topluyor, entry point klasörleri (iç `package.json`'lar) girmiyor, `exports` beş entry point'i doğru gösteriyor. Kanıtlanan: Angular 22.2.6 tüketicide yalnız `npm install @arn-ng/ui@0.0.0-local.8` `ERESOLVE` vermeden bitiyor ve `@angular/cdk@22.2.7`'yi peer olarak kendiliğinden kuruyor; `provideArn` + `ARN_MESSAGES_TR`, RTL `[arnConfig]`, `arnRipple` ve `ArnOverlayService.open()` / `close()` kullanan kodla `ng build` geçiyor; çıktıda `usePopover:!1` var. Build'i düşürenler (beşi de denendi): `layer: 'nope'`, `size: 'huge'` ve `density="dense"` (TS2322), derin import (TS2307), ripple'ı `@arn-ng/ui/core`'dan import (TS2305). Temizlik doğrulandı, gerçek npm'de paket 404. Çalışma zamanı davranışı ve SSR bu çalıştırmada raporlanmadı.

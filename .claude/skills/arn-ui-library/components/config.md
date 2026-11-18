@@ -22,7 +22,7 @@ Dışa açılan tipler: `ArnConfig`, `ArnRootConfig`, `ArnResolvedConfig`, `ArnC
 | `density` | `'comfortable' \| 'compact'` | `comfortable` |
 | `colorScheme` | `'light' \| 'dark' \| 'system'` | `system` |
 | `direction` | `'ltr' \| 'rtl' \| 'auto'` | `auto`; okunurken hep `ltr` / `rtl` ([config-direction.md](config-direction.md)) |
-| `ripple` | `boolean` | `false` (SKILL §5) |
+| `ripple` | `boolean` | `false` ([../rules/styling.md](../rules/styling.md)) |
 | `locale` | `string` (BCP 47) | Angular `LOCALE_ID` (`en-US`) |
 | `messages` | `ArnDeepPartial<ArnMessages>` | İngilizce + Intl ([config-messages.md](config-messages.md)); diller [locales.md](locales.md) |
 | `forms` | `{ showErrorsOn?: 'touched' \| 'dirty' \| 'submitted' }` | `touched` |
@@ -98,13 +98,13 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 
 ## 6. Form uyumu
 
-`forms.showErrorsOn` yalnızca değeri taşır. Form elemanları Faz 4'te `injectArnConfig().forms` ile okur (SKILL §7).
+`forms.showErrorsOn` yalnızca değeri taşır. Form elemanları Faz 4'te `injectArnConfig().forms` ile okur ([../rules/forms-a11y.md](../rules/forms-a11y.md)).
 
 ## 7. Kısıtlar ve kararlar
 
-- **`effect()` yok:** Angular 19'da developer preview (SKILL §1). Kök değerler yalnızca servis metotlarıyla değiştiği için DOM yazımı `update` içinde senkron yapılır; zone ve change detection'a bağlı değildir.
+- **`effect()` yok:** kök değerler yalnızca servis metotlarıyla değiştiği için DOM yazımı `update` içinde senkron yapılır; zone ve change detection'a bağlı değildir. İlk gerekçe (Angular 19'da developer preview) artık geçerli değil (`effect` Angular 20'den beri `@publicApi`); örüntü tasarım gereği kalır ([../rules/angular.md](../rules/angular.md)).
 - **Bilinmeyen alan / geçersiz değer:** `sanitizeConfig` (`config.merge.ts`) `provideArn` ve `update` girişinde atar; atılan alan bir alt öncelikten çözülür. Atma her modda, `console.warn` yalnızca geliştirme modunda (`dev-mode.ts`, `ngDevMode`). Uyarı metinleri prod bundle'da kalır (küçük). `validators` tablosu `satisfies Record<keyof ArnConfig, …>`: arayüze alan eklenip tablo unutulursa derleme düşer. Direktif input'larını şablon derleyicisi denetler, orada çalışmaz.
-- **`ngDevMode`** Angular 19'da global tip olarak bildirilmiyor; `dev-mode.ts` kendi `declare const`'unu taşır.
+- **`ngDevMode`:** `dev-mode.ts` kendi modül içi `declare const ngDevMode: unknown`'unu taşır (Angular 19'un tipleri onu global bildirmiyordu). Angular 22'nin tipleri bildiriyor (`@angular/core/types/_event_dispatcher-chunk.d.ts`, `declare global`); yerel bildirimin kaldırılabilirliği denenmedi.
 - **`provideArn` yalnızca kök içindir.** Route sağlayıcılarında çağrılırsa okunmaz; bölüm ayarı için `[arnConfig]`.
 - **Geri alma yok:** servisle verilen bir alan "varsayılana dön" diye silinemez; açık değer verilir.
 - **Reddedilenler:** direktifte tek obje input'u (`[arnConfig]="{…}"`; ayrı input'lar şablonda tip denetlenir ve tek tek değişir); token'ları dışa açmak; `ArnMessages` için module augmentation; servisin scope olması (iç üyeyi public yapardı).
@@ -112,7 +112,7 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 
 ## 8. Testler
 
-`projects/ui/core/src/config/*.spec.ts` (zoneless, Jasmine'e özgü API yok; `console.warn` `testing/console.ts` ile elle yakalanır).
+`projects/ui/core/src/config/*.spec.ts` (Vitest, zoneless; `console.warn` `testing/console.ts` ile elle yakalanır).
 
 | Spec | Kapsam |
 |---|---|
@@ -121,16 +121,16 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 | `config.directive.spec.ts` | Dört basamaklı öncelik, üç seviye iç içe bölüm, `undefined`'a dönüş, servis değişimini izleme, host yansıması, `theme.css` ile `--arn-density`, axe; `injectArnConfig` context dışı hata |
 | `config.direction.spec.ts` | Yön ve locale zinciri: [config-direction.md](config-direction.md) §8 |
 | `messages.spec.ts` | [config-messages.md](config-messages.md) §8 |
-| `config.types.spec.ts` | Derleme zamanı: 11 `@ts-expect-error` (Karma derlemesi kullanılmayan direktifte düşer; doğrulandı) |
+| `config.types.spec.ts` | Derleme zamanı: 11 `@ts-expect-error` (kullanılmayan direktifte derlemenin düştüğü 2026-10'da Karma derlemesiyle doğrulandı; Vitest `test-build` derlemesiyle yeniden denenmedi) |
 
 `<html>` ortak durumdur: `applyToDocument` kullanan spec `afterEach`'te `resetDocument(document)` çağırır (`testing/document.ts`; `data-density` her çağrıda yazılır, yalnız `dir` silmek sızdırır). `<html>`'in temiz olduğunu sınayan spec ayrıca `beforeEach`'te sıfırlar.
 
 Boşluklar: SSR'da çalıştırma yok; gerçek bileşenle sınama Faz 4.
 
-Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). `baseUrl: "."` Karma (webpack) içindir: yoksa `paths` çalışma dizinine göre çözülür ve entry point'ler arası çalışma zamanı import'u düşer (ilk örnek: ripple → core). Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.
+Spec ve ESLint `projects/ui/tsconfig.json`'u kullanır: `@arn-ng/ui/*` kaynağa (`./*/src/public-api.ts`) çözülür, `dist` gerekmez (CI'da lint build'den önce koşar). `baseUrl` yok (TypeScript 6'da kullanımdan kalktı): `paths` bildirildiği tsconfig'in klasörüne göre çözülür; `types: ["vitest/globals"]`. Spec'ler `tsconfig.spec.json` (bunu genişletir) ile `test-build` hedefinde derlenir; entry point'ler arası çalışma zamanı import'u (ripple → core) kaynağa çözülür. Kütüphane build'i `tsconfig.lib.json` ile kök `paths`'te kalır.
 
 ## 9. Bağlantılar
 
 - Kod: `projects/ui/core/src/config/`, `projects/ui/core/src/public-api.ts`
 - Devamı: [config-messages.md](config-messages.md), [config-direction.md](config-direction.md), [locales.md](locales.md)
-- Doküman sayfası: Faz 3 (Yapılandırma)
+- Doküman sayfası: `/configuration` ([docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

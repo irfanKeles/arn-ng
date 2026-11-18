@@ -23,7 +23,7 @@ Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri (`ArnSize`, `ArnDensity`
 - **Density:** `--arn-density` çarpanı. `:root`'ta 1; `[data-density='compact']` 0.875, `[data-density='comfortable']` 1 yapar. Kalıtımla iner, en yakın `data-density` geçerlidir, iç içe çalışır.
 - **Kural sırası:** `[data-density]` kuralları `:root` bloğundan SONRA durur. İkisi aynı özgüllüktedir (0,1,0); `<html data-density="compact">` ancak bu sırayla çalışır. Spec sabitler.
 
-### Host'ta hesaplama örüntüsü (SKILL §5)
+### Host'ta hesaplama örüntüsü ([../rules/styling.md](../rules/styling.md))
 
 ```css
 :host {
@@ -117,4 +117,4 @@ Yok.
 - Kod: `projects/ui/theme.css`
 - Ana dosya: [tokens.md](tokens.md)
 - Kaynaklar: https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/button.tsx , https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/input.tsx , https://www.w3.org/TR/WCAG22/#target-size-minimum
-- Doküman sayfası: `/theming` ("Sizes", "Density"; [docs-site-pages-guides.md](docs-site-pages-guides.md))
+- Doküman sayfası: `/theming` ("Sizes", "Density"; [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

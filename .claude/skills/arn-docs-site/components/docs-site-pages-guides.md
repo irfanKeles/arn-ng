@@ -1,6 +1,6 @@
 # docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming, Accessibility)
 
-<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Spec yardımcıları: docs-site-pages.md. Ana dosya: docs-site.md. Kurallar: ../SKILL.md §13, §16, §18. -->
+<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Spec yardımcıları: docs-site-pages.md. Ana dosya: docs-site.md. Kurallar: ../SKILL.md, ../../arn-ui-library/rules/docs-page.md, ../../arn-ui-library/rules/component-files.md; kararlar: ../../arn-ui-library/decisions/. -->
 
 ## 1. Özet
 
@@ -18,7 +18,7 @@ Gezinti: Getting started → Overview, Installation; Guides → Configuration, T
 
 ### Ripple (`/ripple`)
 
-Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibility`, `api`, `styling`. Kaynak [ripple.md](ripple.md) §1-5.
+Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibility`, `api`, `styling`. Kaynak [ripple.md](../../arn-ui-library/components/ripple.md) §1-5.
 
 | Konu | Karar |
 |---|---|
@@ -42,7 +42,7 @@ Bölümler: `requirements`, `install`, `theme`, `configuration`, `imports`. Örn
 
 ### Configuration (`/configuration`)
 
-Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-and-messages`, `direction`. Kaynak kod (`config.types.ts`, `config.defaults.ts`, `config.directive.ts`, `config.service.ts`) ve [config.md](config.md), [config-messages.md](config-messages.md), [config-direction.md](config-direction.md), [locales.md](locales.md). SKILL §13'ün "RTL ve i18n" başlığı bu sayfanın iki bölümüdür.
+Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-and-messages`, `direction`. Kaynak kod (`config.types.ts`, `config.defaults.ts`, `config.directive.ts`, `config.service.ts`) ve [config.md](../../arn-ui-library/components/config.md), [config-messages.md](../../arn-ui-library/components/config-messages.md), [config-direction.md](../../arn-ui-library/components/config-direction.md), [locales.md](../../arn-ui-library/components/locales.md). Site yapısındaki ([../SKILL.md](../SKILL.md)) "RTL ve i18n" başlığı bu sayfanın iki bölümüdür.
 
 | Konu | Karar |
 |---|---|
@@ -51,11 +51,11 @@ Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-a
 | Tuzak | Density / colorScheme / direction CSS ile çalışır: `applyToDocument` ya da bölüm olmadan görsel etki yok; `<html lang>` yazılmaz |
 | Dil örneği | `locale.example`: `injectArnConfig()` → `locale()`, `messages().common` (ok, cancel, confirm), `datePicker.monthNames` / `dayNamesShort`. Başlıktaki Language Türkçe'ye geçince anında değişir (docs-site.md §7'deki boşluk kapandı) |
 | Bölüm örneği | `sections.example` önceki örneğin bileşenini üç yerde kullanır (bölümün içinde okumak için bileşen gerekir; TS sekmesi bunu söyler): uygulama, yalnız `locale="de-DE"` (adlar Almanca, metinler UYGULAMANINKİ), `locale="tr-TR"` + `ARN_MESSAGES_TR` (her zaman Türkçe) |
-| Bağlantılar | `/installation`, `/ripple`, `/theming`; Accessibility henüz yok |
+| Bağlantılar | `/installation`, `/ripple`, `/theming`; `/accessibility`'ye bağlantı yok (sayfa sonradan geldi, eklenmedi) |
 
 ### Theming (`/theming`)
 
-Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `overriding`. Kaynak `theme.css`, [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md). SKILL §13'ün "Yoğunluk" başlığı bu sayfanın bölümüdür.
+Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `overriding`. Kaynak `theme.css`, [tokens.md](../../arn-ui-library/components/tokens.md), [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md). Site yapısındaki ([../SKILL.md](../SKILL.md)) "Yoğunluk" başlığı bu sayfanın bölümüdür.
 
 | Konu | Karar |
 |---|---|
@@ -69,7 +69,7 @@ Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `over
 
 ### Accessibility (`/accessibility`)
 
-Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `testing`, `known-limits`. Kaynak SKILL §8 ve §15, [tokens-sizes.md](tokens-sizes.md) (SC 2.5.8), [ripple.md](ripple.md) §5, `projects/ui/testing/a11y.ts`. Örnek yok, beş kod bloğu.
+Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `testing`, `known-limits`. Kaynak [rules/forms-a11y.md](../../arn-ui-library/rules/forms-a11y.md) ve [rules/quality.md](../../arn-ui-library/rules/quality.md), [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md) (SC 2.5.8), [ripple.md](../../arn-ui-library/components/ripple.md) §5, `projects/ui/testing/a11y.ts`. Örnek yok, beş kod bloğu.
 
 | Konu | Karar |
 |---|---|
@@ -77,7 +77,7 @@ Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `
 | Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (theme.spec.ts yöntemi) yeniden hesaplar ve metinde arar |
 | Token'lar | Tablo YOK (kapsam değişmezi iki sayfada belgelemeyi yasaklar); `/theming`'e bağlanır. Spec `docs-token-table` / `docs-api-table` olmadığını sınar |
 | axe örneği | Kütüphanenin iç test yardımcısı; kod yorumu paketin parçası olmadığını söyler |
-| Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok (aramanın sonuç duyurusu dahil, 3d); Karma gerçek tuşla kaydırmayı sınayamaz; ripple klavyede dalga çizmez (karar) |
+| Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok (aramanın sonuç duyurusu dahil, 3d); test çalıştırıcısı gerçek tuşla kaydırmayı sınayamaz (sayfa metni çalıştırıcıyı adlandırmaz); ripple klavyede dalga çizmez (karar) |
 | Bağlantılar | `/ripple`, `/configuration`, `/theming`; Theming (Sizes) ve Ripple (Accessibility) buraya bağlanır |
 
 **Token kapsamı değişmezi** (`pages/token-coverage.spec.ts`): `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da açık izin listesinde (nerede belgelendiği notuyla) olmalı; token tek sayfada belgelenir; listedeki her ad temada var ve hiçbir sayfada yok. Bugün listede yalnız `--arn-z-*` (Overlay sayfası gelene kadar, tokens.md §3). Yeni sayfanın tabloları `DOCUMENTED`'a eklenir.
@@ -105,7 +105,7 @@ Yok. Ripple `config` örneğinde yerel onay kutusu (etiketli).
 ## 7. Kısıtlar ve kararlar
 
 - Sayfa metni yalnız koddan doğrulanan iddiaları taşır (ör. "kök entry point boş": `public-api.ts`; "provideArn'sız varsayılan": `ARN_ROOT_CONFIG` `optional`).
-- **Bundle (prod, ölçüldü):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. Theming ile 259.90 → 260.09 kB ham (72.96 → 73.02 kB aktarım; `main` +0.11 nav, ortak parça +0.08); Theming parçası 32.83 kB ham / 7.56 kB aktarım. Accessibility ile 260.09 → 260.40 kB ham (73.02 → 73.08 kB aktarım; `main` +0.14 nav, ortak parça +0.17); Accessibility parçası 8.49 kB. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
+- **Bundle (prod, Angular 19 ile ölçüldü; yeniden ölçülmedi):** Ripple ile initial 252.54 → 259.19 kB (ortak bağımlılıklar initial parçalara ayrıldı; sayfa kodu, örnek metni, Shiki initial'da yok). Installation +0.37 kB (`main` nav, `styles` `.docs-note`). Configuration ile 259.56 → 259.90 kB ham (73.23 → 72.96 kB aktarım): esbuild ortak parçaları yeniden böldü (iki parça birleşti, 294 B yeni parça, `main` −0.11); tembelde örnek bloğu ve tablolar Ripple ile Configuration'ın ortak parçasına çıktı (9.85 kB; Ripple 31.11 → 21.69 kB), Configuration 17.99 kB. Theming ile 259.90 → 260.09 kB ham (72.96 → 73.02 kB aktarım; `main` +0.11 nav, ortak parça +0.08); Theming parçası 32.83 kB ham / 7.56 kB aktarım. Accessibility ile 260.09 → 260.40 kB ham (73.02 → 73.08 kB aktarım; `main` +0.14 nav, ortak parça +0.17); Accessibility parçası 8.49 kB. `docs-highlight` ilk "Show code"da (677.55 kB ham / 87.69 kB aktarım).
 
 ## 8. Testler
 
@@ -131,4 +131,4 @@ Boşluklar: gerçek `prefers-reduced-motion`, dokunmatik basış ve başlıktaki
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/pages/`
-- İlgili: [docs-site-pages.md](docs-site-pages.md), [docs-site.md](docs-site.md), [ripple.md](ripple.md), [config.md](config.md), [locales.md](locales.md)
+- İlgili: [docs-site-pages.md](docs-site-pages.md), [docs-site.md](docs-site.md), [ripple.md](../../arn-ui-library/components/ripple.md), [config.md](../../arn-ui-library/components/config.md), [locales.md](../../arn-ui-library/components/locales.md)

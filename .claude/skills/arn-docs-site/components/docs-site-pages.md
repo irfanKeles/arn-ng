@@ -1,6 +1,6 @@
 # docs-site-pages (doküman sayfalarının doğrulama yardımcıları)
 
-<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Sayfaların kendisi: docs-site-pages-guides.md. Ana dosya: docs-site.md; tablolar: docs-site-toc-api.md. Kurallar: ../SKILL.md §13, §16, §18. -->
+<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Sayfaların kendisi: docs-site-pages-guides.md. Ana dosya: docs-site.md; tablolar: docs-site-toc-api.md. Kurallar: ../SKILL.md, ../../arn-ui-library/rules/docs-page.md, ../../arn-ui-library/rules/component-files.md; kararlar: ../../arn-ui-library/decisions/. -->
 
 ## 1. Özet
 
@@ -18,7 +18,7 @@ Adım 3c-1b ve sonrası. Yardımcılar yalnız spec'lerde kullanılır (`propert
 
 ### API karşılaştırması: bileşen ve directive
 
-`apiMismatches(type, { inputs, outputs })` önce `reflectComponentType` (public, 19'da kararlı) dener; `null` gelirse (directive) `directiveTemplateNames`'e düşer.
+`apiMismatches(type, { inputs, outputs })` önce `reflectComponentType` (Angular 22'de `@publicApi`) dener; `null` gelirse (directive) `directiveTemplateNames`'e düşer.
 
 | Parça | Davranış |
 |---|---|
@@ -27,9 +27,9 @@ Adım 3c-1b ve sonrası. Yardımcılar yalnız spec'lerde kullanılır (`propert
 | `any` yok | Tanım `unknown` olarak alınır, `typeof` / `Array.isArray` ile daraltılır |
 | Mesajlar | "the code has it, the table does not" / "the table has it, the code does not" (bileşen ve directive için aynı) |
 
-Angular 19'da ɵdir: `inputs: { arnRipple: ['arnRipple', 1, null], … }`, `outputs: { ad: 'ad' }`. Signal input'ta `transform` signal'in içindedir; üçüncü eleman `null` kalır (`transform: booleanAttribute` olsa da).
+ɵdir şekli (Angular 19 ile yazıldı; Angular 22.2'de şekil spec'i `expect-api.spec.ts` geçiyor): `inputs: { arnRipple: ['arnRipple', 1, null], … }`, `outputs: { ad: 'ad' }`. Signal input'ta `transform` signal'in içindedir; üçüncü eleman `null` kalır (`transform: booleanAttribute` olsa da).
 
-**Neden ɵ:** directive'in girdilerini okuyan public API yok. B (bilinen girdiyi şablonda bağlamak) belgelenmemiş girdiyi yakalamaz; C (`.d.ts` metnini ayrıştırmak) `dist`'e bağlanır. ɵ yalnız test kodunda; kütüphaneye GİRMEZ (SKILL §16).
+**Neden ɵ:** directive'in girdilerini okuyan public API yok. B (bilinen girdiyi şablonda bağlamak) belgelenmemiş girdiyi yakalamaz; C (`.d.ts` metnini ayrıştırmak) `dist`'e bağlanır. ɵ yalnız test kodunda; kütüphaneye GİRMEZ ([karar](../../arn-ui-library/decisions/2026-10.md)).
 
 ### Token karşılaştırması: `tokenMismatches`
 
@@ -56,7 +56,7 @@ Angular 19'da ɵdir: `inputs: { arnRipple: ['arnRipple', 1, null], … }`, `outp
 
 ### Sayfa taşması: `pageOverflow`, `expectNoPageOverflow`
 
-`testing/page-overflow.ts`. Her sayfa spec'inde (ve bundan sonraki her sayfada) "320px'te sayfa taşmaz" testi. Eleman yerinden alınır, taban ölçülür (`max(scrollWidth, clientWidth)`: Karma'nın Jasmine raporlayıcısı pencereden birkaç px geniş), sonra **pencerenin sağ kenarına yaslı** 320px'lik kapsayıcıya konur ve `document.documentElement.scrollWidth`'in tabandan büyümediği ölçülür. Sağ kenara yaslamak şart: Karma penceresi ~734px; ortada duran 320px kapsayıcıdan kaçan metin pencere içinde kalır ve belgeyi genişletmez (ilk sürüm 3c fix'teki hatayı bu yüzden kaçırdı; yaslı sürüm 63px yakaladı). `.docs-page.scrollWidth` ölçülmez: kaydırma kapsayıcısından kaçan mutlak eleman atalarını genişletmez. Yalnız LTR.
+`testing/page-overflow.ts`. Her sayfa spec'inde (ve bundan sonraki her sayfada) "320px'te sayfa taşmaz" testi. Eleman yerinden alınır, taban ölçülür (`max(scrollWidth, clientWidth)`: kodun yorumuna göre test çalıştırıcısının kendi sayfası pencereden birkaç px taşabilir; Karma'nın raporlayıcısı taşıyordu, Vitest'in sayfasında taşıp taşmadığı ölçülmedi, taban korunuyor), sonra **pencerenin sağ kenarına yaslı** 320px'lik kapsayıcıya konur ve `document.documentElement.scrollWidth`'in tabandan büyümediği ölçülür. Sağ kenara yaslamak şart: test penceresi 320px'ten geniş (Vitest `browserViewport: "800x600"`; Karma'da ~734px idi); ortada duran 320px kapsayıcıdan kaçan metin pencere içinde kalır ve belgeyi genişletmez (ilk sürüm 3c fix'teki hatayı bu yüzden kaçırdı; yaslı sürüm 63px yakaladı). `.docs-page.scrollWidth` ölçülmez: kaydırma kapsayıcısından kaçan mutlak eleman atalarını genişletmez. Yalnız LTR.
 
 Örnek bloğuna önleyici `position: relative` VERİLMEZ (karar): konumsuz host, örnek CSS'inde eksik `position: relative`'i görünür kılar; konumlamak "kopyalanınca çalışır" kuralının ihlalini maskelerdi.
 

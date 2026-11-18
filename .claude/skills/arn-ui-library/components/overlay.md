@@ -39,7 +39,8 @@ const result = await ref.closed;      // içerik: inject(ArnOverlayRef).close('x
 
 `@angular/cdk/overlay` (`Overlay`, konum ve scroll stratejileri), `@angular/cdk/portal`, `@angular/cdk/a11y` (`FocusTrapFactory`), `@angular/cdk/bidi`. CDK'nın alt çizgili yardımcıları kullanılmaz (aktif eleman ve olay hedefi elle okunur).
 
-- **CDK yapısal CSS'i:** CDK 19.0.0+ `Overlay.create()` içinde kendisi yükler (`_CdkPrivateStyleLoader`); tüketici `overlay-prebuilt.css` EKLEMEZ. Kaynaktan doğrulandı (19.0.0, 19.1.0, 19.2.19).
+- **CDK yapısal CSS'i:** CDK overlay oluştururken kendisi yükler (`_CdkPrivateStyleLoader`; 22.2.7'de `createOverlayRef` içinde, `fesm2022/_overlay-module-chunk.mjs`); tüketici `overlay-prebuilt.css` EKLEMEZ. Önceden 19.0.0, 19.1.0, 19.2.19 kaynağında da doğrulanmıştı.
+- **Top layer yok (`usePopover: false`):** CDK 21+ overlay'i varsayılan olarak tarayıcının top layer'ına koyar (`OVERLAY_DEFAULT_CONFIG?.usePopover ?? true`; host `popover="manual"` alır, overlay container'dan çıkar). Top layer'da z-index işlemez: `--arn-z-*` sırası ve backdrop'un paneline bitişik sırası bozulur. `ArnOverlayService` `overlay.service.ts`'te yalnız kendi overlay'leri için `usePopover: false` verir; global `OVERLAY_DEFAULT_CONFIG` VERMEZ, tüketicinin kendi CDK overlay'leri CDK varsayılanında kalır. `overlay.layers.spec.ts` ("keeps every preset out of the browser top layer") belgede `popover` öznitelikli host kalmadığını sınar.
 - **DOM:** `.cdk-overlay-container` > [`backdrop`] + `host` > `pane` > içerik. Host (`overlayRef.hostElement`) kendi stacking context'ini kurar; sırayı host ve backdrop z-index'i belirler, pane'inki belirlemez.
 - **Ayar mirası** (overlay `<body>` sonunda, `[arnConfig]` bölümünün dışında render edilir):
 
@@ -93,7 +94,7 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- **Servis adı `ArnOverlayService`:** eksiz ad element sınıfıdır (SKILL §2); `<arn-dialog>` → `ArnDialog`, servisi `ArnDialogService`.
+- **Servis adı `ArnOverlayService`:** eksiz ad element sınıfıdır ([../rules/architecture.md](../rules/architecture.md)); `<arn-dialog>` → `ArnDialog`, servisi `ArnDialogService`.
 - **`closed` Promise'tir, RxJS değil:** tek seferlik, sızıntı yok, public tipe rxjs girmez (peer değil). Durum için `state` signal'i.
 - **Tema/density DOM'dan okunur, DI'dan değil:** çözülmüş config her zaman değer taşır ("yalnız verilmişse yaz" ayırt edilemez) ve `applyToDocument`'sız `provideArn({ density })` overlay'i sayfadan farklı boyardı.
 - **Katman kuralları `theme.css`'te:** ayrı dosya ve çalışma zamanında stil enjeksiyonu reddedildi. İki sınıflı seçici: CDK'nın `@layer cdk-overlay`'ini ve (yüklenmişse) `overlay-prebuilt.css`'i yener; tek sınıf tek başına etkisizdir.
@@ -110,6 +111,7 @@ Yok.
 | İçerikte 'closed' ile başlayan sonsuz animasyon | Beklenmez, hemen kaldırılır |
 | Üst overlay z-index'i açılıştan sonra değişir | İç içe yükseltme anlık değerdir |
 | `ComponentPortal` içerik `viewContainerRef`'siz | `ApplicationRef`'e bağlanır; DI yine `config.injector`'dan |
+| Tüketici Material 21+ ya da başka bir CDK overlay'ini CDK varsayılanıyla kullanıyor | O overlay'ler top layer'da kalır ve `--arn-z-*` sırasından bağımsız olarak bizimkilerin üstünde görünür (CDK varsayılanından çıkarım; Material ile denenmedi) |
 
 ## 8. Testler
 
@@ -117,7 +119,7 @@ Yok.
 
 | Spec | Kapsam |
 |---|---|
-| `overlay.layers.spec.ts` | Katman başına host + backdrop z-index = token; token değişimini izleme; backdrop/panel ve aynı katman sırası; dialog içi dropdown ve modal yükseltme; yüksek katman dokunulmaz |
+| `overlay.layers.spec.ts` | Hiçbir host `popover` özniteliği taşımaz (top layer yok); katman başına host + backdrop z-index = token; token değişimini izleme; backdrop/panel ve aynı katman sırası; dialog içi dropdown ve modal yükseltme; yüksek katman dokunulmaz |
 | `overlay.inherit.spec.ts` | Bölüm içi/dışı; `theme.css` etkisi; component ve template içerikte `injectArnConfig` + `Directionality`; origin'siz modal; `<html>` yazılmaz; elle `.dark` / `.light`; iç içe; canlı yön ve `size`; anlık görüntü sınırı |
 | `overlay.presets.spec.ts` | Modal: ortalama, odak, tuzak, geri verme, kaydırma kilidi, Esc, backdrop, axe. Popover/dropdown: konum, RTL `start` / `end`, çevirme + `data-side`, dışa tıklama, Esc sırası. Tooltip: odak ve abonelik yok. Hatalı kullanım |
 | `overlay.close.spec.ts` | Animasyonsuz senkron; animasyon, transition ve alt eleman animasyonu beklenir; reduced-motion; sonsuz animasyon; çift `close`; sonuç; açan yok olunca |
@@ -127,7 +129,7 @@ Boşluklar: SSR'da çalıştırma yok; `disposeOnNavigation` yolu sınanmadı; g
 
 ## 9. Bağlantılar
 
-- Kod: `projects/ui/core/src/overlay/`, `projects/ui/theme.css`
+- Kod: `projects/ui/core/src/overlay/` (`usePopover: false`: `overlay.service.ts`, spec: `overlay.layers.spec.ts`), `projects/ui/theme.css`
 - İlgili: [tokens.md](tokens.md), [config.md](config.md), [config-direction.md](config-direction.md)
-- CDK kaynağı (19.2.x): `src/cdk/overlay/overlay.ts`, `overlay-ref.ts`, `position/flexible-connected-position-strategy.ts`, `src/cdk/a11y/focus-trap/`
-- Doküman sayfası: Faz 3
+- CDK kaynağı: `src/cdk/overlay/overlay.ts`, `overlay-ref.ts`, `position/flexible-connected-position-strategy.ts`, `src/cdk/a11y/focus-trap/` (yazılırken 19.2.x okundu); kurulu 22.2.7 paketinde `fesm2022/_overlay-module-chunk.mjs`
+- Doküman sayfası: yok (overlay kullanan ilk bileşenle, Faz 4)

@@ -1,6 +1,6 @@
 # docs-site-examples (örnek bloğu ve kod renklendirme)
 
-<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Ana dosya: docs-site.md. Kurallar: ../SKILL.md §13, §16, §18. -->
+<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Ana dosya: docs-site.md. Kurallar: ../SKILL.md, ../../arn-ui-library/rules/docs-page.md, ../../arn-ui-library/rules/component-files.md; kararlar: ../../arn-ui-library/decisions/. -->
 
 ## 1. Özet
 
@@ -28,7 +28,7 @@ Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir; stili 
 | `with { loader: 'text' }` | Angular'ın esbuild builder'ı dosyayı string olarak gömer (`loader-import-attribute-plugin`) |
 | `?source` soneki | TypeScript belirteci dosyaya çözemez ve `text-imports.d.ts`'teki tek `declare module '*?source'` bildirimine düşer (tip `string`). Soneksiz `.ts` import'u TS1192 / TS5097 verir; her import'a `@ts-expect-error` yazmak reddedildi. esbuild soneki çözerken atar |
 | `module: esnext` (docs `tsconfig.app/spec/json`) | Import attribute `ES2022` modülünde TS2823 verir. Kök `tsconfig.json`'a dokunulmadı |
-| `angular.json` docs `test.options.builderMode: "application"` | Webpack Karma bu import'u derleyemez ("Module parse failed"). Angular 19'da **developer preview** (SKILL §16). ui testleri webpack'te kalır |
+| Test derlemesi | Docs testleri `@angular/build:unit-test` ile `docs:build:development,testing` hedefinin esbuild derlemesini kullanır; import orada da çalışır, ayrı bir Vite yapılandırması ya da test seçeneği gerekmez. Karma/webpack döneminde yalnız docs test hedefi bunun için ayrı bir builder modu taşıyordu ([karar](../../arn-ui-library/decisions/2026-10.md)) |
 
 Örnek, bir sayfa tarafından import edilmezse bundle'a girmez; `sideEffects` gerekmez (import yoksa modül grafiğinde yok).
 
@@ -37,17 +37,17 @@ Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir; stili 
 | Parça | Görev |
 |---|---|
 | `code/docs-highlight.ts` | Shiki'yi import eden TEK dosya. `createHighlighterCore` + `createCssVariablesTheme` (`shiki/core`), `createJavaScriptRegexEngine` (`shiki/engine/javascript`, wasm yok), diller `shiki/langs/{html,typescript,css,shellscript}.mjs` (`shellscript` 3c Installation komutları için). Highlighter modül düzeyinde tektir (servis TestBed başına yeniden oluşur; Shiki çoklu örnekte uyarır). Çıktıyı `DocsCodeToken[]`'e çevirir; satır sonu da bir token'dır, içerikler toplanınca kod çıkar |
-| `DOCS_HIGHLIGHT_LOADER` | Varsayılanı `import('./docs-highlight')`: ayrı chunk (`docs-highlight`, 636.09 kB ham / 82.78 kB aktarım). Spec'ler sahte / bekleyen / başarısız yükleyici verir |
+| `DOCS_HIGHLIGHT_LOADER` | Varsayılanı `import('./docs-highlight')`: ayrı chunk (`docs-highlight`, 636.09 kB ham / 82.78 kB aktarım; Angular 19 ile ölçüldü). Spec'ler sahte / bekleyen / başarısız yükleyici verir |
 | `DocsHighlighterService.load()` | Sözü bir kez alır; sunucuda, indirme hatasında ve yükleyici fırlatınca `null` |
 | `CodeBlockComponent` | `ngOnChanges`'te `load().then(...)` → `signal`. `effect()` / `afterNextRender` / `rxjs-interop` yok. Girdi değiştiyse geç gelen sonuç atılır; `highlight` fırlatırsa düz metin kalır |
 
-Çıktı `@for` ile `<span [style.color]>` olarak basılır: `innerHTML` ve `codeToHtml` yok (SKILL §4). Şablondaki `<pre>` tek satırdır: Angular `<pre>` içinde boşluğu korur, araya girilen her boşluk koda eklenir (Prettier `<pre>` içine dokunmaz).
+Çıktı `@for` ile `<span [style.color]>` olarak basılır: `innerHTML` ve `codeToHtml` yok ([rules/angular.md](../../arn-ui-library/rules/angular.md)). Şablondaki `<pre>` tek satırdır: Angular `<pre>` içinde boşluğu korur, araya girilen her boşluk koda eklenir (Prettier `<pre>` içine dokunmaz).
 
 CDK: `LiveAnnouncer` (kopya sonucu), `Directionality` (ok tuşu yönü).
 
 ## 3. Token'lar
 
-Shiki renk taşımaz: tema yalnız `var(--docs-code-<ad>)` üretir. Değişkenler `code-block.component.css` `:host`'unda (global `styles.css`'te DEĞİL: orada initial CSS'i 0.85 kB büyütüyordu) mevcut `--arn-*` token'larına bağlıdır (nötr palet, yeni renk değeri yok). `light-dark()` kullanım yerinde çözüldüğü için `.dark` / `.light` / sistem tercihi anında yansır.
+Shiki renk taşımaz: tema yalnız `var(--docs-code-<ad>)` üretir. Değişkenler `code-block.component.css` `:host`'unda (global `styles.css`'te DEĞİL: orada initial CSS'i 0.85 kB büyütüyordu; Angular 19 ile ölçüldü) mevcut `--arn-*` token'larına bağlıdır (nötr palet, yeni renk değeri yok). `light-dark()` kullanım yerinde çözüldüğü için `.dark` / `.light` / sistem tercihi anında yansır.
 
 | Değişken | Değer |
 |---|---|
@@ -85,16 +85,16 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- **Sekme klavyesi elle yazıldı** (`event.key`). CDK `ListKeyManager` kullanımdan kalkmış `keyCode`'u okur; spec onu `no-deprecated` ihlali olmadan üretemez. SKILL §8'deki CDK tercihinden bilinçli sapma (§16).
+- **Sekme klavyesi elle yazıldı** (`event.key`). CDK `ListKeyManager` kullanımdan kalkmış `keyCode`'u okur; spec onu `no-deprecated` ihlali olmadan üretemez. [rules/forms-a11y.md](../../arn-ui-library/rules/forms-a11y.md)'deki CDK tercihinden bilinçli sapma ([karar](../../arn-ui-library/decisions/2026-10.md)).
 - **Tek `tabpanel`:** bütün sekmeler aynı paneli denetler; panel adı seçili sekmeden gelir.
-- **Bundle (prod, ölçüldü):** blok hiçbir sayfada yokken initial 248.16 kB, dosya adları öncekiyle aynı; örnek ve Shiki dizgeleri `dist/docs`'ta yok. Tembel bir sayfa kullanınca (Overview'da geçici önizlemeyle ölçüldü) initial 252.07 kB (+3.91 kB ham, +2.0 kB aktarım), `docs-highlight` ayrı tembel chunk (636.09 kB ham / 82.78 kB aktarım). Initial'daki artış Shiki değil: esbuild'in ana paketle ortak kullanılan CDK parçalarını ve yardımcılarını ortak chunk'lara ayırması; bütçe uyarısı yok. `shellscript` eklenince (3c-1a, `main.ts`'e geçici `import()` ile ölçüldü) initial aynı kaldı, `docs-highlight` 636.09 → 677.55 kB ham (82.78 → 87.69 kB aktarım).
+- **Bundle (prod, Angular 19 ile ölçüldü; yeniden ölçülmedi):** blok hiçbir sayfada yokken initial 248.16 kB, dosya adları öncekiyle aynı; örnek ve Shiki dizgeleri `dist/docs`'ta yok. Tembel bir sayfa kullanınca (Overview'da geçici önizlemeyle ölçüldü) initial 252.07 kB (+3.91 kB ham, +2.0 kB aktarım), `docs-highlight` ayrı tembel chunk (636.09 kB ham / 82.78 kB aktarım). Initial'daki artış Shiki değil: esbuild'in ana paketle ortak kullanılan CDK parçalarını ve yardımcılarını ortak chunk'lara ayırması; bütçe uyarısı yok. `shellscript` eklenince (3c-1a, `main.ts`'e geçici `import()` ile ölçüldü) initial aynı kaldı, `docs-highlight` 636.09 → 677.55 kB ham (82.78 → 87.69 kB aktarım).
 - Shiki sürüm yükseltmesinde tema değişken adları değişebilir; `highlighter.service.spec.ts` gerçek Shiki'nin kullandığı her rengin kod bloğunda tanımlı olduğunu `code-block.component.spec.ts` sınar.
 - Örnek dosya adı kalıbı: `<ad>.example.ts` / `.html` / (isteğe bağlı) `.css`, selector `docs-<ad>-example`. Gösterilen TS `templateUrl` ve `styleUrl` ile diğer dosyalara işaret eder; kopyalayan hepsini alır. Stil örneğin çalışması için gerekiyorsa (ör. ripple'da `position: relative`) CSS dosyası zorunludur: görünmeyen stil "kopyalanınca çalışır" kuralını bozar.
 - Reddedilenler: elle yazılmış string, `raw-loader`, `angular.json` `loader` seçeneği, Shiki çift tema, `codeToHtml` + `innerHTML`, oniguruma wasm, precompiled diller.
 
 ## 8. Testler
 
-Docs Karma hedefi esbuild ile koşar (`builderMode: application`). Fixture: `example/testing/basic.example.{ts,html}`, stilli `styled.example.{ts,html,css}` ve `example-host.ts` (`ExampleHostComponent`, `StyledExampleHostComponent`) (yalnız spec'ler import eder). `testing/dom.ts`'e `nextTask()` eklendi (kuyruktaki söz geri çağrılarından sonra çözülür; süreye bağlı değil).
+Docs testleri Vitest ile `docs:build:development,testing` hedefinin esbuild derlemesinde koşar. Fixture: `example/testing/basic.example.{ts,html}`, stilli `styled.example.{ts,html,css}` ve `example-host.ts` (`ExampleHostComponent`, `StyledExampleHostComponent`) (yalnız spec'ler import eder). `testing/dom.ts`'e `nextTask()` eklendi (kuyruktaki söz geri çağrılarından sonra çözülür; süreye bağlı değil).
 
 | Spec | Kapsam |
 |---|---|
@@ -108,4 +108,4 @@ Boşluklar: gerçek pano izni, gerçek ekran okuyucu duyurusu ve tarayıcıda g�
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/example/`, `projects/docs/src/app/code/`, `projects/docs/src/text-imports.d.ts`, `angular.json` (docs test), `projects/docs/tsconfig*.json`
-- İlgili: [docs-site.md](docs-site.md), [tokens.md](tokens.md)
+- İlgili: [docs-site.md](docs-site.md), [tokens.md](../../arn-ui-library/components/tokens.md)
