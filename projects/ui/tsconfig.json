@@ -2,10 +2,9 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
-    // TypeScript 6 no longer loads every @types package by default; specs need Jasmine's globals
-    "types": ["jasmine"],
-    // No baseUrl (deprecated in TypeScript 6): paths resolve against this file's folder, in tsc
-    // and in the Karma (webpack) build, whose @ngtools/webpack falls back to pathsBasePath (22+)
+    // TypeScript 6 no longer loads every @types package by default; specs need Vitest's globals
+    "types": ["vitest/globals"],
+    // No baseUrl (deprecated in TypeScript 6): paths resolve against this file's folder
     "paths": {
       "@arn-ng/ui/*": ["./*/src/public-api.ts"]
     }

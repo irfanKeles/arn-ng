@@ -2,8 +2,8 @@
 
 /**
  * The amount by which the document is wider than the window while `element` sits in a container
- * `width` px wide at the window's right edge, minus what the document was wider before (Karma's
- * own reporter overhangs by a few pixels). Left-to-right pages only. Measures `document.documentElement`, not the page: an absolutely positioned element
+ * `width` px wide at the window's right edge, minus what the document was wider before (the test
+ * runner's own page may overhang by a few pixels). Left-to-right pages only. Measures `document.documentElement`, not the page: an absolutely positioned element
  * that escapes a scroll container widens the document without widening its own ancestors.
  */
 export async function pageOverflow(

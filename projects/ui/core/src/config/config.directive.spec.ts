@@ -280,7 +280,7 @@ describe('ArnConfigDirective and injectArnConfig', () => {
 
 describe('injectArnConfig', () => {
   it('throws outside an injection context', () => {
-    expect(() => injectArnConfig()).toThrowError(/injectArnConfig/);
+    expect(() => injectArnConfig()).toThrow(/injectArnConfig/);
   });
 
   it('gives the root config inside a context', () => {

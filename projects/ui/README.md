@@ -42,7 +42,7 @@ Once the project is built, you can publish your library by following these steps
 
 ## Running unit tests
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+To execute unit tests with [Vitest](https://vitest.dev) in browser mode (Chromium via Playwright), use the following command:
 
 ```bash
 ng test

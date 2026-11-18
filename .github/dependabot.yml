@@ -35,13 +35,10 @@ updates:
         update-types: ['version-update:semver-major']
       - dependency-name: angular-eslint
         update-types: ['version-update:semver-major']
-      - dependency-name: karma
+      # @angular/build:unit-test Vitest'in desteklediği majörlere bağlı (peer aralığı)
+      - dependency-name: vitest
         update-types: ['version-update:semver-major']
-      - dependency-name: 'karma-*'
-        update-types: ['version-update:semver-major']
-      - dependency-name: jasmine-core
-        update-types: ['version-update:semver-major']
-      - dependency-name: '@types/jasmine'
+      - dependency-name: '@vitest/*'
         update-types: ['version-update:semver-major']
       # Node 22'ye bağlı: tip majörü de 22'de kalır
       - dependency-name: '@types/node'
