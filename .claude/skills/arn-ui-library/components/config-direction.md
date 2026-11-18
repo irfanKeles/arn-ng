@@ -33,9 +33,9 @@ Giriş tipi `ArnDirection` = `'ltr' | 'rtl' | 'auto'`. Çıkış (`injectArnConf
 
 | Parça | Görev |
 |---|---|
-| `ambientDirection(dir)` | Bir `Directionality`'yi signal'e çevirir. `valueSignal` varsa (CDK 20+, bizim nesnelerimiz) onu döner; yoksa (CDK 19) `change` her yaydığında `dir.value`'yu yeniden okuyan `computed`. Abonelik `DestroyRef` ile temizlenir |
+| `ambientDirection(dir)` | Bir `Directionality`'yi signal'e çevirir. `valueSignal` varsa onu döner (CDK 22'nin `Directionality` ve `Dir`'i ile bizim nesnelerimiz taşır); yoksa `change` her yaydığında `dir.value`'yu yeniden okuyan `computed` (CDK 19 için yazılmış yedek yol). Abonelik `DestroyRef` ile temizlenir |
 | `SignalDirectionality` | CDK'nın beklediği biçim: `value` (getter), `change` (`EventEmitter`), `valueSignal`. `sync()` son görülenden farklıysa yayar; ilk çağrı yalnız kaydeder |
-| `ArnRootDirectionality` | `provideArn` ile kök `Directionality`'nin yerine geçer: `explicit(kök direction) ?? belge yönü`. Belge yönünü, özel token altında `useClass: Directionality` ile kurulan CDK örneğinden alır (CDK'nın kendi okuma mantığı; 19 ve 20'de aynı). `ARN_ROOT_OVERRIDES`'a bağlıdır, scope'a değil (döngü yok) |
+| `ArnRootDirectionality` | `provideArn` ile kök `Directionality`'nin yerine geçer: `explicit(kök direction) ?? belge yönü`. Belge yönünü, özel token altında `useClass: Directionality` ile kurulan CDK örneğinden alır (CDK'nın kendi okuma mantığı; CDK 22.2'de önce `<body dir>`, yoksa `<html dir>`, `auto` değeri `navigator.language`'a göre çözülür). `ARN_ROOT_OVERRIDES`'a bağlıdır, scope'a değil (döngü yok) |
 | `[arnConfig]` sağlayıcıları | `ARN_CONFIG_SCOPE` (üst scope + `direction: ambientDirection(üst Directionality)`), `ARN_SECTION_DIRECTIONALITY` (`createSectionDirectionality`), `Directionality` → `useExisting` |
 
 ### Değişimi yayma (`effect()` olmadan)
@@ -73,8 +73,8 @@ Yok.
 ## 7. Kısıtlar ve kararlar
 
 - **`hostDirectives: [Dir]` reddedildi:** `Dir` bulunduğu her elemanda `Directionality`'yi ezer ve değer verilmediğinde `'ltr'` der; RTL sayfadaki `<div arnConfig size="sm">` altını LTR sanardı. Input'u da `effect()` olmadan beslenemez.
-- **`valueSignal` bizde var, CDK 19'da yok:** peer şu an `^19.0.0`, CDK'nınkine güvenilemez; kendi nesnelerimiz sağlar ki peer aralığına CDK 20+ eklenince oradaki tüketiciler de okuyabilsin.
-- **`rxjs-interop` yok** (`toSignal`, `takeUntilDestroyed` 19'da developer preview): elle abonelik + `DestroyRef.onDestroy`.
+- **`valueSignal`:** CDK 22.2'de `Directionality` ve `Dir` `valueSignal` taşır; kendi nesnelerimiz de sağlar. `ambientDirection`'daki `change` yedeği CDK 19 için yazıldı; peer `^22.0.0` ile CDK nesnelerinde devreye girmez (kaldırılması ayrı kod işi).
+- **`rxjs-interop` yok:** elle abonelik + `DestroyRef.onDestroy`. İlk gerekçe (19'da developer preview) artık geçerli değil: Angular 22'de `takeUntilDestroyed` `@publicApi 19.0`, `ToSignalOptions` `@publicApi 20.0` (`toSignal`'in kendi etiketi `.d.ts`'te yok). Örüntü kalır ([../rules/angular.md](../rules/angular.md)).
 - **`scale`, `transform: scaleX(-1)` değil:** etki aynı; bileşenin kendi `transform`'unu (açılınca dönen chevron) ezmez. Token (`--arn-mirror`) reddedildi: her RTL elemana özellik yazan evrensel kural ister, tüketiciye yine CSS yazdırır.
 - **Kural `theme.css`'te:** ikon bileşeni yok; global kural bileşen içindeki ikonlara da uygulanır. `:dir()` tabanı Chrome 120 / Firefox 49 / Safari 16.4 (`light-dark()` tabanının altında).
 
@@ -84,7 +84,7 @@ Yok.
 |---|---|
 | `auto` iken `<html dir>` elle değiştirilir | İzlenmez (CDK da izlemez; `MutationObserver` reddedildi: SSR, maliyet). Çalışma zamanı için `setDirection` |
 | `provideArn()` çağrılmadan `setDirection` | Yalnız kök config değeri değişir; bölümler ve CDK izlemez. Geliştirme modunda uyarı |
-| CDK 19 `Dir`'e `[dir]="x"` ile bağlanan İLK değer | `Dir` `change` yaymaz; değeri oluşturma anında okuyan alt düğüm `ltr` görebilir. Statik `dir="rtl"` ve `[arnConfig]` etkilenmez |
+| CDK `Dir`'e `[dir]="x"` ile bağlanan İLK değer | CDK 22.2'de `Dir` `ngAfterContentInit`'ten önce `change` yaymaz ama `valueSignal`'i hemen günceller. `ambientDirection` signal'i okuduğu için bölümün doğru yönü görmesi beklenir (kaynaktan çıkarım, spec'le sınanmadı); `value`'yu oluşturma anında bir kez okuyan kod `ltr` görebilir. Statik `dir="rtl"` ve `[arnConfig]` etkilenmez |
 | Şablonda düz `<div dir="rtl">` (CDK `Dir` import edilmemiş) ya da `<div arnConfig dir="rtl">` | DOM RTL olur, DI görmez. `arnConfig direction="rtl"` kullan |
 
 ## 8. Testler
@@ -96,11 +96,11 @@ Yok.
 | `testing/theme.spec.ts` | `.arn-rtl-mirror`: RTL'de `scale` `-1 1`, LTR'de ve `rtl` içindeki `ltr`'de `none`, sınıfsız eleman, `transform` korunur |
 | `config.types.spec.ts` | Çözülmüş yöne `'auto'` atanamaz |
 
-Boşluklar: SSR'da çalıştırma yok; CDK 20+ ile çalıştırma yok (`valueSignal` yolu yalnız kendi nesnelerimizle sınandı). Gerçek CDK overlay ile sınama: `overlay.inherit.spec.ts`, `overlay.presets.spec.ts` ([overlay.md](overlay.md)).
+Boşluklar: SSR'da çalıştırma yok. Spec'ler CDK 22.2 ile koşar; CDK nesnelerinin `valueSignal` yolu için ayrı bir test yok. Gerçek CDK overlay ile sınama: `overlay.inherit.spec.ts`, `overlay.presets.spec.ts` ([overlay.md](overlay.md)).
 
 ## 9. Bağlantılar
 
 - Kod: `projects/ui/core/src/config/direction.ts`, `root-directionality.ts`, `config.directive.ts`, `config.scope.ts`, `config.service.ts`, `provide-arn.ts`, `projects/ui/theme.css`
 - Ana dosya: [config.md](config.md); dil paketleri: [locales.md](locales.md)
-- CDK kaynağı (19.2.x): `src/cdk/bidi/directionality.ts`, `dir.ts`
-- Doküman sayfası: Faz 3 (RTL ve i18n)
+- CDK kaynağı: `src/cdk/bidi/directionality.ts`, `dir.ts` (yazılırken 19.2.x okundu); kurulu 22.2.7 paketinde `fesm2022/_directionality-chunk.mjs`, `fesm2022/bidi.mjs`
+- Doküman sayfası: `/configuration`, `direction` bölümü ([docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

@@ -23,7 +23,7 @@ Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri (`ArnSize`, `ArnDensity`
 - **Density:** `--arn-density` çarpanı. `:root`'ta 1; `[data-density='compact']` 0.875, `[data-density='comfortable']` 1 yapar. Kalıtımla iner, en yakın `data-density` geçerlidir, iç içe çalışır.
 - **Kural sırası:** `[data-density]` kuralları `:root` bloğundan SONRA durur. İkisi aynı özgüllüktedir (0,1,0); `<html data-density="compact">` ancak bu sırayla çalışır. Spec sabitler.
 
-### Host'ta hesaplama örüntüsü (SKILL §5)
+### Host'ta hesaplama örüntüsü ([../rules/styling.md](../rules/styling.md))
 
 ```css
 :host {

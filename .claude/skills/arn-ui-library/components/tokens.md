@@ -101,11 +101,11 @@ Tüketicinin kuralı `theme.css` import'undan SONRA gelmelidir (aynı özgüllü
 - **Tek örnek:** bileşen token'ı ile (bileşenin referans dosyasına bak).
 - **Sayfayı boyamak:** `body { background: var(--arn-background); color: var(--arn-foreground); font-family: var(--arn-font-sans); }` (örnek: `projects/docs/src/styles.css`).
 
-**Tuzak (türetilmiş token'lar):** `var()` tanımlandığı elemanda (`:root`) çözülür. Bu yüzden bir container'da `--arn-radius` veya `--arn-neutral-900` değiştirmek, ondan türeyen `--arn-radius-sm` veya `--arn-primary`'yi DEĞİŞTİRMEZ. Tabanı `:root`'ta değiştir ya da container'da türetilmiş token'ı doğrudan yaz. (`light-dark()` bu kuralın dışındadır; kullanıldığı elemanda çözülür.) Spec bu davranışı sabitler. Bileşenler bu tuzağa düşmesin diye kendi token'larını kendi host'unda hesaplar (SKILL §5, örüntü: [tokens-sizes.md](tokens-sizes.md) §2); container'da `--arn-radius` değiştirmek bileşenleri etkiler.
+**Tuzak (türetilmiş token'lar):** `var()` tanımlandığı elemanda (`:root`) çözülür. Bu yüzden bir container'da `--arn-radius` veya `--arn-neutral-900` değiştirmek, ondan türeyen `--arn-radius-sm` veya `--arn-primary`'yi DEĞİŞTİRMEZ. Tabanı `:root`'ta değiştir ya da container'da türetilmiş token'ı doğrudan yaz. (`light-dark()` bu kuralın dışındadır; kullanıldığı elemanda çözülür.) Spec bu davranışı sabitler. Bileşenler bu tuzağa düşmesin diye kendi token'larını kendi host'unda hesaplar ([../rules/styling.md](../rules/styling.md), örüntü: [tokens-sizes.md](tokens-sizes.md) §2); container'da `--arn-radius` değiştirmek bileşenleri etkiler.
 
 ## 5. Davranış ve a11y
 
-Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir. Odak halkası `--arn-ring` iki temada da arka plana karşı en az 3:1 (WCAG 1.4.11): açıkta beyaz üstünde ≈4.7:1, koyuda neutral-950 üstünde ≈4.2:1; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test.options.styles`).
+Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir. Odak halkası `--arn-ring` iki temada da arka plana karşı en az 3:1 (WCAG 1.4.11): açıkta beyaz üstünde ≈4.7:1, koyuda neutral-950 üstünde ≈4.2:1; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test-build.options.styles`).
 
 ## 6. Form uyumu
 
@@ -115,14 +115,14 @@ Yok.
 
 - **shadcn'den sapmalar:** (1) dark mode `.dark` bloğunda yeniden tanımlama yerine `light-dark()`; gerekçe: değerler tek yerde, iç içe tema ve sistem tercihi bedava. (2) `.light` sınıfı eklendi. (3) oklch yazımı (yüzde ve `deg`); gerekçe: Stylelint kuralı kapatmamak. (4) `--arn-` öneki. (5) `--arn-ring` açık temada neutral-500 (shadcn neutral-400): neutral-400 beyaz üstünde ≈2.6:1, WCAG 1.4.11'in 3:1'inin altında; koyu tema shadcn'deki gibi neutral-500.
 - **Eklenmeyenler:** `chart-*`, `sidebar-*` (ilgili bileşen yok; iki resmi shadcn kaynağı chart için farklı değer veriyor), `success/warning/info` (shadcn'de yok), `destructive-foreground` (güncel shadcn'de yok). İhtiyaç duyan bileşenle ayrı karar.
-- **Tarayıcı tabanı:** `light-dark()` → Chrome 123, Firefox 120, Safari 17.5. Fallback yok (SKILL §1 hedef tarayıcı).
+- **Tarayıcı tabanı:** `light-dark()` → Chrome 123, Firefox 120, Safari 17.5. Fallback yok ([../SKILL.md](../SKILL.md) hedef tarayıcı).
 - `sideEffects: false` kaldı; CSS, `styles` veya CSS `@import` ile eklenir, JS'ten import edilmez.
 - Font adları büyük harf içeriyorsa tırnaklanır (Stylelint `value-keyword-case`); `-apple-system`/`BlinkMacSystemFont` yerine `system-ui`.
 - Docs'ta `@import url('…')` yazımı Stylelint `import-notation` gereğidir.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; odak halkası iki temada neutral-500 ve arka plana karşı ≥3:1; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda görsel karşılaştırma yok (docs tema sayfası Faz 3).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; odak halkası iki temada neutral-500 ve arka plana karşı ≥3:1; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda otomatik görsel karşılaştırma yok (`/theming` sayfası elle bakmaya yarar: [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md)).
 
 ## 9. Bağlantılar
 

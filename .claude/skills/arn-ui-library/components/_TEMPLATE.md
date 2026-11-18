@@ -1,6 +1,6 @@
 # <ad>
 
-<!-- En fazla 150 satır. Aşarsa <ad>-<konu>.md dosyasına böl ve buradan bağla. Tablo ve liste kullan; kod kopyalama, dosya yolu ver. Kurallar: ../SKILL.md bölüm 18. -->
+<!-- En fazla 150 satır. Aşarsa <ad>-<konu>.md dosyasına böl ve buradan bağla. Tablo ve liste kullan; kod kopyalama, dosya yolu ver. Kurallar: ../rules/component-files.md. -->
 
 ## 1. Özet
 
@@ -29,7 +29,7 @@ role ve aria-* bileşenin kendi elemanına yazılır (servis yazmaz). İçerik k
 ## 3. Token'lar
 
 <!--
-Bileşen token'ı bileşenin kendi host'unda hesaplanır (SKILL §5), :root'ta değil. Örüntü (tokens-sizes.md §2):
+Bileşen token'ı bileşenin kendi host'unda hesaplanır (../rules/styling.md), :root'ta değil. Örüntü (tokens-sizes.md §2):
   --arn-<ad>-height: max(var(--arn-control-min-size), calc(var(--arn-control-height-<boyut>) * var(--arn-density)));
   --arn-<ad>-padding-inline: calc(var(--arn-control-padding-inline-<boyut>) * var(--arn-density));
   --arn-<ad>-font-size: var(--arn-control-font-size-<boyut>);   (density uygulanmaz)
@@ -61,7 +61,7 @@ Yükseklik token'ı max()'li değeri taşır (24px tabanı, WCAG 2.2 SC 2.5.8). 
 
 ## 7. Kısıtlar ve kararlar
 
-<!-- Bilinen sınırlar, reddedilen alternatifler ve gerekçeleri. shadcn/ui'den her sapma (varyant, boyut, ölçü, davranış) burada gerekçesiyle yazılır (SKILL §1). -->
+<!-- Bilinen sınırlar, reddedilen alternatifler ve gerekçeleri. shadcn/ui'den her sapma (varyant, boyut, ölçü, davranış) burada gerekçesiyle yazılır (../SKILL.md, Değişmez kararlar). effect() kullanıldıysa gerekçesi de burada (../rules/angular.md). -->
 
 ## 8. Testler
 

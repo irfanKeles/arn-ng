@@ -90,4 +90,4 @@ Spec core'u göreli yolla import eder; `messages.ts` içindeki `@arn-ng/ui/core`
 
 - Kod: `projects/ui/locales/tr/`, `projects/ui/tsconfig.json`
 - Şema: [config-messages.md](config-messages.md); ayar: [config.md](config.md)
-- Doküman sayfası: Faz 3 (RTL ve i18n)
+- Doküman sayfası: `/configuration`, `locale-and-messages` bölümü ([docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

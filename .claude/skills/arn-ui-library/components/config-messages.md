@@ -35,7 +35,7 @@ Yok.
 
 ## 5. Davranış ve a11y
 
-`closeLabel` gibi anahtarlar erişilebilir addır (aria-label); metin koda gömülmez (SKILL §9).
+`closeLabel` gibi anahtarlar erişilebilir addır (aria-label); metin koda gömülmez ([../rules/config-i18n-overlay.md](../rules/config-i18n-overlay.md)).
 
 ### Şema (v1)
 
