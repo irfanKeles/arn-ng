@@ -28,4 +28,4 @@ Tüm docs referans dosyalarının listesi: [components/INDEX.md](components/INDE
 - Solda sidebar: bileşenler kategori başlıkları altında gruplanır (Form, Button, Overlay, Data...). Sidebar'ın en üstünde arama (sayfa ve bölüm başlıkları).
 - Sağda sayfa içi başlık gezintisi ("bu sayfada").
 - Üstte tema (light/dark), yön (LTR/RTL), yoğunluk (comfortable/compact) ve dil değiştiriciler. Bunlar tüm örnekleri anlık etkiler.
-- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik. Altı başlık dört sayfada karşılanır: Yoğunluk Theming'de, RTL ve i18n Configuration'da bölümdür (§16).
+- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik. Altı başlık dört sayfada karşılanır: Yoğunluk Theming'de, RTL ve i18n Configuration'da bölümdür ([karar](../arn-ui-library/decisions/2026-10.md)).

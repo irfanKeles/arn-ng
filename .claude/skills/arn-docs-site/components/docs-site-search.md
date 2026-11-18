@@ -1,6 +1,6 @@
 # docs-site-search (sidebar araması, Faz 3 adım 3d)
 
-<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Ana dosya: docs-site.md. Kurallar: ../SKILL.md §8, §13, §16, §18. -->
+<!-- En fazla 150 satır. Kütüphane parçası değil: `projects/docs` uygulaması. Ana dosya: docs-site.md. Kurallar: ../SKILL.md, ../../arn-ui-library/rules/forms-a11y.md, ../../arn-ui-library/rules/component-files.md; kararlar: ../../arn-ui-library/decisions/. -->
 
 ## 1. Özet
 
@@ -65,7 +65,7 @@ Yok (form değil; `<input>` bir forma bağlı değil, Enter bir şey göndermez)
 - `effect()`, `afterNextRender`, `rxjs-interop` yok; router olayına elle abonelik + `DestroyRef` (kabukla aynı örüntü).
 - Odak mantığı TOC ile ortak (`toc/focus-section.ts`): `isPlainClick`, `focusSection`.
 - Sorgu gezintide temizlenmez (kullanıcı sonuçlar arasında gezinebilsin).
-- SKILL §13 "Altında arama": sidebar'ın en üstü olarak uygulandı (listenin sonu klavye ve göz için kötü).
+- Arama sidebar'ın en üstünde ([../SKILL.md](../SKILL.md), Site yapısı). Kuralın ilk metni "altında arama" diyordu; listenin sonu klavye ve göz için kötü olduğundan en üste alındı ve kural buna göre güncellendi.
 
 ## 8. Testler
 
