@@ -4,6 +4,8 @@ Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'i
 
 Kayıtlar aylık dosyalardadır: [2026-10.md](2026-10.md), [2026-11.md](2026-11.md). Yeni karar ilgili ayın dosyasının (`YYYY-MM.md`) sonuna tarihli, ayrı bir madde olarak eklenir; eski maddeler düzeltilmez, geçersiz kalan kısım yeni maddeyle güncellenir.
 
+**Yeni karar nasıl eklenir:** ilgili ayın dosyasına tek satır, `- YYYY-MM: Konu (kaynak; ayrıntı dosyası). (1) … (2) …` biçiminde. Etkilediği eski kararı adıyla anar ve ne yaptığını söyler ("2026-10 "Overlay altyapısı" maddesini günceller" / "… geçersiz kılar"). Kural metni (`SKILL.md`, `rules/`, `components/`) aynı değişiklikte güncellenir.
+
 ## Eski bölüm numaraları
 
 Eski kayıtlarda ve kodda geçen `§N` / "bölüm N" atıfları, bölünmeden önceki tek SKILL.md'nin bölümleridir. Yeni dosyaların başlıkları eski numarayı taşır ("eski §4").
