@@ -6,7 +6,7 @@
 - Zorunlu durumlar: `disabled` (formdan ve input'tan), `invalid`, `touched`, `dirty`, `readonly`, `required`.
 - Hata görünümü `ng-invalid` + `forms.showErrorsOn` (`touched` varsayılan, `dirty`, `submitted`; `ArnConfig`'ten) ile ve `invalid` input'u ile tetiklenebilir.
 - `setDisabledState` doğru uygulanır.
-- Signal forms'a bağımlılık YOK (19'da kararlı değil). Gelecekte eklenecekse ayrı karar.
+- Signal forms (`@angular/forms` `form()`, Angular 22'de `@publicApi`) `ControlValueAccessor`'ın yerine geçmez. Faz 4'te form bileşenlerinden önce ayrı karar verilene kadar kullanılmaz.
 
 ## Erişilebilirlik (a11y) — her bileşende zorunlu (eski §8)
 

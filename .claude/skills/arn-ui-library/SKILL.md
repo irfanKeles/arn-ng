@@ -1,6 +1,6 @@
 ---
 name: arn-ui-library
-description: "@arn-ng/ui kütüphane kodu (projects/ui) için kurallar ve kararlar. Bileşen, directive, servis, token/tema, ayar sistemi (provideArn, [arnConfig]), i18n/RTL, overlay veya ripple yazarken, değiştirirken ya da incelerken; kütüphanenin testleri, lint, CI, sürümleme, peer aralığı, yerel paket testi (Verdaccio) veya bir mimari karar verirken MUTLAKA kullan. Bileşenin doküman sayfası adımında hangi docs dosyalarının okunacağını da söyler. Yalnızca doküman sitesinin kabuğu, araması, örnek bloğu veya giriş sayfaları üzerinde çalışırken değil, onun için arn-docs-site."
+description: "@arn-ng/ui kütüphane kodu (projects/ui) için kurallar ve kararlar. Bileşen, directive, servis, token/tema, ayar sistemi (provideArn, [arnConfig]), i18n/RTL, overlay veya ripple yazarken, değiştirirken ya da incelerken; kütüphanenin testleri, lint, CI, sürümleme, peer aralığı, yerel paket testi (Verdaccio) veya bir mimari karar verirken MUTLAKA kullan. Bileşenin doküman sayfası adımında hangi docs dosyalarının okunacağını da söyler. Yalnızca doküman sitesinin kabuğu, araması, örnek bloğu veya giriş sayfaları üzerinde çalışırken kullanma; onun için arn-docs-site."
 ---
 
 # @arn-ng/ui — Kütüphane Kuralları
@@ -30,9 +30,9 @@ Her satır en fazla üç dosya. Bu dosyadaki değişmez kararlar, "Bitti" tanım
 ## Değişmez kararlar (eski §1)
 
 - Paket: `@arn-ng/ui`. Selector prefix: `arn`. Ücretsiz ve **açık kaynak** (npm'de public yayınlanır, lisans: MIT). Gerçek projelerde npm'den kurulup kullanılacak, bu yüzden public API kararlılığı ve semver baştan ciddiye alınır.
-- Minimum Angular: **19**. Sadece Angular 19'da KARARLI olan API'leri kullan. Daha yeni sürümde gelen veya 19'da deneysel olan API'ye bağımlı olma (örn. signal forms, `linkedSignal`, `resource` yok).
+- Minimum Angular: **22** (peer `^22.0.0`). Minimum sürümde (Angular 22) `@publicApi` olan, `@experimental` / `@developerPreview` olmayan API serbesttir; kullanmadan önce `.d.ts` etiketi kontrol edilir. Ayrıntı: [rules/angular.md](rules/angular.md). Signal forms ayrı karara kadar kullanılmaz ([rules/forms-a11y.md](rules/forms-a11y.md)).
 - Headless katman: **Angular CDK**. Başka bir headless kütüphane (Spartan brain, ng-primitives vb.) EKLENMEZ. Eksik bileşenler CDK primitifleri (overlay, a11y, listbox, menu, dialog, bidi, scrolling) üzerine yazılır.
-- Görsel ve bileşen dili referansı: **shadcn/ui** (Spartan UI gibi: headless taban CDK, üstüne stil). Yalnızca renk değil; bileşen kataloğu, varyant adları (button: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`), boyut adları ve ölçüler (radius, boşluk, focus ring) shadcn'i izler. Kod kopyalanmaz, referans alınır; kendi token'larımızla Angular'a çevrilir. Her sapma bileşenin referans dosyasına (bölüm 18) gerekçesiyle yazılır. Bizim eklerimiz: `xl` boyutu (xs-lg shadcn'de var), density, ileride mask vb.
+- Görsel ve bileşen dili referansı: **shadcn/ui** (Spartan UI gibi: headless taban CDK, üstüne stil). Yalnızca renk değil; bileşen kataloğu, varyant adları (button: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`), boyut adları ve ölçüler (radius, boşluk, focus ring) shadcn'i izler. Kod kopyalanmaz, referans alınır; kendi token'larımızla Angular'a çevrilir. Her sapma bileşenin referans dosyasına ([rules/component-files.md](rules/component-files.md)) gerekçesiyle yazılır. Bizim eklerimiz: `xl` boyutu (xs-lg shadcn'de var), density, ileride mask vb.
 - Hedef: PrimeNG kadar profesyonel, kararlı, tutarlı; kullanıcıya ve geliştiriciye sorun çıkarmayan bir kütüphane. Hız değil sağlamlık önceliklidir.
 - Hedef tarayıcı: Angular'ın desteklediği güncel (evergreen) tarayıcılar, yaklaşık son 1 yıllık sürümler. `oklch` fallback'siz kullanılabilir.
 
@@ -40,7 +40,7 @@ Her satır en fazla üç dosya. Bu dosyadaki değişmez kararlar, "Bitti" tanım
 
 Bir bileşen ancak hepsi tamamsa bitmiştir:
 
-- [ ] Selector ve import kuralları (bölüm 2-3) uygulandı
+- [ ] Selector ve import kuralları ([rules/architecture.md](rules/architecture.md)) uygulandı
 - [ ] Token'lar tanımlı, hardcode değer yok, mantıksal CSS kullanıldı
 - [ ] 5 boyut + iki yoğunluk çalışıyor
 - [ ] Light + dark çalışıyor
@@ -49,8 +49,8 @@ Bir bileşen ancak hepsi tamamsa bitmiştir:
 - [ ] RTL kontrol edildi, i18n metinleri dışarıdan
 - [ ] SSR'da kırılmıyor
 - [ ] Birim testleri yazıldı
-- [ ] Doküman sayfası yazıldı (bölüm 13) ve örnekler çalışıyor
-- [ ] `components/<ad>.md` yazıldı/güncellendi ve `INDEX.md`'ye eklendi (bölüm 18)
+- [ ] Doküman sayfası yazıldı ([rules/docs-page.md](rules/docs-page.md)) ve örnekler çalışıyor
+- [ ] `components/<ad>.md` yazıldı/güncellendi ve `INDEX.md`'ye eklendi ([rules/component-files.md](rules/component-files.md))
 - [ ] Public API gözden geçirildi, gereksiz export yok
 
 ## Yapılmaması gerekenler (özet) (eski §14)
@@ -63,12 +63,12 @@ Bir bileşen ancak hepsi tamamsa bitmiştir:
 - Doküman sayfası, test veya a11y olmadan bileşeni "bitti" saymak → [rules/docs-page.md](rules/docs-page.md), [rules/quality.md](rules/quality.md), [rules/forms-a11y.md](rules/forms-a11y.md)
 - Native davranışı bozan sarmalayıcı (tıklanamayan buton, form'a bağlanmayan input) → [rules/architecture.md](rules/architecture.md)
 - Aynı kavrama farklı isim vermek (`disabled` vs `isDisabled`) → [rules/architecture.md](rules/architecture.md)
-- Angular 19'da kararlı olmayan API'ye bağımlı olmak → [Değişmez kararlar](#değişmez-kararlar-eski-1), [rules/angular.md](rules/angular.md)
+- Minimum sürümde (Angular 22) `@experimental` / `@developerPreview` olan API'ye bağımlı olmak → [Değişmez kararlar](#değişmez-kararlar-eski-1), [rules/angular.md](rules/angular.md)
 - Gereksiz public export, belirsiz kırıcı değişiklik (breaking change) yapmak. Kırıcı değişiklik gerekiyorsa önce söyle, versiyon ve migration notunu hazırla. → [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md)
 
 ## Henüz açık kararlar (eski §17)
 
-- Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
+- Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 22'yi aşmıyorsa). `@angular/aria` repoda kurulu değil; 22'deki durumu doğrulanmadı.
 
 ## Satır limitleri
 
