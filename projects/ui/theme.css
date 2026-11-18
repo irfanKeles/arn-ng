@@ -46,7 +46,12 @@
 
   /* Dark border and input are white with alpha in shadcn; the palette has no equivalent */
   --arn-border: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%));
-  --arn-input: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 15%));
+
+  /*
+   * Input: darker than shadcn so the control border meets WCAG 1.4.11's 3:1 (as --arn-ring does).
+   * Not neutral-500: kept apart from the ring, so focus still changes the border color.
+   */
+  --arn-input: light-dark(oklch(65% 0 0deg), oklch(100% 0 0deg / 40%));
 
   /* Light: neutral-500, not shadcn's neutral-400 (2.6:1 on white, below WCAG 1.4.11's 3:1) */
   --arn-ring: light-dark(var(--arn-neutral-500), var(--arn-neutral-500));
