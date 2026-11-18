@@ -27,9 +27,12 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [x] Karar: Signal forms stratejisi. Verildi: kontroller yalnız `FormValueControl` / `FormCheckboxControl` uygular, CVA yok; peer `^22.2.5` (decisions 2026-11)
 - [x] `ArnConfig` `forms.showErrorsOn: 'submitted'` kaldırma (ayrı kod PR'ı, input'tan önce; Signal Forms'ta karşılığı yok, decisions 2026-11 "Signal Forms stratejisi" (3))
 - [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
+- [x] Karar: bileşen docs sayfası şablonu (bölüm sırası, "Components" kategorisi, örnek kartı, iki temada ≥4.5:1 kod renkleri; decisions 2026-11)
+- [ ] Örnek kartı yenilemesi, mevcut 10 örneğin geçişi ve renkli kod paleti (ayrı docs PR'ı, button'dan önce; kontrast helper birleştirmesinden sonra)
 
 ### Bileşenler ve doğrulama
-- [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
+- [ ] button (yalnız attribute: `button[arnButton]`, `a[arnButton]`, sınıf `ArnButton`; element ertelendi, bkz. Ertelenenler). Docs sayfası aynı PR'da, "Components > Button". Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
+- [ ] badge (`arn-badge` sayaç mantığı; button sayfasındaki satır içi ve köşe rozeti örneklerinin ötesi)
 - [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer. Form test matrisi: `ngModel`, `formControl`, `formControlName`, `[formField]`; bilinen boşluklar (`ngModel`'de `required`; reactive'de `readonly` / `name` / `min` / `max`; blur'da `touch`) testle kilitlenir (decisions 2026-11 "Signal Forms stratejisi" (5))
 - [ ] checkbox
 - [ ] select
@@ -56,7 +59,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Tema anahtarı / ayarlar açılır menüsü
 - [ ] "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
 - [ ] Sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
-- [ ] Renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
+- [ ] Renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla). Güncelleme: örnek kartı PR'ıyla yapılır; karar verildi (decisions 2026-11 "Bileşen docs sayfası şablonu" (6))
 
 ## Teknik backlog
 - [ ] Test hijyeni: `overlay.presets.spec.ts:139-149` düğme temizliği `afterEach`'e taşınmalı
@@ -69,7 +72,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Vitest çıktısında 7 "Pre-transform error" (`@arn-ng/ui` `./core` exports) uyarısı: kaynağını bul. Değişiklikten bağımsız, geri alınca da çıkıyor
   - Bulgu (`ci/playwright-no-deps` dalı): uyarılar `./core` ve `./locales/tr` export'larının çözümlenememesi; `node_modules/@arn-ng/ui` `projects/ui`'ya junction. `test:ci` çıkış kodu 0, testler geçiyor. Main'de ayrıca ölçülmedi, yalnız bu dalda gözlendi
 - [ ] check-md betiğini repoya al (`tools/check-md.mjs`, bağımlılıksız: bağlantı + 150 satır limiti), npm script + CI adımı
-- [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli)
+- [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli). İkisi de yalnız akromatik `oklch(L 0 0)` okuyor; kromatik oklch desteği şart (button destructive `--arn-red-*`, renkli kod paleti). Dal `test/shared-contrast-helper`, örnek kartı PR'ından önce
 - [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)
 
 ## Doğrulama bekleyenler
@@ -82,6 +85,9 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - Angular 19 ile ölçülmüş docs bundle boyutlarının yeniden ölçümü
 - `@angular/aria`'nın Angular 22'deki durumu
 - `toSignal`'in `.d.ts` etiketi (yalnız `ToSignalOptions` `@publicApi 20.0` okundu)
+
+## Ertelenenler
+- `<arn-button>` elemanı (0.1.0'da yok; yalnız `button[arnButton]`, `a[arnButton]`). Gerekçe: sarmalayıcı `type` / `form` / `name` / `value` / `aria-*` / `href` / `disabled`'ı iç elemana iletmek zorunda kalır, bu da erişilebilirlik ve form riski taşır (decisions 2026-11). Yeniden değerlendirme koşulu: somut tüketici ihtiyacı, ayrıca iletilen öznitelik listesinin testle kilitlenmesi. Gelirse sınıf adı ayrı karar (directive `ArnButton` adını aldı)
 
 ## Açık kararlar
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 22'yi aşmıyorsa). `@angular/aria` repoda kurulu değil; 22'deki durumu doğrulanmadı.
