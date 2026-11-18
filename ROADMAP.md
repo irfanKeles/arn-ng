@@ -35,7 +35,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] select
 - [ ] dialog. Not: modal backdrop renk token'ı bununla gelir (bugün CDK'nın `cdk-overlay-dark-backdrop` rengi)
 - [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `^22.0.0`, `@angular/core` `^22.2.5`; `rules/architecture.md`)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `@angular/core` / `@angular/common` `^22.2.5`, `@angular/cdk` `^22.0.0`; `rules/architecture.md`)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit). Not: altyapı hazır, Vitest `browsers`'a `firefox` / `webkit` eklemek (`angular.json`)
 
 ## Faz 5 — İlk yayın
@@ -66,6 +66,8 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Bayat yorumlar: `.github/dependabot.yml` ("Angular 19"), `projects/docs/src/app/pages/installation/installation.data.ts:34` ("Angular 19.2"), `projects/ui/README.md` (CLI 19.2.0 jenerik metni; Faz 5 README maddesiyle birlikte)
 - [ ] `config-direction`: `ambientDirection`'daki CDK 19 yedek dalını kaldır (peer `^22.0.0`)
 - [ ] Kök `dependencies`'teki kullanılmayan `zone.js`'i kaldır
+- [ ] Vitest çıktısında 7 "Pre-transform error" (`@arn-ng/ui` `./core` exports) uyarısı: kaynağını bul. Değişiklikten bağımsız, geri alınca da çıkıyor
+- [ ] check-md betiğini repoya al (`tools/check-md.mjs`, bağımlılıksız: bağlantı + 150 satır limiti), npm script + CI adımı
 - [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli)
 - [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)
 
