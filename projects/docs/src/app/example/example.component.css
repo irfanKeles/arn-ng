@@ -65,6 +65,13 @@
   font-weight: var(--arn-font-weight-semibold);
 }
 
+/* Press feedback in place of the removed tap highlight (styles.css); after the selected rule so it wins */
+.docs-example-button:active,
+.docs-example-tab:active {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}
+
 .docs-example-panel {
   min-inline-size: 0;
   border-block-start: var(--arn-border-width) solid var(--arn-border);
