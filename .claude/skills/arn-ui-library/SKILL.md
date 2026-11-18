@@ -1,13 +1,33 @@
 ---
 name: arn-ui-library
-description: "@arn-ng/ui Angular bileşen kütüphanesi için kurallar. Bu kütüphanede bir bileşen yazarken, değiştirirken, incelerken veya dokümantasyon sayfasını hazırlarken MUTLAKA kullan. Mimari kararları, kodlama kurallarını, yasakları, token/tema yapısını ve doküman sayfası standardını içerir."
+description: "@arn-ng/ui kütüphane kodu (projects/ui) için kurallar ve kararlar. Bileşen, directive, servis, token/tema, ayar sistemi (provideArn, [arnConfig]), i18n/RTL, overlay veya ripple yazarken, değiştirirken ya da incelerken; kütüphanenin testleri, lint, CI, sürümleme, peer aralığı, yerel paket testi (Verdaccio) veya bir mimari karar verirken MUTLAKA kullan. Bileşenin doküman sayfası adımında hangi docs dosyalarının okunacağını da söyler. Yalnızca doküman sitesinin kabuğu, araması, örnek bloğu veya giriş sayfaları üzerinde çalışırken değil, onun için arn-docs-site."
 ---
 
 # @arn-ng/ui — Kütüphane Kuralları
 
-Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği çelişirse DUR, çelişkiyi söyle, karar günlüğüne (en alttaki bölüm) yazılmadan kuralı çiğneme.
+Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği çelişirse DUR, çelişkiyi söyle, karar günlüğüne ([decisions/](decisions/README.md)) yazılmadan kuralı çiğneme.
 
-## 1. Değişmez kararlar
+## Hangi iş için hangi dosya
+
+Her satır en fazla üç dosya. Bu dosyadaki değişmez kararlar, "Bitti" tanımı ve yasaklar her işte geçerlidir. Eski `§N` atıfları: [decisions/README.md](decisions/README.md).
+
+| İş | Oku |
+|---|---|
+| Yeni bileşen: iskelet, paket yeri, Angular kodu | [rules/architecture.md](rules/architecture.md), [rules/angular.md](rules/angular.md), [components/_TEMPLATE.md](components/_TEMPLATE.md) |
+| Yeni bileşen: stil, token, boyut, density | [rules/styling.md](rules/styling.md), [components/tokens.md](components/tokens.md), [components/tokens-sizes.md](components/tokens-sizes.md) |
+| Yeni bileşen: form, klavye, a11y, metinler | [rules/forms-a11y.md](rules/forms-a11y.md), [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config-messages.md](components/config-messages.md) |
+| Bileşen referans dosyasını yazma / güncelleme | [rules/component-files.md](rules/component-files.md), [components/_TEMPLATE.md](components/_TEMPLATE.md), [components/INDEX.md](components/INDEX.md) |
+| Mevcut bileşeni değiştirme | [components/INDEX.md](components/INDEX.md), `components/<ad>.md`, değişikliğin konusuna ait `rules/` dosyası |
+| Bileşenin doküman sayfasını yazma | [rules/docs-page.md](rules/docs-page.md), [docs-site-examples.md](components/docs-site-examples.md), [docs-site-pages.md](components/docs-site-pages.md) |
+| Doküman sitesi kabuğu, arama, "On this page" | [docs-site.md](components/docs-site.md), [docs-site-search.md](components/docs-site-search.md), [docs-site-toc-api.md](components/docs-site-toc-api.md) |
+| Test, lint, CI, sürümleme, yayın | [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
+| Peer aralığı, paket yapısı, entry point, `exports` | [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
+| Ayar sistemi, i18n, RTL, overlay | [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config.md](components/config.md), konunun devam dosyası ([config-direction.md](components/config-direction.md), [config-messages.md](components/config-messages.md), [locales.md](components/locales.md) ya da [overlay.md](components/overlay.md)) |
+| Token, tema, dark mode | [rules/styling.md](rules/styling.md), [components/tokens.md](components/tokens.md), [components/tokens-sizes.md](components/tokens-sizes.md) |
+| Yeni karar ekleme | [decisions/README.md](decisions/README.md), ilgili ayın dosyası ([decisions/2026-11.md](decisions/2026-11.md) …) |
+| Eski `§N` / "bölüm N" atfını çözme | [decisions/README.md](decisions/README.md) |
+
+## Değişmez kararlar (eski §1)
 
 - Paket: `@arn-ng/ui`. Selector prefix: `arn`. Ücretsiz ve **açık kaynak** (npm'de public yayınlanır, lisans: MIT). Gerçek projelerde npm'den kurulup kullanılacak, bu yüzden public API kararlılığı ve semver baştan ciddiye alınır.
 - Minimum Angular: **19**. Sadece Angular 19'da KARARLI olan API'leri kullan. Daha yeni sürümde gelen veya 19'da deneysel olan API'ye bağımlı olma (örn. signal forms, `linkedSignal`, `resource` yok).
@@ -16,118 +36,7 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 - Hedef: PrimeNG kadar profesyonel, kararlı, tutarlı; kullanıcıya ve geliştiriciye sorun çıkarmayan bir kütüphane. Hız değil sağlamlık önceliklidir.
 - Hedef tarayıcı: Angular'ın desteklediği güncel (evergreen) tarayıcılar, yaklaşık son 1 yıllık sürümler. `oklch` fallback'siz kullanılabilir.
 
-## 2. Bileşen mimarisi
-
-**Tek çekirdek, iki yüz.** Basit bileşenlerde davranış ve stil tek bir directive'de durur, element sarmalayıcı aynı directive'i kullanır. Davranış asla iki yerde ayrı yazılmaz.
-
-| Bileşen türü | Kullanım şekli |
-|---|---|
-| Basit, native elemanı olanlar (button, input) | Hem attribute (`<button arnButton>`) hem element (`<arn-button label="..." icon="...">`) |
-| Karmaşık (select, mask input, dialog, date picker, tooltip vb.) | SADECE element (`<arn-select>`) |
-
-- Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*` vb. native davranış bedavaya çalışır).
-- Element sarmalayıcı içinde gerçek bir native eleman render eder (örn. `<arn-button>` içinde `<button>`). Dış `<arn-button>` etiketi tıklanabilir/odaklanabilir sahte bir kutu OLMAZ.
-- Sınıf adları: directive `ArnButtonDirective`, element `ArnButton`, aynı kalıp her bileşende.
-
-## 3. Paket ve import yapısı
-
-- Her bileşen kendi secondary entry point'inde: `@arn-ng/ui/button`, `@arn-ng/ui/input`, `@arn-ng/ui/select`.
-- Kök entry point (`@arn-ng/ui`) bileşen export etmez. Her şey secondary entry point'lerden import edilir.
-- Klasör yapısı: her entry point `projects/ui/<ad>/` altında, kendi `ng-package.json` ve `src/public-api.ts` dosyasıyla. Dil paketleri bir kat içeridedir: `projects/ui/locales/<dil>/` → `@arn-ng/ui/locales/<dil>`.
-- Entry point'ler birbirini paket adıyla import eder (`@arn-ng/ui/core`), göreli yolla değil. Spec ve ESLint bu adları `projects/ui/tsconfig.json` ile kaynağa çözer (`dist` gerekmez); spec'ler göreli import kullanabilir.
-- `angular.json`'da ui projesinin `sourceRoot`'u `projects/ui` (Karma spec'leri bulsun diye). Bileşen dosyaları `projects/ui/<entry-point>/src/` altında durur; `ng generate` kullanılırsa `--path` verilmeli.
-- Her entry point sadece bileşeni ve ona ait tipleri/token'ları export eder. Kullanıcı sadece kullandığını import eder (`import { ArnButton } from '@arn-ng/ui/button'`).
-- Tüm bileşenler standalone. NgModule YOK.
-- `package.json`: `sideEffects: false`. `peerDependencies` (`@angular/core`, `@angular/common`, `@angular/cdk`) yalnızca test edilmiş majörleri taşır, üstten açık BIRAKILMAZ (`>=19` yasak; şu an üçü de `^19.0.0`). Yeni majör, tüketici uyumluluk testi (ROADMAP Faz 4) o majörde geçince üç pakete birlikte eklenir (`^19.0.0 || ^20.0.0`). Gerekçe: üstten açık aralıkta npm en yeni CDK'yı seçer ve eski Angular'da kurulum `ERESOLVE` ile düşer.
-- Yayın metadata'sı `projects/ui/package.json`'da durur (`description`, `keywords`, `license`, `author`, `homepage`, `repository`, `bugs`, `publishConfig.access: public`). `projects/ui/LICENSE` kök `LICENSE`'ın kopyasıdır (ng-packagr proje dışından dosya almaz); biri değişirse diğeri de güncellenir.
-- Tema tek dosya: kaynak `projects/ui/theme.css`, ng-packagr `assets` ile `dist/ui/theme.css`'e kopyalanır, `projects/ui/package.json` `exports`'unda `./theme.css` olarak açılır (ng-packagr elle yazılan `exports`'u üretilenlerle birleştirir). Tüketici bir kez ekler: `@import '@arn-ng/ui/theme.css'`.
-- Public API küçük tutulur. Dışarı açılan her şey söz verilmiş sayılır. İç detaylar export edilmez. Export etmeden önce gerekçe sor.
-- Entry point'ler arası döngüsel bağımlılık YASAK. Ortak kod `@arn-ng/ui/core` altında.
-
-## 4. Angular kodlama kuralları
-
-- `input()`, `output()`, `model()`, `computed()`, `signal()` kullan. `@Input()/@Output()` decorator'ı YOK.
-- `ChangeDetectionStrategy.OnPush` her bileşende zorunlu. Zoneless ile çalışmalı (zone.js'e bağımlı kod yazma).
-- `inject()` kullan, constructor injection yok.
-- Host binding/listener: `host: { ... }` metadata'sı. `@HostBinding/@HostListener` YOK.
-- Şablonda yeni control flow: `@if`, `@for`, `@switch`. `*ngIf/*ngFor` YOK.
-- `ViewEncapsulation`: bileşen stilleri CSS değişkenlerine dayanır. `::ng-deep` YASAK. Kullanıcının stil geçersiz kılması token'larla yapılabilmeli.
-- `any` YASAK. Strict TypeScript. Public API'deki her tip export edilir.
-- Doğrudan `window`, `document`, `localStorage` kullanma. `DOCUMENT` ve `isPlatformBrowser(inject(PLATFORM_ID))` kullan (SSR güvenliği). `afterNextRender` KULLANILMAZ (19'da developer preview).
-- `innerHTML` ile kullanıcı verisi basma. Gerekirse sanitization açıkça yapılır.
-- Her `subscribe` temizlenir (`takeUntilDestroyed`) veya hiç kullanılmaz (signal tercih edilir).
-- Kaynak kodda JSDoc, yorum, test adı ve konsol mesajları İngilizce; `.claude/` ve `ROADMAP.md` Türkçe.
-
-## 5. Token, tema, stil
-
-- Üç katman: **ham** (`--arn-neutral-500`), **anlamlı** (`--arn-primary`, `--arn-border`, `--arn-radius`), **bileşen** (`--arn-button-bg`, `--arn-button-radius`). Bileşen token'ı anlamlı token'a bağlanır, kullanıcı ister global ister tek bileşen için değiştirir. Ham ve anlamlı katman `theme.css`'te, bileşen katmanı bileşenin kendi stilinde durur. Bileşen yalnızca token'a bakar, kendi renk değerini taşımaz. Tam liste: [components/tokens.md](components/tokens.md).
-- İsimlendirme: `--arn-<bileşen>-<özellik>[-<durum>]`. Tutarlı, istisnasız. Anlamlı token adları shadcn adlarıdır (`--arn-background`, `--arn-muted-foreground`...).
-- Renk formatı `oklch`, Stylelint'in istediği yazımla (`oklch(98.5% 0 0deg)`). Temel renk shadcn **neutral**.
-- Dark mode: anlamlı renkler `light-dark(açık, koyu)` ile tek yerde tanımlanır. `:root` `color-scheme: light dark` taşır (sistem ayarına uyar); `.dark` / `.light` sınıfı zorlar, sistem tercihini ezer ve iç içe kullanılabilir. `theme.css` hiçbir elemanı boyamaz; token dışı kuralları yalnız `.arn-rtl-mirror`, overlay katman z-index'leri (bölüm 10) ve ripple sınıflarıdır (`.arn-ripple-container`, `.arn-ripple-wave`).
-- **Mantıksal CSS özellikleri zorunlu** (RTL için): `margin-inline-start`, `padding-inline-end`, `inset-inline-start`, `text-align: start`. `margin-left/right`, `padding-left/right`, `left/right`, `text-align: left/right` YASAK (istisna gerekçesi yazılı olmalı).
-- **Bileşen token'ı bileşenin kendi host'unda hesaplanır**, `:root`'ta değil (örn. host'ta `--arn-button-radius: calc(var(--arn-radius) * 0.8)`). Gerekçe: `var()` tanımlandığı elemanda çözülür; `:root`'ta türetilen adımlar (`--arn-radius-sm` vb.) container'da taban değişince güncellenmez. O adımlar yalnızca global değişir, tüketicinin kendi CSS'i için yardımcıdır, bileşende KULLANILMAZ.
-- Boyutlar: `xs`, `sm`, `md`, `lg`, `xl` (5 boyut). Varsayılan `md`. Boyut yüksekliği, yatay padding'i, yazı boyutunu, ikon boyutunu ve gap'i birlikte belirler: `--arn-control-<özellik>-<boyut>` (sabit değerler, `theme.css`). Katalog ve örüntü: [components/tokens-sizes.md](components/tokens-sizes.md).
-- Yoğunluk: `comfortable` (varsayılan) ve `compact`. Container'a (veya `<html>`'e) `data-density="compact"` verilince `--arn-density` çarpanı 0.875 olur; iç içe kullanılabilir. Çarpan yalnızca yükseklik ve yatay padding'e uygulanır, yazı boyutuna UYGULANMAZ. Bileşenlere tek tek dokunmak gerekmez.
-- Kontrol yüksekliği host'ta `max(var(--arn-control-min-size), calc(var(--arn-control-height-<boyut>) * var(--arn-density)))` olarak yazılır ve `--arn-<bileşen>-height` bu değeri taşır. `--arn-control-min-size` 1.5rem'dir: density sonrası yükseklik 24 CSS px'in altına düşmez (WCAG 2.2 SC 2.5.8).
-- Font, border, radius, boşluk gibi değerler merkezi token'lardan beslenir. Bileşende sabit px/renk değeri YASAK (token yoksa önce token tanımla).
-- Animasyonlar `prefers-reduced-motion` ile kapatılabilir olmalı.
-- **Ripple:** `arnRipple` directive'i (`@arn-ng/ui/ripple`) olarak sunulur. Başka bir kütüphaneye (Angular Material) bağımlı olmadan kendimiz yazarız. Varsayılan kapalı, `provideArn({ ripple: true })` ile global, bileşende `[ripple]` input'u ile tek tek açılır/kapanır. `prefers-reduced-motion` altında otomatik devre dışı. SSR'da güvenli, animasyon bitince DOM'dan temizlenir, rengi token'dan gelir (`--arn-ripple-color`). Klavyede ripple yoktur. Ayrıntı: [components/ripple.md](components/ripple.md).
-
-## 6. Merkezi ayar
-
-- Davranışsal ayar tek arayüzdür: `ArnConfig` (`@arn-ng/ui/core`). Alanlar: `size`, `density`, `colorScheme`, `direction`, `ripple`, `locale`, `messages`, `forms`. Hepsi opsiyonel, literal union tipli, index signature YOK. Yeni alan ancak karar günlüğüyle eklenir.
-- Görsel ayar (renk, font, kenarlık, radius): CSS değişkenleri. `ArnConfig`'e taşınmaz.
-- **Öncelik sırası (yukarıdan aşağıya güçlüden zayıfa):**
-  1. Bileşenin kendi input'u (`size="sm"`)
-  2. En yakın `[arnConfig]` bölümü (`<div arnConfig size="sm" density="compact">`, hiyerarşik DI, iç içe olabilir)
-  3. Global `provideArn()` (çalışma zamanında `ArnConfigService`)
-  4. Kütüphane varsayılanı
-- Üç seviye de signal'dir ve çalışma zamanında değişebilir. `undefined` "bir alttakini kullan" demektir.
-- Bileşen ayarı YALNIZCA `injectArnConfig` ile okur (`injectArnConfig('size', this.size)`); servisi veya token'ı doğrudan inject etmez, önceliği kendi yazmaz. Bu yüzden devralınan input'un varsayılanı `undefined`'dır (`input<ArnSize>()`).
-- DOM'a yazma otomatik değildir: `<html>` yalnızca `applyToDocument()` veya `provideArn({ applyToDocument: true })` ile güncellenir. `[arnConfig]` yalnızca kendi elemanına ve yalnızca verilen `density` / `colorScheme` / açık `direction` (`dir`) için yazar. `<html lang>` hiç yazılmaz.
-- İki alanın varsayılanı ortamdan gelir: `locale` → Angular `LOCALE_ID`; `direction` → en yakın CDK `Directionality` (`auto` = verilmemiş). `direction` okunurken her zaman `ltr` / `rtl`'dir. `[arnConfig]` ve `provideArn` `Directionality`'yi sağlar; CDK tabanlı parçalar aynı yönü görür. Ayrıntı: [components/config-direction.md](components/config-direction.md).
-- Bu sıra her bileşen dokümanında "Yapılandırma" bölümünde kısaca belirtilir. Ayrıntı: [components/config.md](components/config.md).
-
-## 7. Form uyumu
-
-- Form elemanları `ControlValueAccessor` ile çalışır: `ngModel`, `formControl`, `formControlName` üçü de test edilir.
-- Zorunlu durumlar: `disabled` (formdan ve input'tan), `invalid`, `touched`, `dirty`, `readonly`, `required`.
-- Hata görünümü `ng-invalid` + `forms.showErrorsOn` (`touched` varsayılan, `dirty`, `submitted`; `ArnConfig`'ten) ile ve `invalid` input'u ile tetiklenebilir.
-- `setDisabledState` doğru uygulanır.
-- Signal forms'a bağımlılık YOK (19'da kararlı değil). Gelecekte eklenecekse ayrı karar.
-
-## 8. Erişilebilirlik (a11y) — her bileşende zorunlu
-
-- Tam klavye kullanımı: Tab/Shift+Tab, ok tuşları, Enter, Space, Escape, Home/End (bileşen türüne göre WAI-ARIA Authoring Practices kalıbına uy).
-- Doğru `role` ve `aria-*` nitelikleri (`aria-expanded`, `aria-invalid`, `aria-describedby`, `aria-disabled`...).
-- Focus yönetimi: overlay açılınca focus içeri, kapanınca tetikleyiciye döner. Focus trap (dialog). Görünür focus halkası.
-- Sadece renkle bilgi verme. Kontrast yeterli.
-- Ekran okuyucu için gizli metin/label mekanizması.
-- A11y bir "sonra yaparız" değildir. A11y eksikse bileşen BİTMİŞ sayılmaz.
-- CDK'nın a11y araçları (`FocusTrap`, `FocusMonitor`, `ListKeyManager`, `LiveAnnouncer`) tercih edilir, elle yazılmaz.
-
-## 9. i18n ve RTL
-
-- Bileşen içindeki tüm sabit metinler (örn. "Seç", "Temizle", "Sonuç yok", aria-label'lar) dışarıdan verilebilir bir locale/mesaj sistemiyle gelir. Metin koda gömülmez.
-- Metinler `ArnConfig.messages`'tadır (`ArnMessages`, varsayılan İngilizce). Her bileşen kendi alt başlığını core'a İngilizce varsayılanıyla ekler; tüketici ve çeviri paketi yalnızca `ArnDeepPartial<ArnMessages>` verir, bu yüzden anahtar eklemek kırıcı değildir, silmek/yeniden adlandırmak kırıcıdır. Gün/ay adları `Intl` ile `locale`'den üretilir, override edilebilir. Şema: [components/config-messages.md](components/config-messages.md).
-- Çeviri paketi dil başına ayrı entry point'tir (`@arn-ng/ui/locales/tr` → `ARN_MESSAGES_TR`); İngilizce çekirdekte yerleşiktir. Paket otomatik yüklenmez, `provideArn({ locale, messages })` ile açıkça verilir. Yalnızca anadili konuşanın yazdığı/gözden geçirdiği çeviri yayınlanır; çeviri UYDURULMAZ, yeni anahtarın Türkçesi kullanıcıya sorulur. Rehber: [components/locales.md](components/locales.md).
-- Her bileşen RTL'de test edilir (`<div arnConfig direction="rtl">`). Yön `injectArnConfig().direction` ile okunur; CDK parçasına `Directionality` kendiliğinden ulaşır.
-- İkon ve ok yönleri RTL'de aynalanır: yön bildiren ikona `arn-rtl-mirror` sınıfı (`theme.css`, `:dir(rtl)` + `scale: -1 1`). Bileşen kendi aynalama kuralını yazmaz.
-- Tarih/sayı formatı locale'e göre.
-
-## 10. Overlay
-
-- Dropdown, popover, tooltip, dialog, menu hep tek ortak overlay altyapısından geçer: `ArnOverlayService.open()` (`@arn-ng/ui/core`, CDK Overlay üstünde). Bileşen CDK `Overlay`'i doğrudan kullanmaz; kendi z-index/portal/odak/kapanma çözümünü yazmaz. Ayrıntı: [components/overlay.md](components/overlay.md).
-- Hazır ayarlar: `modal`, `popover`, `dropdown`, `tooltip`. Katmanlar ve token'ları (`theme.css`, alttan üste): `--arn-z-dropdown` 1000, `--arn-z-popover` 1100, `--arn-z-modal` 1200, `--arn-z-toast` 1300, `--arn-z-tooltip` 1400.
-- Overlay açanın ayarlarını miras alır: içerik açanın injector'ıyla oluşur (`injectArnConfig()` içeride doğru okur), `dir` / `.dark` / `.light` / `data-density` panele yazılır. Bu yüzden `open()`'a hep açan bileşenin `Injector`'ı verilir.
-- Animasyon sözleşmesi: panel `data-state="open|closed"` (bağlı olanlarda `data-side`, `data-align`) taşır; `close()` çıkış animasyonu bitince, animasyon yoksa ya da `prefers-reduced-motion` varsa hemen kaldırır. Bileşen animasyonunu yalnız bu özniteliklere bağlar (`:host-context([data-state='closed'])`), süre/zamanlayıcı kodu yazmaz. Sözleşmeyi değiştirmek kırıcıdır.
-- `role` ve `aria-*` servisin değil bileşenin işidir (dialog: `role="dialog"` + `aria-modal` + etiket).
-
-## 11. İsimlendirme tutarlılığı
-
-Ortak input isimleri tüm bileşenlerde aynıdır: `size`, `variant`, `disabled`, `invalid`, `readonly`, `required`, `label`, `icon`; ayar adları `ArnConfig` alanlarıdır (`density`, `colorScheme`, `direction`, `ripple`, `locale`). Aynı kavram için farklı isim icat etme. Yeni ortak kavram gerekiyorsa önce karar günlüğüne yaz.
-
-## 12. Bileşen "Bitti" tanımı (Definition of Done)
+## Bileşen "Bitti" tanımı (Definition of Done) (eski §12)
 
 Bir bileşen ancak hepsi tamamsa bitmiştir:
 
@@ -144,140 +53,26 @@ Bir bileşen ancak hepsi tamamsa bitmiştir:
 - [ ] `components/<ad>.md` yazıldı/güncellendi ve `INDEX.md`'ye eklendi (bölüm 18)
 - [ ] Public API gözden geçirildi, gereksiz export yok
 
-## 13. Doküman sayfası standardı (PrimeNG tarzı)
+## Yapılmaması gerekenler (özet) (eski §14)
 
-Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüphaneyi gerçek bir kullanıcı gibi tüketir (böylece her örnek aynı zamanda gerçek kullanım testidir). Yeni bileşen, doküman sayfası olmadan merge edilmez.
+- `::ng-deep`, `!important` ile stil zorlamak → [rules/styling.md](rules/styling.md)
+- `@Input/@Output/@HostBinding` decorator'ları, `*ngIf/*ngFor`, NgModule → [rules/angular.md](rules/angular.md)
+- `margin-left/right` gibi yön-bağımlı CSS → [rules/styling.md](rules/styling.md)
+- Sabit renk/px/metin (token ve i18n dışında) → [rules/styling.md](rules/styling.md), [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md)
+- CDK dışında ikinci bir headless kütüphane → [Değişmez kararlar](#değişmez-kararlar-eski-1)
+- Doküman sayfası, test veya a11y olmadan bileşeni "bitti" saymak → [rules/docs-page.md](rules/docs-page.md), [rules/quality.md](rules/quality.md), [rules/forms-a11y.md](rules/forms-a11y.md)
+- Native davranışı bozan sarmalayıcı (tıklanamayan buton, form'a bağlanmayan input) → [rules/architecture.md](rules/architecture.md)
+- Aynı kavrama farklı isim vermek (`disabled` vs `isDisabled`) → [rules/architecture.md](rules/architecture.md)
+- Angular 19'da kararlı olmayan API'ye bağımlı olmak → [Değişmez kararlar](#değişmez-kararlar-eski-1), [rules/angular.md](rules/angular.md)
+- Gereksiz public export, belirsiz kırıcı değişiklik (breaking change) yapmak. Kırıcı değişiklik gerekiyorsa önce söyle, versiyon ve migration notunu hazırla. → [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md)
 
-**Site yapısı**
-- Solda sidebar: bileşenler kategori başlıkları altında gruplanır (Form, Button, Overlay, Data...). Sidebar'ın en üstünde arama (sayfa ve bölüm başlıkları).
-- Sağda sayfa içi başlık gezintisi ("bu sayfada").
-- Üstte tema (light/dark), yön (LTR/RTL), yoğunluk (comfortable/compact) ve dil değiştiriciler. Bunlar tüm örnekleri anlık etkiler.
-- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik. Altı başlık dört sayfada karşılanır: Yoğunluk Theming'de, RTL ve i18n Configuration'da bölümdür (§16).
-
-**Her bileşen sayfasının bölümleri (bu sırayla)**
-1. Kısa açıklama
-2. **Import** (kopyalanabilir kod)
-3. **Basic** (en basit kullanım)
-4. **ngModel ile kullanım** (form elemanıysa)
-5. **Reactive Forms ile kullanım** (form elemanıysa)
-6. **Disabled**
-7. **Invalid / Validation**
-8. **Sizes** (xs-xl)
-9. **Label, Icon varken / yokken** ve bileşene özgü tüm varyantlar
-10. **Density** (gerekliyse)
-11. Bileşene özgü örnekler (olay yönetimi, template ile özelleştirme...)
-12. **Accessibility** (klavye tuşları tablosu, aria nitelikleri)
-13. **API tabloları:** Inputs, Outputs, Templates/Slots, Methods
-14. **Styling:** bu bileşenin tüm CSS token'ları (isim, varsayılan, açıklama)
-
-**Her örneğin biçimi**
-- Canlı çalışan demo, altında "Kodu göster" ile HTML + TS sekmeleri, kopyala düğmesi.
-- Örnek kodu kopyalanıp yapıştırıldığında çalışmalı (import'lar dahil tam kod).
-- API tabloları kod/yorumdan türetilir veya elle yazılıyorsa bileşen değişince aynı PR'da güncellenir. Eski doküman YASAK.
-- Yalnızca gerçek, anlamlı örnekler. Dolgu örneği yok.
-
-## 14. Yapılmaması gerekenler (özet)
-
-- `::ng-deep`, `!important` ile stil zorlamak
-- `@Input/@Output/@HostBinding` decorator'ları, `*ngIf/*ngFor`, NgModule
-- `margin-left/right` gibi yön-bağımlı CSS
-- Sabit renk/px/metin (token ve i18n dışında)
-- CDK dışında ikinci bir headless kütüphane
-- Doküman sayfası, test veya a11y olmadan bileşeni "bitti" saymak
-- Native davranışı bozan sarmalayıcı (tıklanamayan buton, form'a bağlanmayan input)
-- Aynı kavrama farklı isim vermek (`disabled` vs `isDisabled`)
-- Angular 19'da kararlı olmayan API'ye bağımlı olmak
-- Gereksiz public export, belirsiz kırıcı değişiklik (breaking change) yapmak. Kırıcı değişiklik gerekiyorsa önce söyle, versiyon ve migration notunu hazırla.
-
-## 15. Sürümleme ve kalite
-
-- Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider (1.0.0'dan sonra).
-- Sürüm ve changelog: Changesets. Sürümün tek kaynağı `projects/ui/package.json`; kök `package.json` sürümü ilgisizdir. Akış: `npm run changeset` (değişikliği tarif et) → sürüm çıkarırken `npm run version-packages` (sürümü artırır, `projects/ui/CHANGELOG.md`'yi yazar) → `npm run build:ui` (sürüm ve changelog `dist/ui`'ye geçer). Durum: `npx changeset status`.
-- 0.x kuralı: kırıcı değişiklik ve yeni özellik `minor`, düzeltme `patch`. `major` changeset YAZILMAZ (0.x'i doğrudan 1.0.0 yapar); 1.0.0 ayrı karardır. 0.1.0'a kadar changeset yazılmaz, ilk sürüm tek changeset'le çıkar.
-- Dependabot PR'ları changeset istemez. İstisna: PR `projects/ui/package.json`'daki `dependencies`/`peerDependencies`'e dokunuyorsa changeset elle eklenir.
-- Yayın `dist/ui`'den yapılır. `changeset publish` KULLANILMAZ (kaynak klasörü yayınlar).
-- Yerel paket testi: Verdaccio ile, adımlar ve güvenlik kuralları [local-package-test.md](local-package-test.md)'de. `exports`, entry point veya `projects/ui/package.json` değişince ve her yayından önce çalıştırılır. Gerçek registry'ye asla deneme yayını yapılmaz.
-- Node: 22 LTS (`.nvmrc`, `engines`). `engine-strict` kapalı.
-- Lint: `npm run lint` = ESLint (flat config, `eslint.config.mjs`: angular-eslint + typescript-eslint `strictTypeChecked`, şablon a11y kuralları) + Stylelint (`.stylelintrc.json`: `::ng-deep`, `!important` ve yön-bağımlı CSS yasak, ui'da token adı `--arn-*`). Bölüm 4-5 kurallarının çoğu burada hata olarak zorlanır. Kural kapatmak veya `eslint-disable` yazmak karar günlüğüne gerekçe ister.
-- Format: Prettier (`npm run format`, `npm run format:check`). Markdown ve `.claude/` kapsam dışı. Satır sonu LF (`.gitattributes`).
-- Lint ile zorlanamayan, incelemede elle bakılan kurallar: `subscribe` temizliği, `innerHTML`, entry point'ler arası döngüsel bağımlılık, sabit renk/px.
-- Birim test: Karma + Jasmine, Chrome. `npm test` (ui, izleme modu), `npm run test:docs`, `npm run test:ci` (tüm projeler, tek sefer, `ChromeHeadlessCI`, coverage → `coverage/`).
-- Testler **zoneless** koşar: kurulum dosyası (`projects/ui/testing/test-setup.ts`) her teste `provideExperimentalZonelessChangeDetection()` verir ve zone.js test ortamına hiç yüklenmez. Zone'a yaslanan kod testte kırılır. Bu deneysel API yalnızca test kurulumunda ve docs uygulamasında kullanılır, kütüphane koduna girmez.
-- **Her bileşen spec'inde axe testi zorunlu:** `await expectNoA11yViolations(fixture.nativeElement)` (`projects/ui/testing/a11y.ts`). Yardımcı public API'nin parçası değildir, entry point'lerden export edilmez; spec'ler göreli yolla import eder.
-- Testler Jasmine'e özgü API kullanmaz (ileride Vitest'e geçiş için): yalnızca `describe/it/beforeEach/afterEach/expect` ve ortak matcher'lar. `jasmine.*`, `spyOn`, `expectAsync`, `fail`, `fit/fdescribe/xit/xdescribe`, `fakeAsync/waitForAsync/tick/flush` ESLint'te hatadır. Sahte fonksiyon gerekiyorsa elle yazılır.
-- Spec dosyaları kaynağın yanında durur (`*.spec.ts`); `projects/ui` altındaki her klasör taranır.
-- CI (`.github/workflows/ci.yml`): `main`'e push ve her PR'da, Node sürümü `.nvmrc`'den, sırayla `npm ci` → `npm run lint` → `format:check` → `build:ui` → `build:docs` → `test:ci` (axe testleri dahil). Yerelde aynı komutları aynı sırayla çalıştır; PR açmadan önce hepsi geçmeli.
-- Dependabot (`.github/dependabot.yml`) haftalık. Angular, TypeScript ve ESLint ailesinde majör güncelleme kapalı (geliştirme Angular 19'da); minor/patch tek PR'da gruplanır.
-- En güncel Angular'da derleme kontrolü tüketici uyumluluk testiyle gelecek (ROADMAP Faz 4).
-- Yayın: npm trusted publishing (OIDC). Saklı npm token KULLANILMAZ. Workflow Faz 5'te yazılacak.
-- Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
-
-## 16. Karar günlüğü
-
-Yeni bir karar alındığında buraya tarihle eklenir. Bu bölüm bölüm 1-15'in önüne geçmez, onları günceller.
-
-- 2026-10: Angular 19+, CDK, shadcn referansı, `@arn-ng/ui`, prefix `arn`, basit bileşenlerde attribute+element, karmaşıklarda sadece element, boyutlar xs-xl, density comfortable/compact, dark mode class + sistem.
-- 2026-10: `@arn` npm kapsamı alınmış çıktı. Paket adı `@arn-ng/ui` oldu (npm org: `arn-ng`). Selector prefix (`arn`) ve CSS token öneki (`--arn-*`) değişmedi.
-- 2026-10: Kütüphane açık kaynak olacak (MIT, public npm), monorepo kullanılacak, ripple isteğe bağlı directive olarak eklenecek.
-- 2026-10: Monorepo aracı Angular workspace (Nx yok). Paket yöneticisi npm. Geliştirme Angular 19 / CLI 19 ile. Yapı: `projects/ui` (kütüphane, ng-packagr), `projects/docs` (standalone doküman uygulaması).
-- 2026-10: Secondary entry point yapısı: `projects/ui/<ad>/` (`ng-package.json` + `src/public-api.ts`). Kök entry point (`@arn-ng/ui`) bileşen export etmez. Pilotlar: `core`, `button` (boş).
-- 2026-10: Kalite araçları: ESLint 9 flat config + angular-eslint 19 + typescript-eslint (`strictTypeChecked`), Stylelint 17 + `stylelint-use-logical`, Prettier 3 (Markdown hariç). ESLint doğrudan çalışır, `angular.json`'da lint target'ı yok. Node 22 (`.nvmrc`, `engines: ^22.0.0`), satır sonu LF (`.gitattributes`).
-- 2026-10: ui projesinde `@angular-eslint/component-class-suffix` kapalı (element sınıfı `ArnButton`, bölüm 2). Inline `styles` yasak (`component-max-inline-declarations`), stiller Stylelint'in görebildiği ayrı dosyada durur.
-- 2026-10: tsconfig'e `noUncheckedIndexedAccess`, `strictStandalone`, `extendedDiagnostics.defaultCategory: error` eklendi. `exactOptionalPropertyTypes` ve `noUnusedLocals/Parameters` bilinçli olarak eklenmedi.
-- 2026-10: Test altyapısı: Karma + Jasmine (CLI 19 varsayılanı), Chrome, CI için `ChromeHeadlessCI` (`--no-sandbox`). Testler zoneless koşar, zone.js test ortamına yüklenmez (`provideExperimentalZonelessChangeDetection` deneysel; yalnızca test kurulumunda, "zoneless uyumlu" kuralını zorlamak için). axe-core yardımcısı `projects/ui/testing/` altında, public API dışı. Jasmine'e özgü API yasak (Vitest'e geçişi kolaylaştırmak için). ui projesinin `sourceRoot`'u `projects/ui` (secondary entry point ve `testing/` altındaki spec'ler bulunsun diye).
-- 2026-10: `no-autofocus` ve `no-input-rename` ESLint kuralları açık kalıyor. Gerekçe: `autofocus` erişilebilirlik için sakıncalı, odak yönetimi kodla yapılır; `no-input-rename` directive selector'ıyla aynı alias'a izin verir, `arnRipple` gibi durumlar sorunsuz.
-- 2026-10: Bileşen referans dosyaları (bölüm 18): her bileşen/directive/servis/ortak yapı için `components/<ad>.md`, liste `components/INDEX.md`, iskelet `components/_TEMPLATE.md`. Bileşenle aynı değişiklikte yazılır/güncellenir. Satır limitleri: SKILL.md 300, bileşen dosyası 150, INDEX.md 150.
-- 2026-10: CI: GitHub Actions, tek job (`ubuntu-latest`, imajdaki Chrome; sonradan `ubuntu-24.04`'e sabitlendi, aşağıda), `actions/checkout@v7` + `actions/setup-node@v7`, izin `contents: read`, aynı ref'te eski çalışma iptal. Dependabot haftalık; `@angular/*`, `@angular-devkit/*`, `ng-packagr`, `typescript` (minor dahil), `zone.js`, `rxjs`, `eslint`, `@eslint/js`, `angular-eslint` majörleri yoksayılır. Yayın trusted publishing (OIDC) ile yapılacak, saklı npm token yok.
-- 2026-10: Sürümleme: Changesets 3 (`.changeset/config.json`: `baseBranch: main`, `access: public`, varsayılan changelog formatı). Changesets paketi bulabilsin diye kök `package.json`'da npm `workspaces: ["projects/ui"]` (yan etki: `node_modules/@arn-ng/ui` kaynağa bağlanır; derleme `tsconfig` `paths` ile `dist/ui`'yi kullanmaya devam eder). `projects/ui` sürümü `0.0.0`, ilk yayın 0.1.0. PR'larda changeset kontrolü CI'a 0.1.0'dan sonra eklenecek.
-- 2026-10: Yerel paket testi Verdaccio ile (repoya bağımlılık eklenmeden, geçici klasörde; akış `local-package-test.md`). İlk çalıştırma geçti. Yayın metadata'sı ve `projects/ui/LICENSE` eklendi; lisans MIT, `publishConfig.access: public`.
-- 2026-10: shadcn uyumu genişletildi: yalnızca palet değil bileşen kataloğu, varyant/boyut adları ve ölçüler de shadcn'i izler; sapmalar bileşen referans dosyasına gerekçeyle yazılır (bölüm 1).
-- 2026-10: Tema (Faz 2 adım a): tek dosya `@arn-ng/ui/theme.css`, kaynağı `projects/ui/theme.css` (core altı değil: workspace symlink'i ve `dist` aynı göreli yolu görsün diye). Temel renk neutral; değerler `ui.shadcn.com/r/colors/neutral.json` ile doğrulandı. Dark mode `light-dark()` + `color-scheme` ile (shadcn'in `.dark` bloğunu yeniden tanımlama tekniğinden sapma; tüketici API'si aynı, değerler tek yerde). `.light` sınıfı eklendi, `data-theme` yok. oklch yazımı Stylelint'e uyar, kural kapatılmadı. `chart-*`, `sidebar-*` ve `success/warning/info` token'ları EKLENMEDİ (ihtiyaç duyan bileşenle ayrı karar). `--arn-destructive-foreground` yok (güncel shadcn'de kaldırılmış). Font yığını `system-ui` tabanlı.
-- 2026-10: Boyut ve density (Faz 2 adım b, yalnızca CSS; `theme.css` içinde, ayrı dosya reddedildi, paket yapısı değişmedi). (1) Bileşen token'ı host'ta hesaplanır; `:root`'taki türetilmiş adımlar yalnızca global değişir ve bileşende kullanılmaz. (2) Kontrol token'ları `--arn-control-{height,padding-inline,font-size,icon-size,gap}-{xs…xl}`, sabit değer (`var()` yok), varsayılan `md`. xs-lg shadcn button değerleri (`button.tsx`, new-york-v4, web'den doğrulandı; shadcn'de artık `xs` var, `default` bizde `md`); `xl` bizim ekimiz (3rem / 2rem / 1rem / 1.25rem / 0.5rem). (3) Density `--arn-density` çarpanı (1 / 0.875), `[data-density]` ile; yalnızca yükseklik ve yatay padding. (4) `--arn-control-min-size: 1.5rem` ve host'ta `max()`: density sonrası yükseklik tabanı (SC 2.5.8); compact xs 24px kalır. (5) Compact'ta yuvarlama yok (md 31.5px).
-- 2026-10: Ayar sistemi (Faz 2 adım c, `@arn-ng/ui/core`; ayrıntı `components/config.md`). (1) Tek `ArnConfig`; §6'daki eski `dir` → `direction`, `animations` alanı çıkarıldı, `colorScheme` / `ripple` / `messages` / `forms` eklendi; ripple varsayılanı `false` kaldı. (2) Bölüm ayarı `arnForm` değil `[arnConfig]` direktifi. (3) Öncelik tek fonksiyonda (`createScope`); bileşen `injectArnConfig` kullanır; token'lar dışa açılmaz. (4) `effect()` KULLANILMAZ (19'da developer preview): `applyToDocument` sonrası DOM yazımı servis `update`'inde senkrondur. (5) DOM'a yazma yalnızca açık çağrıyla; `[arnConfig]` kendi host'una `data-density` ve `.dark` / `.light` yansıtır, `dir` adım (d)'de. (6) Tip dışı alan/değer her modda atılır, geliştirme modunda `console.warn`. (7) Mesaj şeması v1: `common`, `dialog`, `toast`, `datePicker`; gün/ay adları `Intl` + override. (8) `forms.showErrorsOn`: `touched` | `dirty` | `submitted`.
-- 2026-10: Kaynak kod dili İngilizce (§4): `projects/ui/` altındaki JSDoc, yorum, test adı ve konsol mesajları çevrildi (paket public, JSDoc tüketicinin IDE'sinde görünür). `.claude/` ve `ROADMAP.md` Türkçe kalır; testlerdeki Türkçe çeviri verisi (`'Tamam'`, `tr-TR` adları) test verisidir.
-- 2026-10: Çeviri paketleri ve RTL (Faz 2 adım d; ayrıntı `components/locales.md`, `components/config-direction.md`). (1) Dil paketi iç içe secondary entry point: `@arn-ng/ui/locales/<dil>`, yalnız `ARN_MESSAGES_<DİL>` (`ArnDeepPartial<ArnMessages>`), `datePicker` içermez; ilk sürümde yalnız Türkçe, anadili olmayan çeviri yayınlanmaz. (2) `ARN_CONFIG_TR` gibi `{ locale, messages }` paketi EKLENMEDİ. (3) `<html lang>` YAZILMAZ. (4) `ArnResolvedConfig.direction` `'ltr' | 'rtl'` oldu (`auto` çözülür; adım c'deki tipten sapma, paket yayınlanmamıştı). (5) Yönün kaynağı en yakın CDK `Directionality`; `[arnConfig]` ve `provideArn` onu kendi nesneleriyle sağlar, `hostDirectives: [Dir]` reddedildi (verilmeyen yönü `ltr` sayar). (6) `rxjs-interop` kullanılmaz (19'da developer preview); değişim `ngOnChanges` ve servis `update`'i ile yayılır. (7) `.arn-rtl-mirror` `theme.css`'teki tek token dışı kuraldır. (8) `@angular/cdk` kök bağımlılık ve ui peer'ı olarak eklendi. (9) `projects/ui/tsconfig.json`: spec ve ESLint entry point adlarını kaynağa çözer.
-- 2026-10: Peer aralıkları daraltıldı: `@angular/core`, `@angular/common`, `@angular/cdk` `>=19.0.0` → `^19.0.0` (§3). Gerekçe: Verdaccio dördüncü çalıştırmada üstten açık aralık Angular 19 tüketicide CDK 22'yi seçip kurulumu `ERESOLVE` ile düşürdü. Majörler test edildikçe eklenir; minimum Angular hâlâ 19 (§1).
-- 2026-10: Overlay altyapısı (Faz 2 adım e, `@arn-ng/ui/core`; ayrıntı `components/overlay.md`). (1) Servis adı `ArnOverlayService`: servisler `Service` soneki taşır, eksiz ad element sınıfına kalır (`ArnDialog` / `ArnDialogService`). (2) Katman kuralları `theme.css`'te (ayrı dosya ve çalışma zamanında yükleme reddedildi); z-index CDK host elemanına ve backdrop'a iki sınıflı seçiciyle yazılır. CDK'nın yapısal CSS'i 19.0.0'dan beri kendiliğinden yüklenir, tüketici bir şey eklemez. (3) `.cdk-overlay-container` z-index'ine dokunulmaz; token'lar yalnız overlay'ler arası sırayı verir. (4) İç içe overlay açılışta üstünün z-index'ine yükseltilir. (5) Tema ve density tetikleyenin DOM'undan (`closest`), yön `Directionality`'den okunur; yön canlı, tema/density bölüm düzeyinde anlık görüntüdür. (6) `ArnOverlayRef.closed` `Promise`'tir (public API'de rxjs yok). (7) Çıkış beklemesi Web Animations API ile (`getAnimations`); sabit süre yok. (8) §10'daki eski `--arn-z-dialog` adı `--arn-z-modal` oldu.
-- 2026-10: Ripple (Faz 2 adım f; ayrıntı `components/ripple.md`). (1) Ayrı entry point `@arn-ng/ui/ripple`, core'a tek yönlü bağımlı; core'da değil. (2) Girdiler `arnRipple` / `arnRippleColor` / `arnRippleCentered`; `arnRippleDisabled` YOK (`[arnRipple]="false"`). Boş attribute eleman girdisidir ve config'i ezer; config yalnız girdi `undefined` iken (bileşenin `hostDirectives` takma adı `ripple` bağlanmadığında) geçerlidir. (3) Klavyede (Enter/Space) ripple yok; yalnız `pointerdown`, birincil düğme. (4) `afterNextRender` KULLANILMAZ: 19.2'de `@developerPreview` (§1); §4 `isPlatformBrowser` olarak düzeltildi. (5) Token'lar (`--arn-ripple-color` / `-duration` / `-easing`) ve iki sınıf `theme.css`'te: directive'in stil dosyası olamaz (§5 "bileşen katmanı bileşenin stilinde" kuralından sapma). (6) `arnRippleColor` olduğu gibi uygulanır; sönme bırakınca hemen, aynı süreyle. (7) Container son dalgayla kaldırılır; en fazla 5 dalga. (8) `projects/ui/tsconfig.json`'a `baseUrl: "."` eklendi: entry point'ler arası ilk çalışma zamanı import'u Karma'da çözülmüyordu (`@ngtools/webpack` `paths`'i `baseUrl` yoksa çalışma dizinine göre çözer). TS 6+ `baseUrl`'i kullanımdan kaldırıyor; TypeScript yükseltilirken yeniden bakılacak.
-- 2026-10: Doküman sitesi kabuğu (Faz 3 adım 3a, `projects/docs`; ayrıntı `components/docs-site.md`). (1) Araç: özel Angular uygulaması; site dili İngilizce (arayüz ve içerik), `<html lang>` `en` kalır; dil değiştirici sitenin metnini değil kütüphanenin yerelini (`locale` / `messages`) değiştirir. (2) Selector öneki `docs-`. (3) Düz CSS + `--arn-*` token'ları, Tailwind yok; Stylelint kuralları docs'ta da geçerli. (4) Gezinti tek tipli veriden (`docs-nav.ts`): sidebar ve lazy route'lar aynı listeden, URL düz `/<slug>`, yalnız var olan sayfalar listelenir. (5) Değiştiriciler `ArnConfigService` + `provideArn({ applyToDocument: true })` ile; kendi ayar tipi yok. (6) Kalıcılık `localStorage` tek anahtar (`arn-docs:settings`), try/catch + allowlist, `DOCUMENT` üzerinden. (7) İngilizce'ye dönüş açılışta alınan mesaj anlık görüntüsüyle (servisin reset yolu hâlâ açık karar, ROADMAP). (8) Zoneless: `provideExperimentalZonelessChangeDetection()` docs'ta açıldı, `angular.json`'da yalnız docs `polyfills`'inden `zone.js` kaldırıldı; build ve testler sorunsuz, değerlendirme 3e'de (§1'in "yalnız kararlı API" kuralı kütüphane içindir). (9) Dar ekran modu CSS media query değil TS token'ı (`DOCS_NARROW_VIEWPORT`) ile; çekmece disclosure'dır, kütüphanenin overlay servisi kullanılmaz. (10) `projects/docs/tsconfig.json` yalnız editör/ESLint için `@arn-ng/ui/*`'ı kaynağa çözer (lint `dist` istemesin); build ve testler `dist/ui`'yi tüketir. (11) Dağıtım Faz 5'e bırakıldı.
-- 2026-10: Kod renklendirme: Shiki, yalnız docs'ta (kütüphaneye girmez), tembel yüklenen parça, JS regex motoru (wasm yok), yalnız `html` / `typescript` / `css` dilleri (3c-1a'da `shellscript` eklendi, Installation komutları için; yalnız tembel parçayı büyütür). Adım 3b-1'de uygulandı (sonraki madde).
-- 2026-10: Örnek bloğu ve kod renklendirme (Faz 3 adım 3b-1, `projects/docs`; ayrıntı `components/docs-site-examples.md`). (1) Örnek kodunun kaynağı derlenen dosyanın kendisidir: `import src from './x.example.ts?source' with { loader: 'text' }`; `?source` soneki tek ambient bildirimle (`text-imports.d.ts`) tiplenir, `@ts-expect-error` yazılmaz; docs tsconfig'lerinde `module: esnext`. Elle yazılmış string reddedildi (demo ile kod ayrışır). (2) Bu import webpack'te çalışmadığı için `angular.json`'da YALNIZ docs test hedefi `builderMode: application` (esbuild) kullanır; seçenek Angular 19'da **developer preview**'dur (v19.angular.dev, build-system-migration), bilerek kabul edildi; ui testleri webpack'te kalır. (3) Shiki 4.5.0 (MIT) kök `devDependencies`'te; `shiki/core` + `createJavaScriptRegexEngine` (`shiki/engine/javascript`), diller `shiki/langs/*.mjs`; yalnız `code/docs-highlight.ts` import eder, o da `import()` ile ayrı parçadır. (4) Çıktı token dizisidir ve şablonda `@for` ile basılır; `innerHTML` / `codeToHtml` yok. (5) Renk: `createCssVariablesTheme` yalnız `var(--docs-code-*)` üretir; değişkenler kod bloğunun kendi stilinde (`:host`) mevcut `--arn-*` token'larına bağlıdır (nötr). Shiki çift teması (üçüncü taraf hex) reddedildi; renkli palet ROADMAP'te. (6) Sekme klavyesi elle yazıldı: CDK `ListKeyManager` kullanımdan kalkmış `keyCode`'u okur, spec bunu `no-deprecated` ihlali olmadan üretemez (§8'deki CDK tercihinden sapma).
-- 2026-10: CI runner `ubuntu-latest` → `ubuntu-24.04` sabitlendi. Gerekçe: `ubuntu-latest` 19 Ekim 2026'da Ubuntu 26'ya geçti; Karma imajdaki Chrome'a dayanır ve yeni imaj denenmedi. Ubuntu 26 ayrı bir denemeyle (Chrome sürümü + `test:ci` geçince) açılır; 24.04 imajının kaldırılma duyurusu gelirse öncelik kazanır.
-- 2026-10: "On this page" (Faz 3 adım 3b-2 ilk yarı, `projects/docs`; ayrıntı `components/docs-site-toc-api.md`). (1) Bölümler bildirimsel: sayfa `<docs-section sectionId heading>` yazar, bileşen `DocsTocService`'e kaydolur; DOM taraması reddedildi (zoneless + `afterNextRender` yasağında zamanlama belirsiz). (2) `<section>` adsız (her bölüm `region` landmark'ı olmasın). (3) Liste kabukta, sayfa yolu girdiyle (göreli `routerLink` kök route'a çözülürdü); bağlantı başlığa odak taşır; `anchorScrolling` açıldı. (4) Görünürlük TS token'ı `DOCS_TOC_VIEWPORT` (≥80rem) + en az iki bölüm; üçüncü sütun yalnız `docs-with-toc` sınıfıyla açılır. (5) Çekmece (<48rem) ile aralıklar çakışmaz, listeye `inert` gerekmez. (6) Scrollspy ve dar ekranda liste sonraya (ROADMAP).
-- 2026-10: API ve Styling tabloları (Faz 3 adım 3b-2 ikinci yarı; ayrıntı `components/docs-site-toc-api.md`). (1) Veri elle yazılır, tipli (`api/docs-api.ts`); derleme zamanı kod çözümleme (compodoc, TS API) şimdilik reddedildi. (2) Bayatlamaya karşı her sayfa spec'i `expectApiMatchesComponent` çağırır: saf `apiMismatches` `reflectComponentType` (19'da kararlı) ile gerçek input/output template adlarını (alias ve `model()`'in `<ad>Change`'i dahil) tabloyla birebir karşılaştırır; yalnız ad denetlenir. (3) Directive'ler `reflectComponentType` ile okunamaz; 3c-1b'de çözüldü (sonraki madde). (4) İki tablo bileşeni tek iç `docs-table`'ı paylaşır; tablo odaklanabilir, adlı bir bölgede yalnız kendi içinde kayar.
-- 2026-10: Odak halkası shadcn'den sapıyor: `--arn-ring` açık temada neutral-400 → neutral-500 (beyaz üstünde ≈2.6:1 → ≈4.7:1; WCAG 1.4.11 odak göstergesi için 3:1 ister). Koyu tema değişmedi (neutral-500, neutral-950 üstünde ≈4.2:1). `theme.spec.ts` iki temada ≥3:1'i sınar.
-- 2026-10: Doküman doğrulama yardımcıları (Faz 3 adım 3c-1b; ayrıntı `components/docs-site-pages.md`). (1) Directive API'si derlenmiş tanımdan (`ɵdir`) okunur: public API yok, "yalnız kararlı API" kuralından YALNIZ docs spec kodunda sapma, kütüphaneye girmez. Yalnız anahtarlar (template adları) kullanılır, şekil denetlenir; bilinmeyen şekil "okunamadı" diye düşer, şekil spec'i Angular güncellemesini yakalar. (2) `tokenMismatches`: `theme.css` metni ayrı bir `CSSStyleSheet`'e ayrıştırılır (`document.styleSheets` değil), `@layer` / `@media` / iç içe kurallar dolaşılır, yalnız `--arn-*`, iki yönlü ve kapsam fonksiyonuyla. (3) `properties` tablo türü (`inputs` sütunları, başlık "Properties").
-- 2026-10: Giriş sayfaları (Faz 3 adım 3c; ayrıntı `components/docs-site-pages-guides.md`). (1) §13'ün altı giriş başlığı dört sayfada: Installation, Configuration (RTL ve i18n bölüm olarak), Theming (Density bölüm olarak), Accessibility; ayırmak sonra kolay. (2) Installation 0.1.0'dan önce yazıldı, başında "Not on npm yet" notuyla; adımlar Verdaccio çalıştırmalarında denenenlerdir, gereksinimler `projects/ui/package.json`'dan derleme anında okunur. Not 0.1.0'da kaldırılır (ROADMAP Faz 5). (3) Accessibility "garanti" değil kural dilindedir (henüz bileşen yok), yalnız koddan / testten doğrulanan sayıları taşır (24px, 3px, halka ≈4.7 / ≈4.2:1, spec yeniden hesaplar), token belgelemez (Theming'e bağlanır) ve dürüst bir "Known limits" bölümü içerir.
-- 2026-10: Doküman sayfası değişmezleri (Faz 3 adım 3c, Theming ile; ayrıntı `components/docs-site-pages.md`, `docs-site-pages-guides.md`). (1) Her sayfa spec'i "320px'te belge taşmaz" testini taşır (`expectNoPageOverflow`: `document.documentElement.scrollWidth`, pencerenin sağ kenarına yaslı kapsayıcı, Karma raporlayıcısı için taban). (2) `:root`'taki her `--arn-*` bir sayfanın Styling tablosunda ya da notlu izin listesinde (`pages/token-coverage.spec.ts`); bugün listede yalnız `--arn-z-*`. (3) Örnek bloğu konumlanmaz: konumsuz host, örnekte eksik `position: relative`'i görünür kılar.
-- 2026-11: Sidebar araması (Faz 3 adım 3d; ayrıntı `components/docs-site-search.md`). (1) Kapsam sayfa ve bölüm başlıkları; veri `DocsNavPage.sections` (zorunlu), bayatlığa karşı her sayfayı render eden spec. (2) Normalizasyon yerelden bağımsız: NFD → işaret sil → `toLowerCase` → `ı`→`i`; `toLocaleLowerCase` yok. (3) Filtre, combobox değil; yalnız bölümü eşleşen sayfa bağlantı değil etiket. (4) Duyuru `role="status"` görünür metinle (§8'deki CDK `LiveAnnouncer` tercihinden sapma: metin görenler için de içerik, çift duyuru olurdu); sayı = görünen bağlantı sayısı. (5) `role="search"` nav'ın kardeşi (iç içe landmark yok). (6) Yerel `<input type="search">` (kütüphanede input yok; Faz 4'te `arnInput`), kenarlık `--arn-muted-foreground` (`--arn-input` ≈1.3:1, karar Faz 4). (7) Çekmece odağı ilk bağlantıda kalır (ekran klavyesi), bağlantı yoksa arama alanına; Escape `isComposing`'te IME'ye bırakılır.
-- İlk sürüm (v0.1) önerilen bileşenler: button, input, checkbox, select, dialog, tooltip (altyapıyı doğrulamak için). Kesinleşmedi.
-
-## 17. Henüz açık kararlar
+## Henüz açık kararlar (eski §17)
 
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 19'u aşmıyorsa)
 
-## 18. Bileşen referans dosyaları (`components/`)
+## Satır limitleri
 
-Her bileşen, directive, servis veya ortak yapı için `.claude/skills/arn-ui-library/components/<ad>.md` yazılır. Amaç: sonraki oturumlarda koda bakmadan bileşenin nasıl kurulduğunu anlamak. Kullanıcıya dönük doküman sayfasından (bölüm 13) farklıdır: orası "nasıl kullanılır", burası "nasıl yapıldı ve neden".
-
-- Bileşen oluşturulurken veya değiştirilirken referans dosyası AYNI değişiklikte yazılır/güncellenir. Güncel değilse bileşen BİTMİŞ sayılmaz.
-- Bir bileşeni değiştirmeden önce referans dosyasını oku.
-- Tüm referans dosyalarının tek satırlık listesi: [components/INDEX.md](components/INDEX.md). Bu dosya (SKILL.md) sadece INDEX'e bağlanır, bileşen ayrıntısı buraya yazılmaz.
-- Yeni dosya [components/_TEMPLATE.md](components/_TEMPLATE.md) kopyalanarak başlar.
-
-**Şablon bölümleri (bu sırayla)**
-1. **Özet:** selector, entry point, element/directive, sınıf adları, dosya yolları
-2. **Mimari ve CDK:** neyden extend ediyor, hangi CDK parçalarını kullandı, neyi neden genişletti, `hostDirectives`
-3. **Token'lar:** tablo (ad, host'taki hesap, bağlı anlamlı token)
-4. **Override rehberi:** global, container, tek örnek
-5. **Davranış ve a11y:** klavye, aria
-6. **Form uyumu**
-7. **Kısıtlar ve kararlar**
-8. **Testler**
-9. **Bağlantılar:** kod yolları, doküman sayfası
-
-**Satır limitleri**
-- SKILL.md en fazla 300 satır. Aşarsa bir bölüm ayrı dosyaya taşınır ve buradan referans verilir.
+- SKILL.md (bu dosya ve `arn-docs-site/SKILL.md`) ve her `rules/*.md` en fazla 150 satır. Aşarsa bir bölüm ayrı dosyaya taşınır ve buradan bağlanır.
 - Bileşen dosyası en fazla 150 satır. Aşarsa `<ad>.md` + `<ad>-<konu>.md` olarak bölünür, ana dosyadan bağlanır.
 - INDEX.md en fazla 150 satır. Aşarsa kategori indekslerine bölünür.
 - Dosyalar kısa olsun: tablo ve liste ağırlıklı, kod kopyalamak yerine dosya yolu ver.

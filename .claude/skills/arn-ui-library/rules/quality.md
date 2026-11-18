@@ -1,0 +1,22 @@
+# Sürümleme ve kalite (eski §15)
+
+- Semver. Her değişiklik changelog'a yazılır. Kırıcı değişiklik major'a gider (1.0.0'dan sonra).
+- Sürüm ve changelog: Changesets. Sürümün tek kaynağı `projects/ui/package.json`; kök `package.json` sürümü ilgisizdir. Akış: `npm run changeset` (değişikliği tarif et) → sürüm çıkarırken `npm run version-packages` (sürümü artırır, `projects/ui/CHANGELOG.md`'yi yazar) → `npm run build:ui` (sürüm ve changelog `dist/ui`'ye geçer). Durum: `npx changeset status`.
+- 0.x kuralı: kırıcı değişiklik ve yeni özellik `minor`, düzeltme `patch`. `major` changeset YAZILMAZ (0.x'i doğrudan 1.0.0 yapar); 1.0.0 ayrı karardır. 0.1.0'a kadar changeset yazılmaz, ilk sürüm tek changeset'le çıkar.
+- Dependabot PR'ları changeset istemez. İstisna: PR `projects/ui/package.json`'daki `dependencies`/`peerDependencies`'e dokunuyorsa changeset elle eklenir.
+- Yayın `dist/ui`'den yapılır. `changeset publish` KULLANILMAZ (kaynak klasörü yayınlar).
+- Yerel paket testi: Verdaccio ile, adımlar ve güvenlik kuralları [local-package-test.md](../local-package-test.md)'de. `exports`, entry point veya `projects/ui/package.json` değişince ve her yayından önce çalıştırılır. Gerçek registry'ye asla deneme yayını yapılmaz.
+- Node: 22 LTS (`.nvmrc`, `engines`). `engine-strict` kapalı.
+- Lint: `npm run lint` = ESLint (flat config, `eslint.config.mjs`: angular-eslint + typescript-eslint `strictTypeChecked`, şablon a11y kuralları) + Stylelint (`.stylelintrc.json`: `::ng-deep`, `!important` ve yön-bağımlı CSS yasak, ui'da token adı `--arn-*`). Bölüm 4-5 kurallarının çoğu burada hata olarak zorlanır. Kural kapatmak veya `eslint-disable` yazmak karar günlüğüne gerekçe ister.
+- Format: Prettier (`npm run format`, `npm run format:check`). Markdown ve `.claude/` kapsam dışı. Satır sonu LF (`.gitattributes`).
+- Lint ile zorlanamayan, incelemede elle bakılan kurallar: `subscribe` temizliği, `innerHTML`, entry point'ler arası döngüsel bağımlılık, sabit renk/px.
+- Birim test: Karma + Jasmine, Chrome. `npm test` (ui, izleme modu), `npm run test:docs`, `npm run test:ci` (tüm projeler, tek sefer, `ChromeHeadlessCI`, coverage → `coverage/`).
+- Testler **zoneless** koşar: kurulum dosyası (`projects/ui/testing/test-setup.ts`) her teste `provideExperimentalZonelessChangeDetection()` verir ve zone.js test ortamına hiç yüklenmez. Zone'a yaslanan kod testte kırılır. Bu deneysel API yalnızca test kurulumunda ve docs uygulamasında kullanılır, kütüphane koduna girmez.
+- **Her bileşen spec'inde axe testi zorunlu:** `await expectNoA11yViolations(fixture.nativeElement)` (`projects/ui/testing/a11y.ts`). Yardımcı public API'nin parçası değildir, entry point'lerden export edilmez; spec'ler göreli yolla import eder.
+- Testler Jasmine'e özgü API kullanmaz (ileride Vitest'e geçiş için): yalnızca `describe/it/beforeEach/afterEach/expect` ve ortak matcher'lar. `jasmine.*`, `spyOn`, `expectAsync`, `fail`, `fit/fdescribe/xit/xdescribe`, `fakeAsync/waitForAsync/tick/flush` ESLint'te hatadır. Sahte fonksiyon gerekiyorsa elle yazılır.
+- Spec dosyaları kaynağın yanında durur (`*.spec.ts`); `projects/ui` altındaki her klasör taranır.
+- CI (`.github/workflows/ci.yml`): `main`'e push ve her PR'da, Node sürümü `.nvmrc`'den, sırayla `npm ci` → `npm run lint` → `format:check` → `build:ui` → `build:docs` → `test:ci` (axe testleri dahil). Yerelde aynı komutları aynı sırayla çalıştır; PR açmadan önce hepsi geçmeli.
+- Dependabot (`.github/dependabot.yml`) haftalık. Angular, TypeScript ve ESLint ailesinde majör güncelleme kapalı (geliştirme Angular 19'da); minor/patch tek PR'da gruplanır.
+- En güncel Angular'da derleme kontrolü tüketici uyumluluk testiyle gelecek (ROADMAP Faz 4).
+- Yayın: npm trusted publishing (OIDC). Saklı npm token KULLANILMAZ. Workflow Faz 5'te yazılacak.
+- Cross-browser görsel/etkileşim testleri (Playwright, Chromium + Firefox + WebKit).
