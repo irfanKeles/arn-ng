@@ -42,7 +42,7 @@ $env:npm_config_cache      = "$root\npm-cache"
 4. **Tüketici**
    ```powershell
    Set-Location $root
-   npx -y @angular/cli@22 new consumer --skip-git --skip-tests --style=css --ssr=false --package-manager=npm   # peer aralığındaki majör (şu an ^22.0.0)
+   npx -y @angular/cli@22 new consumer --skip-git --skip-tests --style=css --ssr=false --package-manager=npm   # peer aralığındaki majör (şu an 22; @angular/core ^22.2.5)
    Set-Location consumer
    npm install @arn-ng/ui@0.0.0-local.1    # CDK peer olarak kendiliğinden kurulur; elle verme
    npm ls @angular/cdk                      # peer'ın kurulduğunu gör (tuzaklara bak)

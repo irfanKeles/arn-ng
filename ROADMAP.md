@@ -24,17 +24,18 @@ Kurallar için `.claude/skills/arn-ui-library/SKILL.md` (doküman sitesi: `.clau
 Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kararların hiçbirine bağlı DEĞİL; kararlar beklerken button yapılabilir.
 
 - [x] Karar: `--arn-input` kontrastı (eski ölçüm açık temada 1.26:1; WCAG 1.4.11 3:1 ister). Verildi: input, checkbox ve select kenarlığı için `--arn-input` artık iki temada ≥3:1 (açık `oklch(65% 0 0deg)`, koyu beyaz %40; decisions 2026-11)
-- [ ] Karar: Signal forms stratejisi (CVA'nın yerine geçmez; form bileşenlerinden önce). Önce gelir: input (ve form bileşenlerinin tamamı: input, checkbox, select)
+- [x] Karar: Signal forms stratejisi. Verildi: kontroller yalnız `FormValueControl` / `FormCheckboxControl` uygular, CVA yok; peer `^22.2.5` (decisions 2026-11)
+- [ ] `ArnConfig` `forms.showErrorsOn: 'submitted'` kaldırma (ayrı kod PR'ı, input'tan önce; Signal Forms'ta karşılığı yok, decisions 2026-11 "Signal Forms stratejisi" (3))
 - [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
 
 ### Bileşenler ve doğrulama
 - [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
-- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer
+- [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer. Form test matrisi: `ngModel`, `formControl`, `formControlName`, `[formField]`; bilinen boşluklar (`ngModel`'de `required`; reactive'de `readonly` / `name` / `min` / `max`; blur'da `touch`) testle kilitlenir (decisions 2026-11 "Signal Forms stratejisi" (5))
 - [ ] checkbox
 - [ ] select
 - [ ] dialog. Not: modal backdrop renk token'ı bununla gelir (bugün CDK'nın `cdk-overlay-dark-backdrop` rengi)
 - [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `^22.0.0`; `rules/architecture.md`)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `@angular/core` / `@angular/common` `^22.2.5`, `@angular/cdk` `^22.0.0`; `rules/architecture.md`)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit). Not: altyapı hazır, Vitest `browsers`'a `firefox` / `webkit` eklemek (`angular.json`)
 
 ## Faz 5 — İlk yayın
@@ -65,6 +66,9 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Bayat yorumlar: `.github/dependabot.yml` ("Angular 19"), `projects/docs/src/app/pages/installation/installation.data.ts:34` ("Angular 19.2"), `projects/ui/README.md` (CLI 19.2.0 jenerik metni; Faz 5 README maddesiyle birlikte)
 - [ ] `config-direction`: `ambientDirection`'daki CDK 19 yedek dalını kaldır (peer `^22.0.0`)
 - [ ] Kök `dependencies`'teki kullanılmayan `zone.js`'i kaldır
+- [ ] Vitest çıktısında 7 "Pre-transform error" (`@arn-ng/ui` `./core` exports) uyarısı: kaynağını bul. Değişiklikten bağımsız, geri alınca da çıkıyor
+- [ ] check-md betiğini repoya al (`tools/check-md.mjs`, bağımlılıksız: bağlantı + 150 satır limiti), npm script + CI adımı
+- [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli)
 - [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)
 
 ## Doğrulama bekleyenler
