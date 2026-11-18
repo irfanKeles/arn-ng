@@ -19,6 +19,15 @@ Kurallar için `.claude/skills/arn-ui-library/SKILL.md` (doküman sitesi: `.clau
 - [x] Builder'lar `@angular/build`, Karma + Jasmine → Vitest browser mode (Playwright Chromium) (PR #2)
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
+
+### Ön kararlar
+Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kararların hiçbirine bağlı DEĞİL; kararlar beklerken button yapılabilir.
+
+- [ ] Karar: `--arn-input` açık temada ≈1.3:1 (WCAG 1.4.11 3:1 ister); `--arn-ring` emsaliyle karara bağla (input, checkbox, select kenarlığı). Önce gelir: input, checkbox, select
+- [ ] Karar: Signal forms stratejisi (CVA'nın yerine geçmez; form bileşenlerinden önce). Önce gelir: input (ve form bileşenlerinin tamamı: input, checkbox, select)
+- [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
+
+### Bileşenler ve doğrulama
 - [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
 - [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). `--arn-input` 1.4.11 kontrastı (açık ≈1.3:1; dark'ta beyaz %15) kararı bekliyor (docs araması bu yüzden `--arn-muted-foreground` kullanıyor). Docs araması yerel `<input>`'tan `arnInput`'a geçer
 - [ ] checkbox
@@ -27,9 +36,6 @@ Kurallar için `.claude/skills/arn-ui-library/SKILL.md` (doküman sitesi: `.clau
 - [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
 - [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `^22.0.0`; `rules/architecture.md`)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit). Not: altyapı hazır, Vitest `browsers`'a `firefox` / `webkit` eklemek (`angular.json`)
-- [ ] Karar: `--arn-input` açık temada ≈1.3:1 (WCAG 1.4.11 3:1 ister); `--arn-ring` emsaliyle karara bağla (input, checkbox, select kenarlığı)
-- [ ] Karar: Signal forms stratejisi (CVA'nın yerine geçmez; form bileşenlerinden önce)
-- [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile)
 
 ## Faz 5 — İlk yayın
 - [ ] README, kurulum rehberi (`projects/ui/README.md` hâlâ CLI'ın jenerik metni ve pakete giriyor)

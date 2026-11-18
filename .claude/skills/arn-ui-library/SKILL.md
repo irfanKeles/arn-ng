@@ -9,16 +9,17 @@ Bu dosya kütüphanenin anayasasıdır. Bir kural ile kullanıcının isteği ç
 
 ## Hangi iş için hangi dosya
 
-Her satır en fazla üç dosya. Bu dosyadaki değişmez kararlar, "Bitti" tanımı ve yasaklar her işte geçerlidir. Eski `§N` atıfları: [decisions/README.md](decisions/README.md).
+Tablo asgari okuma listesidir; yeni bileşen birkaç satırı birleştirir (ilk satır tam akışı verir). Satırlar kısa tutulur. Bu dosyadaki değişmez kararlar, "Bitti" tanımı ve yasaklar her işte geçerlidir. Eski `§N` atıfları: [decisions/README.md](decisions/README.md).
 
 | İş | Oku |
 |---|---|
+| Yeni bileşen: tam akış (sırayla). Alttaki dört "Yeni bileşen: ..." satırı parça iş içindir | [ROADMAP.md](../../../ROADMAP.md), bu dosya ([Değişmez kararlar](#değişmez-kararlar-eski-1), ["Bitti" tanımı](#bileşen-bitti-tanımı-definition-of-done-eski-12)), [components/INDEX.md](components/INDEX.md), [rules/architecture.md](rules/architecture.md), [rules/angular.md](rules/angular.md), [components/_TEMPLATE.md](components/_TEMPLATE.md), [rules/styling.md](rules/styling.md), [components/tokens.md](components/tokens.md), [components/tokens-sizes.md](components/tokens-sizes.md), [rules/forms-a11y.md](rules/forms-a11y.md), [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config-messages.md](components/config-messages.md), [rules/quality.md](rules/quality.md), [rules/component-files.md](rules/component-files.md). Bileşenin kararları: [decisions/](decisions/README.md) içinde bileşen adını ara |
 | Yeni bileşen: iskelet, paket yeri, Angular kodu | [rules/architecture.md](rules/architecture.md), [rules/angular.md](rules/angular.md), [components/_TEMPLATE.md](components/_TEMPLATE.md) |
 | Yeni bileşen: stil, token, boyut, density | [rules/styling.md](rules/styling.md), [components/tokens.md](components/tokens.md), [components/tokens-sizes.md](components/tokens-sizes.md) |
 | Yeni bileşen: form, klavye, a11y, metinler | [rules/forms-a11y.md](rules/forms-a11y.md), [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config-messages.md](components/config-messages.md) |
 | Bileşen referans dosyasını yazma / güncelleme | [rules/component-files.md](rules/component-files.md), [components/_TEMPLATE.md](components/_TEMPLATE.md), [components/INDEX.md](components/INDEX.md) |
 | Mevcut bileşeni değiştirme | [components/INDEX.md](components/INDEX.md), `components/<ad>.md`, değişikliğin konusuna ait `rules/` dosyası |
-| Bileşenin doküman sayfasını yazma | [rules/docs-page.md](rules/docs-page.md), [arn-docs-site/components/docs-site-examples.md](../arn-docs-site/components/docs-site-examples.md), [arn-docs-site/components/docs-site-pages.md](../arn-docs-site/components/docs-site-pages.md) |
+| Bileşenin doküman sayfasını yazma | [rules/docs-page.md](rules/docs-page.md), [arn-docs-site/components/docs-site-examples.md](../arn-docs-site/components/docs-site-examples.md), [arn-docs-site/components/docs-site-pages.md](../arn-docs-site/components/docs-site-pages.md), [arn-docs-site/components/docs-site-toc-api.md](../arn-docs-site/components/docs-site-toc-api.md) (API/Styling tabloları), [arn-docs-site/components/docs-site.md](../arn-docs-site/components/docs-site.md) (`docs-nav.ts` kaydı) |
 | Doküman sitesi kabuğu, arama, "On this page" | [arn-docs-site/SKILL.md](../arn-docs-site/SKILL.md) (kendi yönlendirme tablosuyla) |
 | Test, lint, CI, sürümleme, yayın | [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
 | Peer aralığı, paket yapısı, entry point, `exports` | [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
