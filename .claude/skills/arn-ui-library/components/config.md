@@ -25,7 +25,7 @@ Dışa açılan tipler: `ArnConfig`, `ArnRootConfig`, `ArnResolvedConfig`, `ArnC
 | `ripple` | `boolean` | `false` ([../rules/styling.md](../rules/styling.md)) |
 | `locale` | `string` (BCP 47) | Angular `LOCALE_ID` (`en-US`) |
 | `messages` | `ArnDeepPartial<ArnMessages>` | İngilizce + Intl ([config-messages.md](config-messages.md)); diller [locales.md](locales.md) |
-| `forms` | `{ showErrorsOn?: 'touched' \| 'dirty' \| 'submitted' }` | `touched` |
+| `forms` | `{ showErrorsOn?: 'touched' \| 'dirty' }` | `touched` |
 
 `ArnRootConfig` = `ArnConfig` + `applyToDocument?: boolean` (yalnızca `provideArn`). Görsel ayar (renk, font, kenarlık) buraya girmez, CSS token'ıdır.
 
@@ -121,7 +121,7 @@ Yok. Yansıtılan `data-density` ve `.dark` / `.light`, `theme.css`'teki kuralla
 | `config.directive.spec.ts` | Dört basamaklı öncelik, üç seviye iç içe bölüm, `undefined`'a dönüş, servis değişimini izleme, host yansıması, `theme.css` ile `--arn-density`, axe; `injectArnConfig` context dışı hata |
 | `config.direction.spec.ts` | Yön ve locale zinciri: [config-direction.md](config-direction.md) §8 |
 | `messages.spec.ts` | [config-messages.md](config-messages.md) §8 |
-| `config.types.spec.ts` | Derleme zamanı: 11 `@ts-expect-error` (kullanılmayan direktifte derlemenin düştüğü 2026-10'da Karma derlemesiyle doğrulandı; Vitest `test-build` derlemesiyle yeniden denenmedi) |
+| `config.types.spec.ts` | Derleme zamanı: 12 `@ts-expect-error` (kullanılmayan direktifte derlemenin düştüğü 2026-10'da Karma derlemesiyle doğrulandı; Vitest `test-build` derlemesiyle yeniden denenmedi) |
 
 `<html>` ortak durumdur: `applyToDocument` kullanan spec `afterEach`'te `resetDocument(document)` çağırır (`testing/document.ts`; `data-density` her çağrıda yazılır, yalnız `dir` silmek sızdırır). `<html>`'in temiz olduğunu sınayan spec ayrıca `beforeEach`'te sıfırlar.
 

@@ -44,7 +44,7 @@ const oneOf =
   (value: unknown): boolean =>
     allowed.includes(value);
 
-const formErrorTrigger = oneOf(['touched', 'dirty', 'submitted']);
+const formErrorTrigger = oneOf(['touched', 'dirty']);
 
 // Thanks to `satisfies`, adding a field to ArnConfig without adding it here fails the build.
 const validators = {

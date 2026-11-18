@@ -25,7 +25,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 
 - [x] Karar: `--arn-input` kontrastı (eski ölçüm açık temada 1.26:1; WCAG 1.4.11 3:1 ister). Verildi: input, checkbox ve select kenarlığı için `--arn-input` artık iki temada ≥3:1 (açık `oklch(65% 0 0deg)`, koyu beyaz %40; decisions 2026-11)
 - [x] Karar: Signal forms stratejisi. Verildi: kontroller yalnız `FormValueControl` / `FormCheckboxControl` uygular, CVA yok; peer `^22.2.5` (decisions 2026-11)
-- [ ] `ArnConfig` `forms.showErrorsOn: 'submitted'` kaldırma (ayrı kod PR'ı, input'tan önce; Signal Forms'ta karşılığı yok, decisions 2026-11 "Signal Forms stratejisi" (3))
+- [x] `ArnConfig` `forms.showErrorsOn: 'submitted'` kaldırma (ayrı kod PR'ı, input'tan önce; Signal Forms'ta karşılığı yok, decisions 2026-11 "Signal Forms stratejisi" (3))
 - [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
 
 ### Bileşenler ve doğrulama
