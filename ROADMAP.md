@@ -71,6 +71,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - `@ts-expect-error`'un Vitest `test-build` derlemesinde kullanılmayan direktifte derlemeyi düşürmesi (`config.types.spec.ts`)
 - `dev-mode.ts`'teki yerel `ngDevMode` bildiriminin kaldırılabilirliği (Angular 22 global bildiriyor)
 - CDK 22 `Dir`'e `[dir]` ile bağlanan ilk değerin bölümde doğru okunması (spec ile)
+- Docs dokunma geri bildirimi (-webkit-tap-highlight-color kapalı + :active) gerçek Android ve iOS cihazda doğrulandı (sorun yok). Firefox ve Opera mobilde denenmedi.
 - Material 21+ overlay'leriyle etkileşim (top layer'da üstte kalmaları)
 - Vitest sayfasında `pageOverflow` tabanının gerekliliği ve gerçek tuşla kaydırmanın birim testte üretilemezliği
 - Angular 19 ile ölçülmüş docs bundle boyutlarının yeniden ölçümü
