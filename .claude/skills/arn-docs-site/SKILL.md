@@ -19,7 +19,7 @@ Tüm docs referans dosyalarının listesi: [components/INDEX.md](components/INDE
 | Örnek bloğu, kod renklendirme (Shiki), `?source` import'u | [components/docs-site-examples.md](components/docs-site-examples.md) |
 | Doküman spec yardımcıları (`apiMismatches`, `tokenMismatches`, 320px taşma, iç bağlantılar) | [components/docs-site-pages.md](components/docs-site-pages.md) |
 | Giriş sayfaları ve Ripple sayfası | [components/docs-site-pages-guides.md](components/docs-site-pages-guides.md), [components/docs-site-pages.md](components/docs-site-pages.md) |
-| Bir bileşenin doküman sayfası | [arn-ui-library/rules/docs-page.md](../arn-ui-library/rules/docs-page.md), [components/docs-site-examples.md](components/docs-site-examples.md), [components/docs-site-pages.md](components/docs-site-pages.md) |
+| Bir bileşenin doküman sayfası | [arn-ui-library/rules/docs-page.md](../arn-ui-library/rules/docs-page.md), [components/docs-site-examples.md](components/docs-site-examples.md), [components/docs-site-pages.md](components/docs-site-pages.md), [components/docs-site-toc-api.md](components/docs-site-toc-api.md) (API/Styling tabloları), [components/docs-site.md](components/docs-site.md) (`docs-nav.ts` kaydı) |
 | Docs ile ilgili karar ekleme / eski karar arama | [arn-ui-library/decisions/README.md](../arn-ui-library/decisions/README.md) |
 
 ## Site yapısı (eski §13, site kısmı)
