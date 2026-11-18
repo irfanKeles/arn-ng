@@ -129,4 +129,4 @@ Yok.
 - Kod: `projects/ui/theme.css`, `projects/ui/ng-package.json`, `projects/ui/package.json`
 - Devamı: [tokens-sizes.md](tokens-sizes.md) (boyut ve density)
 - Kaynaklar: https://ui.shadcn.com/docs/theming , https://ui.shadcn.com/r/colors/neutral.json , Tailwind `packages/tailwindcss/theme.css`
-- Doküman sayfası: `/theming` ("The theme file", "Color tokens", "Dark mode", "Overriding tokens"; [docs-site-pages-guides.md](docs-site-pages-guides.md))
+- Doküman sayfası: `/theming` ("The theme file", "Color tokens", "Dark mode", "Overriding tokens"; [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

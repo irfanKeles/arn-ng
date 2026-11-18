@@ -117,4 +117,4 @@ Yok.
 - Kod: `projects/ui/theme.css`
 - Ana dosya: [tokens.md](tokens.md)
 - Kaynaklar: https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/button.tsx , https://raw.githubusercontent.com/shadcn-ui/ui/main/apps/v4/registry/new-york-v4/ui/input.tsx , https://www.w3.org/TR/WCAG22/#target-size-minimum
-- Doküman sayfası: `/theming` ("Sizes", "Density"; [docs-site-pages-guides.md](docs-site-pages-guides.md))
+- Doküman sayfası: `/theming` ("Sizes", "Density"; [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md))

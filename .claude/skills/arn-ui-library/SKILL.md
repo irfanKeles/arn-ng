@@ -18,8 +18,8 @@ Her satır en fazla üç dosya. Bu dosyadaki değişmez kararlar, "Bitti" tanım
 | Yeni bileşen: form, klavye, a11y, metinler | [rules/forms-a11y.md](rules/forms-a11y.md), [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config-messages.md](components/config-messages.md) |
 | Bileşen referans dosyasını yazma / güncelleme | [rules/component-files.md](rules/component-files.md), [components/_TEMPLATE.md](components/_TEMPLATE.md), [components/INDEX.md](components/INDEX.md) |
 | Mevcut bileşeni değiştirme | [components/INDEX.md](components/INDEX.md), `components/<ad>.md`, değişikliğin konusuna ait `rules/` dosyası |
-| Bileşenin doküman sayfasını yazma | [rules/docs-page.md](rules/docs-page.md), [docs-site-examples.md](components/docs-site-examples.md), [docs-site-pages.md](components/docs-site-pages.md) |
-| Doküman sitesi kabuğu, arama, "On this page" | [docs-site.md](components/docs-site.md), [docs-site-search.md](components/docs-site-search.md), [docs-site-toc-api.md](components/docs-site-toc-api.md) |
+| Bileşenin doküman sayfasını yazma | [rules/docs-page.md](rules/docs-page.md), [arn-docs-site/components/docs-site-examples.md](../arn-docs-site/components/docs-site-examples.md), [arn-docs-site/components/docs-site-pages.md](../arn-docs-site/components/docs-site-pages.md) |
+| Doküman sitesi kabuğu, arama, "On this page" | [arn-docs-site/SKILL.md](../arn-docs-site/SKILL.md) (kendi yönlendirme tablosuyla) |
 | Test, lint, CI, sürümleme, yayın | [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
 | Peer aralığı, paket yapısı, entry point, `exports` | [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md), [local-package-test.md](local-package-test.md) |
 | Ayar sistemi, i18n, RTL, overlay | [rules/config-i18n-overlay.md](rules/config-i18n-overlay.md), [components/config.md](components/config.md), konunun devam dosyası ([config-direction.md](components/config-direction.md), [config-messages.md](components/config-messages.md), [locales.md](components/locales.md) ya da [overlay.md](components/overlay.md)) |

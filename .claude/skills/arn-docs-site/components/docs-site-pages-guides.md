@@ -18,7 +18,7 @@ Gezinti: Getting started → Overview, Installation; Guides → Configuration, T
 
 ### Ripple (`/ripple`)
 
-Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibility`, `api`, `styling`. Kaynak [ripple.md](ripple.md) §1-5.
+Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibility`, `api`, `styling`. Kaynak [ripple.md](../../arn-ui-library/components/ripple.md) §1-5.
 
 | Konu | Karar |
 |---|---|
@@ -42,7 +42,7 @@ Bölümler: `requirements`, `install`, `theme`, `configuration`, `imports`. Örn
 
 ### Configuration (`/configuration`)
 
-Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-and-messages`, `direction`. Kaynak kod (`config.types.ts`, `config.defaults.ts`, `config.directive.ts`, `config.service.ts`) ve [config.md](config.md), [config-messages.md](config-messages.md), [config-direction.md](config-direction.md), [locales.md](locales.md). SKILL §13'ün "RTL ve i18n" başlığı bu sayfanın iki bölümüdür.
+Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-and-messages`, `direction`. Kaynak kod (`config.types.ts`, `config.defaults.ts`, `config.directive.ts`, `config.service.ts`) ve [config.md](../../arn-ui-library/components/config.md), [config-messages.md](../../arn-ui-library/components/config-messages.md), [config-direction.md](../../arn-ui-library/components/config-direction.md), [locales.md](../../arn-ui-library/components/locales.md). SKILL §13'ün "RTL ve i18n" başlığı bu sayfanın iki bölümüdür.
 
 | Konu | Karar |
 |---|---|
@@ -55,7 +55,7 @@ Bölümler: `precedence`, `global`, `sections`, `runtime`, `own-code`, `locale-a
 
 ### Theming (`/theming`)
 
-Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `overriding`. Kaynak `theme.css`, [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md). SKILL §13'ün "Yoğunluk" başlığı bu sayfanın bölümüdür.
+Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `overriding`. Kaynak `theme.css`, [tokens.md](../../arn-ui-library/components/tokens.md), [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md). SKILL §13'ün "Yoğunluk" başlığı bu sayfanın bölümüdür.
 
 | Konu | Karar |
 |---|---|
@@ -69,7 +69,7 @@ Bölümler: `theme-file`, `color-tokens`, `dark-mode`, `sizes`, `density`, `over
 
 ### Accessibility (`/accessibility`)
 
-Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `testing`, `known-limits`. Kaynak SKILL §8 ve §15, [tokens-sizes.md](tokens-sizes.md) (SC 2.5.8), [ripple.md](ripple.md) §5, `projects/ui/testing/a11y.ts`. Örnek yok, beş kod bloğu.
+Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `testing`, `known-limits`. Kaynak SKILL §8 ve §15, [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md) (SC 2.5.8), [ripple.md](../../arn-ui-library/components/ripple.md) §5, `projects/ui/testing/a11y.ts`. Örnek yok, beş kod bloğu.
 
 | Konu | Karar |
 |---|---|
@@ -131,4 +131,4 @@ Boşluklar: gerçek `prefers-reduced-motion`, dokunmatik basış ve başlıktaki
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/pages/`
-- İlgili: [docs-site-pages.md](docs-site-pages.md), [docs-site.md](docs-site.md), [ripple.md](ripple.md), [config.md](config.md), [locales.md](locales.md)
+- İlgili: [docs-site-pages.md](docs-site-pages.md), [docs-site.md](docs-site.md), [ripple.md](../../arn-ui-library/components/ripple.md), [config.md](../../arn-ui-library/components/config.md), [locales.md](../../arn-ui-library/components/locales.md)

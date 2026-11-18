@@ -98,7 +98,7 @@ Yok.
 - Backdrop tıklaması host `(click)` dinleyicisindedir (şablonda tıklanabilir `div` a11y lint'ine takılır; klavye karşılığı Esc).
 - Dil değiştiricinin görünür etkisi 3c'de geldi: Configuration sayfasının "Locale and messages" örneği `injectArnConfig()` ile `locale`, `messages().common` ve gün / ay adlarını gösterir; Türkçe seçilince anında değişir ([docs-site-pages-guides.md](docs-site-pages-guides.md)). Kütüphanede `messages` okuyan bileşen hâlâ yok (Faz 4).
 - Dağıtım (barındırma, `base href`) Faz 5'e bırakıldı.
-- Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](tokens.md) §7).
+- Odak halkası `--arn-ring` kütüphanede düzeltildi: açık temada neutral-500 (beyaz üstünde ≈4.7:1; önceki shadcn değeri neutral-400 ≈2.6:1 idi). Docs ayrı bir değer taşımaz ([tokens.md](../../arn-ui-library/components/tokens.md) §7).
 
 ### 3b-3e için boşluklar
 
@@ -130,5 +130,5 @@ Boşluklar: tarayıcıda görsel doğrulama kullanıcı tarafından yapıldı (k
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/`, `projects/docs/src/styles.css`, `projects/docs/tsconfig.json`, `angular.json` (docs)
-- İlgili: [docs-site-examples.md](docs-site-examples.md), [docs-site-toc-api.md](docs-site-toc-api.md), [config.md](config.md), [config-direction.md](config-direction.md), [locales.md](locales.md), [tokens.md](tokens.md), [tokens-sizes.md](tokens-sizes.md)
+- İlgili: [docs-site-examples.md](docs-site-examples.md), [docs-site-toc-api.md](docs-site-toc-api.md), [config.md](../../arn-ui-library/components/config.md), [config-direction.md](../../arn-ui-library/components/config-direction.md), [locales.md](../../arn-ui-library/components/locales.md), [tokens.md](../../arn-ui-library/components/tokens.md), [tokens-sizes.md](../../arn-ui-library/components/tokens-sizes.md)
 - Yerelde: `npm run build:ui` ardından `npm run serve:docs`

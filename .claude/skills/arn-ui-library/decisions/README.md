@@ -22,7 +22,7 @@ Eski kayıtlarda ve kodda geçen `§N` / "bölüm N" atıfları, bölünmeden ö
 | §10 | Overlay | [rules/config-i18n-overlay.md](../rules/config-i18n-overlay.md) |
 | §11 | İsimlendirme tutarlılığı | [rules/architecture.md](../rules/architecture.md) |
 | §12 | "Bitti" tanımı | [SKILL.md](../SKILL.md) |
-| §13 | Doküman sayfası standardı | [rules/docs-page.md](../rules/docs-page.md) |
+| §13 | Doküman sayfası standardı | [rules/docs-page.md](../rules/docs-page.md); site yapısı [arn-docs-site/SKILL.md](../../arn-docs-site/SKILL.md) |
 | §14 | Yapılmaması gerekenler | [SKILL.md](../SKILL.md) |
 | §15 | Sürümleme ve kalite | [rules/quality.md](../rules/quality.md) |
 | §16 | Karar günlüğü | bu klasör |

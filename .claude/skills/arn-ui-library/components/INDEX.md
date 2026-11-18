@@ -12,12 +12,12 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | locales (çeviri paketleri, `ARN_MESSAGES_TR`, yeni dil ekleme rehberi) | ortak yapı | `@arn-ng/ui/locales/<dil>` | [locales.md](locales.md) |
 | overlay (`ArnOverlayService`, `ArnOverlayRef`, katmanlar, preset'ler, ayar mirası, `data-state` sözleşmesi) | servis + ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [overlay.md](overlay.md) |
 | ripple (`arnRipple`, `ArnRippleDirective`, ripple token'ları) | directive | `@arn-ng/ui/ripple`, `@arn-ng/ui/theme.css` | [ripple.md](ripple.md) |
-| docs-site (doküman sitesi kabuğu, `docs-nav.ts`, değiştiriciler, kalıcılık) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site.md](docs-site.md) |
-| docs-site-examples (örnek bloğu `docs-example`, kod bloğu `docs-code-block`, Shiki, metin import'u) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-examples.md](docs-site-examples.md) |
-| docs-site-pages (doküman spec yardımcıları: `unknownInternalLinks`, `apiMismatches` directive desteği, `tokenMismatches`, `renderExample`; `properties` tablo türü) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages.md](docs-site-pages.md) |
-| docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming, Accessibility; örnekleri, doğrulamaları, token kapsamı değişmezi) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages-guides.md](docs-site-pages-guides.md) |
-| docs-site-search (sidebar araması: `searchNav`, `normalizeForSearch`, `DocsNavPage.sections`, bölüm bağlantısında odak) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-search.md](docs-site-search.md) |
-| docs-site-toc-api ("On this page": `docs-section`, `docs-toc`, `DocsTocService`; API ve Styling tabloları `docs-api-table`, `docs-token-table`, `apiMismatches`) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-toc-api.md](docs-site-toc-api.md) |
+| docs-site (doküman sitesi kabuğu, `docs-nav.ts`, değiştiriciler, kalıcılık) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site.md](../../arn-docs-site/components/docs-site.md) |
+| docs-site-examples (örnek bloğu `docs-example`, kod bloğu `docs-code-block`, Shiki, metin import'u) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-examples.md](../../arn-docs-site/components/docs-site-examples.md) |
+| docs-site-pages (doküman spec yardımcıları: `unknownInternalLinks`, `apiMismatches` directive desteği, `tokenMismatches`, `renderExample`; `properties` tablo türü) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages.md](../../arn-docs-site/components/docs-site-pages.md) |
+| docs-site-pages-guides (3c sayfaları: Ripple, Installation, Configuration, Theming, Accessibility; örnekleri, doğrulamaları, token kapsamı değişmezi) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md) |
+| docs-site-search (sidebar araması: `searchNav`, `normalizeForSearch`, `DocsNavPage.sections`, bölüm bağlantısında odak) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-search.md](../../arn-docs-site/components/docs-site-search.md) |
+| docs-site-toc-api ("On this page": `docs-section`, `docs-toc`, `DocsTocService`; API ve Styling tabloları `docs-api-table`, `docs-token-table`, `apiMismatches`) | ortak yapı (uygulama) | yok (`projects/docs`) | [docs-site-toc-api.md](../../arn-docs-site/components/docs-site-toc-api.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 

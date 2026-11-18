@@ -2,12 +2,6 @@
 
 Doküman sitesi aynı workspace'te ayrı bir Angular uygulamasıdır ve kütüphaneyi gerçek bir kullanıcı gibi tüketir (böylece her örnek aynı zamanda gerçek kullanım testidir). Yeni bileşen, doküman sayfası olmadan merge edilmez.
 
-**Site yapısı**
-- Solda sidebar: bileşenler kategori başlıkları altında gruplanır (Form, Button, Overlay, Data...). Sidebar'ın en üstünde arama (sayfa ve bölüm başlıkları).
-- Sağda sayfa içi başlık gezintisi ("bu sayfada").
-- Üstte tema (light/dark), yön (LTR/RTL), yoğunluk (comfortable/compact) ve dil değiştiriciler. Bunlar tüm örnekleri anlık etkiler.
-- Giriş bölümü: Kurulum, Yapılandırma (`provideArn`), Tema ve token'lar, Yoğunluk, RTL ve i18n, Erişilebilirlik. Altı başlık dört sayfada karşılanır: Yoğunluk Theming'de, RTL ve i18n Configuration'da bölümdür (§16).
-
 **Her bileşen sayfasının bölümleri (bu sırayla)**
 1. Kısa açıklama
 2. **Import** (kopyalanabilir kod)

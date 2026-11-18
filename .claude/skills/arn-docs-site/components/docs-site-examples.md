@@ -108,4 +108,4 @@ Boşluklar: gerçek pano izni, gerçek ekran okuyucu duyurusu ve tarayıcıda g�
 ## 9. Bağlantılar
 
 - Kod: `projects/docs/src/app/example/`, `projects/docs/src/app/code/`, `projects/docs/src/text-imports.d.ts`, `angular.json` (docs test), `projects/docs/tsconfig*.json`
-- İlgili: [docs-site.md](docs-site.md), [tokens.md](tokens.md)
+- İlgili: [docs-site.md](docs-site.md), [tokens.md](../../arn-ui-library/components/tokens.md)
