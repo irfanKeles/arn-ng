@@ -1,61 +1,35 @@
 # @arn-ng/ui — Yol Haritası
 
-Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip eder. Bir faz bitmeden sonrakine geçme. Yeni karar çıkarsa `SKILL.md` karar günlüğüne yaz.
+Kurallar için `.claude/skills/arn-ui-library/SKILL.md` (doküman sitesi: `.claude/skills/arn-docs-site/SKILL.md`) dosyasına bak. Bu dosya fazları ve ilerlemeyi takip eder. Bir faz bitmeden sonrakine geçme. Yeni karar çıkarsa `.claude/skills/arn-ui-library/decisions/` altında ilgili ayın dosyasına yeni madde olarak yaz (SKILL.md'de karar günlüğü yok). Biten fazların ayrıntısı `decisions/` ve git geçmişindedir.
 
-## Faz 0 — Hazırlık
-- [x] npm kapsamı alındı: `@arn` doluydu, `@arn-ng` organizasyonu oluşturuldu (paket adı `@arn-ng/ui`, selector prefix `arn` aynı kaldı)
-- [x] GitHub repo oluştur, MIT `LICENSE` ekle
-- [x] `SKILL.md` ve `ROADMAP.md` dosyalarını repoya koy (Claude Code kullanılacaksa `.claude/skills/arn-ui-library/SKILL.md`)
-- [x] npm hesabında 2FA aç, npm'in yayın politikası duyurusunu oku (Ağu 2026 / Oca 2027 değişiklikleri CI'dan yayını etkileyebilir)
+## Faz 0 — Hazırlık (bitti)
+- [x] npm kapsamı `@arn-ng` (`@arn` doluydu), GitHub repo + MIT `LICENSE`, kural ve yol haritası dosyaları repoda, npm 2FA ve yayın politikası duyurusu okundu
 
-## Faz 1 — Altyapı
-- [x] Monorepo aracı kararı: Angular workspace (Nx yok), paket yöneticisi npm, geliştirme Angular 19 / CLI 19
-- [x] `projects/ui` (kütüphane, ng-packagr) ve `projects/docs` (doküman uygulaması)
-- [x] Secondary entry point yapısı (`projects/ui/<ad>/`; pilotlar: `@arn-ng/ui/core`, `@arn-ng/ui/button`, ikisi de boş)
-- [x] Lint, format, strict TypeScript (ESLint + angular-eslint, Stylelint, Prettier, Node 22)
-- [x] Birim test altyapısı (Karma + Jasmine, zoneless testler, axe yardımcısı, `test:ci`)
-- [x] CI (GitHub Actions: lint + format + build + test) ve Dependabot. En güncel Angular'da derleme kontrolü Faz 4'teki tüketici uyumluluk testine taşındı
-- [x] Changesets + sürüm/changelog akışı (sürüm kaynağı `projects/ui/package.json`, npm workspaces)
-- [x] Yerel paket testi (Verdaccio) ile gerçek projede kurulum denemesi. Yayın metadata'sı ve `LICENSE` paketlemesi de bu maddede yapıldı
+## Faz 1 — Altyapı (bitti)
+- [x] Angular workspace (npm), `projects/ui` + `projects/docs`, secondary entry point yapısı, lint / format / strict TypeScript, birim test + axe yardımcısı, CI ve Dependabot, Changesets, Verdaccio ile yerel paket testi ve yayın metadata'sı
 
-## Faz 2 — Çekirdek (`@arn-ng/ui/core`)
-- [x] Token yapısı (ham / anlamlı), shadcn neutral paleti, `oklch`, dark mode (`light-dark()` + `.dark` / `.light`): `@arn-ng/ui/theme.css`. Bileşen katmanı ilk bileşenle gelir (Faz 4)
-- [x] Boyutlar xs-xl, density (comfortable / compact): CSS token'ları (`--arn-control-*`, `--arn-density`, `--arn-control-min-size`) `theme.css`'te. `size` / `density` TS tipleri ve DI `provideArn` maddesinde
-- [x] `provideArn()` ve hiyerarşik ayar öncelik sırası: `ArnConfig`, `[arnConfig]`, `ArnConfigService` (`applyToDocument`), `injectArnConfig` (`components/config.md`)
-- [x] i18n mesaj sistemi, RTL (`cdk/bidi`): mesaj şeması ve Intl gün/ay adları (`components/config-messages.md`), Türkçe çeviri paketi `@arn-ng/ui/locales/tr` (`components/locales.md`), `direction` → CDK `Directionality` ve bölüm bazında `dir`, `.arn-rtl-mirror` (`components/config-direction.md`)
-- [x] Ortak overlay altyapısı (CDK Overlay üstünde), z-index token'ları: `ArnOverlayService` / `ArnOverlayRef`, katmanlar (`--arn-z-*`), preset'ler (modal, popover, dropdown, tooltip), ayar mirası, `data-state` kapanma sözleşmesi (`components/overlay.md`). Toast preset'i Faz 6, backdrop renk token'ı dialog ile Faz 4
-- [x] `arnRipple` directive'i: ayrı entry point `@arn-ng/ui/ripple` (`ArnRippleDirective`), token'lar ve sınıflar `theme.css`'te (`components/ripple.md`). Bileşen girdisi `[ripple]` Faz 4'te button ile
-- [x] Token kataloğu referans dosyası: global token'lar, tema, override rehberi (`components/tokens.md`)
-- [x] Token kataloğuna boyut ve density bölümü (`components/tokens-sizes.md`)
+## Faz 2 — Çekirdek (`@arn-ng/ui/core`) (bitti)
+- [x] Token ve tema (`theme.css`, `light-dark()`), boyut ve density, `provideArn` / `[arnConfig]` / `ArnConfigService` / `injectArnConfig`, i18n mesaj sistemi + `locales/tr` + RTL, overlay altyapısı (`ArnOverlayService`, `--arn-z-*`), `arnRipple`, token kataloğu referans dosyaları
 
-## Faz 3 — Doküman sitesi iskeleti
-- [x] Sidebar (kategorili): kabuk, tek tipli gezinti verisi (`docs-nav.ts`), küçük ekranda çekmece, 404 (adım 3a; `components/docs-site.md`)
-- [x] Sayfa içi gezinti, "bu sayfada" (adım 3b-2): `docs-section` + `DocsTocService`, geniş ekranda (≥80rem) üçüncü sütun (`components/docs-site-toc-api.md`)
-- [x] Arama (adım 3d): sidebar'da, sayfa ve bölüm başlıklarını filtreler (`DocsNavPage.sections` + bayatlık spec'i), `role="status"` duyurusu, bölüm bağlantısında odak başlığa (`components/docs-site-search.md`)
-- [x] Tema / yön / yoğunluk / dil değiştiriciler: `ArnConfigService` üzerinden, seçimler `localStorage`'da (adım 3a)
-- [x] Örnek bileşeni (canlı demo + kod sekmesi + kopyala)
-- [x] API ve Styling tablo bileşenleri (adım 3b-2): `docs-api-table`, `docs-token-table`, spec doğrulaması `apiMismatches` (`components/docs-site-toc-api.md`)
-- [x] Ripple sayfası (adım 3c): `/ripple`, dört örnek (CSS sekmeli), API ve Styling tabloları doğrulamalı (`components/docs-site-pages-guides.md`)
-- [x] Giriş sayfaları (adım 3c): Kurulum (`/installation`), Yapılandırma (`/configuration`), Tema (`/theming`), Erişilebilirlik (`/accessibility`); `components/docs-site-pages-guides.md`
-- [ ] Docs uygulamasını zoneless çalıştırmayı değerlendir (deneysel, kütüphaneyi gerçek kullanımda sınamak için). 3a'da zoneless açıldı (build ve testler geçiyor); değerlendirme adım 3e'de
-- [ ] Docs cilası: çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli), tema anahtarı / ayarlar açılır menüsü
-- [ ] Docs cilası: "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
-- [ ] Docs cilası: sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
-- [ ] Docs cilası: renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
-- [x] CI: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti, `ubuntu-24.04`'e sabitlendi (Ubuntu 26 denemesi ayrı iş)
-- [x] projects/ui/testing/a11y.ts yardımcısına expect eklemek ("has no expectations" uyarısını keser): ihlalde fırlatma korundu, temizse `expect(violations).toEqual([])`; uyarı 48 → 0
-- [ ] Test hijyeni: overlay.presets.spec.ts:139-149 düğme temizliği afterEach'e taşınmalı
-- [ ] CI: Ubuntu 26 imajında Chrome sürümü ve test:ci denemesi
+## Faz 3 — Doküman sitesi iskeleti (bitti)
+- [x] Kabuk ve kategorili sidebar, "On this page", sidebar araması, değiştiriciler, örnek bloğu, API ve Styling tabloları, Ripple sayfası, giriş sayfaları (Installation, Configuration, Theming, Accessibility), CI `ubuntu-24.04`, axe yardımcısında `expect`. Zoneless değerlendirmesi (3e) kapatıldı: provider kararlı, docs zoneless çalışıyor. Kalan cila: "Docs backlog"
+
+## Faz 3.5 — Platform yükseltmesi (bitti)
+- [x] Angular 19 → 22 (birer majör), TypeScript 6, Node `^22.22.3`, peer `^22.0.0` (PR #1)
+- [x] Builder'lar `@angular/build`, Karma + Jasmine → Vitest browser mode (Playwright Chromium) (PR #2)
 
 ## Faz 4 — İlk bileşenler (her biri "Bitti" tanımıyla)
-- [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md)
+- [ ] button (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
 - [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). `--arn-input` 1.4.11 kontrastı (açık ≈1.3:1; dark'ta beyaz %15) kararı bekliyor (docs araması bu yüzden `--arn-muted-foreground` kullanıyor). Docs araması yerel `<input>`'tan `arnInput`'a geçer
 - [ ] checkbox
 - [ ] select
-- [ ] dialog
+- [ ] dialog. Not: modal backdrop renk token'ı bununla gelir (bugün CDK'nın `cdk-overlay-dark-backdrop` rengi)
 - [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 19 ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an yalnız `^19.0.0`; SKILL §3)
-- [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `^22.0.0`; `rules/architecture.md`)
+- [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit). Not: altyapı hazır, Vitest `browsers`'a `firefox` / `webkit` eklemek (`angular.json`)
+- [ ] Karar: `--arn-input` açık temada ≈1.3:1 (WCAG 1.4.11 3:1 ister); `--arn-ring` emsaliyle karara bağla (input, checkbox, select kenarlığı)
+- [ ] Karar: Signal forms stratejisi (CVA'nın yerine geçmez; form bileşenlerinden önce)
+- [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile)
 
 ## Faz 5 — İlk yayın
 - [ ] README, kurulum rehberi (`projects/ui/README.md` hâlâ CLI'ın jenerik metni ve pakete giriyor)
@@ -68,8 +42,35 @@ Kurallar için `SKILL.md` dosyasına bak. Bu dosya fazları ve ilerlemeyi takip 
 - [ ] Geri bildirim ve düzeltmeler
 
 ## Faz 6 — Genişleme
-- [ ] mask input, date picker, table, toast ve diğerleri (önceliği ihtiyaçla belirle)
+- [ ] mask input, date picker, table, toast (overlay'e toast preset'i bununla gelir) ve diğerleri (önceliği ihtiyaçla belirle)
+
+## Docs backlog
+- [ ] Çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli)
+- [ ] Tema anahtarı / ayarlar açılır menüsü
+- [ ] "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
+- [ ] Sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
+- [ ] Renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla)
+
+## Teknik backlog
+- [ ] Test hijyeni: `overlay.presets.spec.ts:139-149` düğme temizliği `afterEach`'e taşınmalı
+- [ ] CI: Ubuntu 26 imajında `npx playwright install --with-deps chromium` ve `test:ci` denemesi (24.04 imajının kaldırılma duyurusu gelirse öncelik kazanır)
+- [ ] CI süresi izleme: PR koşusu bir kez 10m23s'ye çıktı, main 1m46s; 5 dakikanın üstü tekrar ederse adım sürelerini ölç
+- [ ] Kök yapılandırma yorumlarının İngilizceye çevirisi (`eslint.config.mjs`, `.github/workflows/ci.yml`, `.github/dependabot.yml`, `projects/docs/src/test-setup.ts`) ve `eslint.config.mjs` mesajlarındaki `SKILL §N` atıflarının yeni kural dosyalarına çevrilmesi (`eslint.config.mjs:25` yorumu "Vitest'e geçişi kolaylaştırmak için" dahil)
+- [ ] Bayat yorumlar: `.github/dependabot.yml` ("Angular 19"), `projects/docs/src/app/pages/installation/installation.data.ts:34` ("Angular 19.2"), `projects/ui/README.md` (CLI 19.2.0 jenerik metni; Faz 5 README maddesiyle birlikte)
+- [ ] `config-direction`: `ambientDirection`'daki CDK 19 yedek dalını kaldır (peer `^22.0.0`)
+- [ ] Kök `dependencies`'teki kullanılmayan `zone.js`'i kaldır
+
+## Doğrulama bekleyenler
+- `@ts-expect-error`'un Vitest `test-build` derlemesinde kullanılmayan direktifte derlemeyi düşürmesi (`config.types.spec.ts`)
+- `dev-mode.ts`'teki yerel `ngDevMode` bildiriminin kaldırılabilirliği (Angular 22 global bildiriyor)
+- CDK 22 `Dir`'e `[dir]` ile bağlanan ilk değerin bölümde doğru okunması (spec ile)
+- Material 21+ overlay'leriyle etkileşim (top layer'da üstte kalmaları)
+- Vitest sayfasında `pageOverflow` tabanının gerekliliği ve gerçek tuşla kaydırmanın birim testte üretilemezliği
+- Angular 19 ile ölçülmüş docs bundle boyutlarının yeniden ölçümü
+- `@angular/aria`'nın Angular 22'deki durumu
+- `toSignal`'in `.d.ts` etiketi (yalnız `ToSignalOptions` `@publicApi 20.0` okundu)
 
 ## Açık kararlar
+- Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 22'yi aşmıyorsa). `@angular/aria` repoda kurulu değil; 22'deki durumu doğrulanmadı.
 - `chart-*`, `sidebar-*` ve `success` / `warning` / `info` token'ları: şimdilik yok, ihtiyaç duyan ilk bileşenle karar verilecek
 - `ArnConfigService` ile verilen bir alanı "varsayılana dön" diye silme yolu (reset) yok; ilk ihtiyaçta karar ver.

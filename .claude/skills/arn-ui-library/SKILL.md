@@ -66,10 +66,6 @@ Bir bileşen ancak hepsi tamamsa bitmiştir:
 - Minimum sürümde (Angular 22) `@experimental` / `@developerPreview` olan API'ye bağımlı olmak → [Değişmez kararlar](#değişmez-kararlar-eski-1), [rules/angular.md](rules/angular.md)
 - Gereksiz public export, belirsiz kırıcı değişiklik (breaking change) yapmak. Kırıcı değişiklik gerekiyorsa önce söyle, versiyon ve migration notunu hazırla. → [rules/architecture.md](rules/architecture.md), [rules/quality.md](rules/quality.md)
 
-## Henüz açık kararlar (eski §17)
-
-- Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 22'yi aşmıyorsa). `@angular/aria` repoda kurulu değil; 22'deki durumu doğrulanmadı.
-
 ## Satır limitleri
 
 - SKILL.md (bu dosya ve `arn-docs-site/SKILL.md`) ve her `rules/*.md` en fazla 150 satır. Aşarsa bir bölüm ayrı dosyaya taşınır ve buradan bağlanır.

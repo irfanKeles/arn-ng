@@ -28,5 +28,5 @@ Eski kayıtlarda ve kodda geçen `§N` / "bölüm N" atıfları, bölünmeden ö
 | §14 | Yapılmaması gerekenler | [SKILL.md](../SKILL.md) |
 | §15 | Sürümleme ve kalite | [rules/quality.md](../rules/quality.md) |
 | §16 | Karar günlüğü | bu klasör |
-| §17 | Henüz açık kararlar | [SKILL.md](../SKILL.md) |
+| §17 | Henüz açık kararlar | [ROADMAP.md](../../../../ROADMAP.md) "Açık kararlar" |
 | §18 | Bileşen referans dosyaları | [rules/component-files.md](../rules/component-files.md); satır limitleri [SKILL.md](../SKILL.md) |
