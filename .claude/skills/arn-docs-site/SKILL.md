@@ -9,6 +9,8 @@ Kütüphane kuralları (selector, token, a11y, yasaklar, karar günlüğü) docs
 
 ## Hangi iş için hangi dosya
 
+Tüm docs referans dosyalarının listesi: [components/INDEX.md](components/INDEX.md).
+
 | İş | Oku |
 |---|---|
 | Kabuk, gezinti (`docs-nav.ts`), değiştiriciler, kalıcılık | [components/docs-site.md](components/docs-site.md) |
