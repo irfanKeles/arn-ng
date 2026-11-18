@@ -14,7 +14,8 @@ concurrency:
 
 jobs:
   ci:
-    # Sabit: ubuntu-latest 19 Ekim 2026'da Ubuntu 26'ya geçti; Playwright'ın --with-deps kurulumu sürüme bağlı
+    # Pinned: ubuntu-latest moved to Ubuntu 26 on 2026-10-19, and the browser's system libraries
+    # are not verified there yet (see the Ubuntu 26 trial item in ROADMAP.md)
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
