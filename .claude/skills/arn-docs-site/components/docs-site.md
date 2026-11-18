@@ -84,6 +84,7 @@ Yok (uygulama). Hedef yüksekliği her yerde aynı ifade: `max(var(--arn-control
 | Çekmece | Başlığın altında açılan disclosure (modal değil, odak tuzağı yok; başlık kullanılabilir kalır). Düğme `aria-expanded` + `aria-controls`; açılınca odak ilk bağlantıya (bağlantı yoksa arama alanına), kapanınca düğmeye; Esc, backdrop ve gezinti kapatır; açıkken `<main>` `inert` |
 | Arama | Sidebar'da, nav'ın üstünde `role="search"`; bölüm bağlantısında odak başlığa (çekmece önce kapanır). Ayrıntı: [docs-site-search.md](docs-site-search.md) |
 | Odak halkası | Global `:focus-visible` (`--arn-ring-width`, `--arn-ring`) |
+| Dokunma | `-webkit-tap-highlight-color` global kapalı (`styles.css`). Her yeni etkileşimli öğe (düğme, bağlantı, sekme) `:hover`'ını `@media (hover: hover)` içinde yazar, dokunma geri bildirimi için `:active` tanımlar |
 | RTL | Mantıksal CSS; yön bildiren tek simge (404 geri oku) `arn-rtl-mirror` taşır. Çekmecede kaydırma animasyonu yok (fiziksel `translate` gerektirirdi) |
 
 `LiveAnnouncer` ile duyurup odağı sidebar'da bırakmak reddedildi: klavye kullanıcısı içeriğe ulaşmak için tüm sidebar'ı geçerdi.

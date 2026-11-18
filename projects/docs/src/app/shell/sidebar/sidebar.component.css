@@ -63,7 +63,16 @@
   cursor: pointer;
 }
 
-.docs-search-clear:hover {
+/* Hover only where a pointer hovers: on touch it would stay stuck after the tap */
+@media (hover: hover) {
+  .docs-search-clear:hover {
+    background: var(--arn-accent);
+    color: var(--arn-accent-foreground);
+  }
+}
+
+/* Press feedback in place of the removed tap highlight (styles.css) */
+.docs-search-clear:active {
   background: var(--arn-accent);
   color: var(--arn-accent-foreground);
 }
@@ -120,9 +129,12 @@
   text-decoration: none;
 }
 
-.docs-nav-link:hover {
-  background: var(--arn-accent);
-  color: var(--arn-accent-foreground);
+/* Hover only where a pointer hovers: on touch it would stay stuck after the tap */
+@media (hover: hover) {
+  .docs-nav-link:hover {
+    background: var(--arn-accent);
+    color: var(--arn-accent-foreground);
+  }
 }
 
 /* A page shown only for its matching sections: context, not a link (no hover, no pointer) */
