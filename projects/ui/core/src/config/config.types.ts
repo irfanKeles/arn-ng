@@ -16,7 +16,7 @@ export type ArnColorScheme = 'light' | 'dark' | 'system';
 export type ArnDirection = 'ltr' | 'rtl' | 'auto';
 
 /** When the error state of a form control becomes visible. */
-export type ArnFormErrorTrigger = 'touched' | 'dirty' | 'submitted';
+export type ArnFormErrorTrigger = 'touched' | 'dirty';
 
 /** Shared behavior settings of form controls. */
 export interface ArnFormsConfig {

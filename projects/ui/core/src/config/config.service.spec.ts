@@ -132,7 +132,7 @@ describe('ArnConfigService', () => {
       config.setDirection('rtl');
       config.setRipple(true);
       config.setLocale('tr-TR');
-      config.setForms({ showErrorsOn: 'submitted' });
+      config.setForms({ showErrorsOn: 'dirty' });
 
       expect(config.size()).toBe('xl');
       expect(config.density()).toBe('compact');
@@ -140,7 +140,7 @@ describe('ArnConfigService', () => {
       expect(config.direction()).toBe('rtl');
       expect(config.ripple()).toBe(true);
       expect(config.locale()).toBe('tr-TR');
-      expect(config.forms()).toEqual({ showErrorsOn: 'submitted' });
+      expect(config.forms()).toEqual({ showErrorsOn: 'dirty' });
       expect(config.messages().datePicker.dayNames[0]).toBe('Pazar');
     });
 

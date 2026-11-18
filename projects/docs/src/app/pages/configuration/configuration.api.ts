@@ -45,7 +45,7 @@ const FIELDS: Record<keyof ArnConfig, Omit<DocsApiInput, 'name'>> = {
     description: 'Texts of the components. Partial; whatever is missing stays English.',
   },
   forms: {
-    type: "{ showErrorsOn?: 'touched' | 'dirty' | 'submitted' }",
+    type: "{ showErrorsOn?: 'touched' | 'dirty' }",
     default: "{ showErrorsOn: 'touched' }",
     description: 'When an invalid form control shows its error.',
   },

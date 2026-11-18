@@ -159,10 +159,10 @@ describe('ArnConfigDirective and injectArnConfig', () => {
 
       expect(host.innerProbe().config.forms()).toEqual({ showErrorsOn: 'dirty' });
 
-      host.outerForms.set({ showErrorsOn: 'submitted' });
+      host.outerForms.set({ showErrorsOn: 'touched' });
       fixture.detectChanges();
 
-      expect(host.innerProbe().config.forms()).toEqual({ showErrorsOn: 'submitted' });
+      expect(host.innerProbe().config.forms()).toEqual({ showErrorsOn: 'touched' });
       expect(host.rootProbe().config.forms()).toEqual({ showErrorsOn: 'dirty' });
     });
   });

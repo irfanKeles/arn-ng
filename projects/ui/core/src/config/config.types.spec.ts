@@ -14,7 +14,7 @@ describe('ArnConfig type', () => {
       { density: 'compact', colorScheme: 'dark', direction: 'rtl', ripple: true, locale: 'tr-TR' },
       { messages: { common: { ok: 'Tamam' } } },
       { messages: { datePicker: { monthNames: ['Ocak'] } } },
-      { forms: { showErrorsOn: 'submitted' } },
+      { forms: { showErrorsOn: 'dirty' } },
     ];
 
     expect(configs.length).toBe(6);
@@ -44,11 +44,13 @@ describe('ArnConfig type', () => {
       accept({ messages: { unknownGroup: {} } }),
       // @ts-expect-error a text must be a string
       accept({ messages: { common: { ok: 1 } } }),
-      // @ts-expect-error forms.showErrorsOn can only be touched | dirty | submitted
+      // @ts-expect-error forms.showErrorsOn can only be touched | dirty
       accept({ forms: { showErrorsOn: 'blur' } }),
+      // @ts-expect-error submitted was removed; Signal Forms has no submitted state on a field
+      accept({ forms: { showErrorsOn: 'submitted' } }),
     ];
 
-    expect(rejected.length).toBe(10);
+    expect(rejected.length).toBe(11);
   });
 
   it('the resolved direction is never auto', () => {
