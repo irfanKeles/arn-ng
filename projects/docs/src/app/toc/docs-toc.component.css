@@ -38,7 +38,10 @@
   text-decoration: none;
 }
 
-.docs-toc-link:hover {
-  background: var(--arn-accent);
-  color: var(--arn-accent-foreground);
+/* Hover only where a pointer hovers: on touch it would stay stuck after the tap */
+@media (hover: hover) {
+  .docs-toc-link:hover {
+    background: var(--arn-accent);
+    color: var(--arn-accent-foreground);
+  }
 }

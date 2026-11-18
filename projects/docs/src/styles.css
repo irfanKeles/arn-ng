@@ -17,6 +17,16 @@ body {
   line-height: var(--arn-text-base-line-height);
 }
 
+/* Mobile browsers flash a default tap color; the site's own :active states give the feedback */
+button,
+a,
+[role='tab'],
+[role='button'],
+select,
+summary {
+  -webkit-tap-highlight-color: transparent;
+}
+
 :focus-visible {
   outline: var(--arn-ring-width) solid var(--arn-ring);
   outline-offset: calc(var(--arn-spacing) / 2);

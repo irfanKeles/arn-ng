@@ -65,6 +65,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Bayat yorumlar: `.github/dependabot.yml` ("Angular 19"), `projects/docs/src/app/pages/installation/installation.data.ts:34` ("Angular 19.2"), `projects/ui/README.md` (CLI 19.2.0 jenerik metni; Faz 5 README maddesiyle birlikte)
 - [ ] `config-direction`: `ambientDirection`'daki CDK 19 yedek dalını kaldır (peer `^22.0.0`)
 - [ ] Kök `dependencies`'teki kullanılmayan `zone.js`'i kaldır
+- [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)
 
 ## Doğrulama bekleyenler
 - `@ts-expect-error`'un Vitest `test-build` derlemesinde kullanılmayan direktifte derlemeyi düşürmesi (`config.types.spec.ts`)

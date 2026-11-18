@@ -82,7 +82,16 @@
   cursor: pointer;
 }
 
-.docs-drawer-toggle:hover {
+/* Hover only where a pointer hovers: on touch it would stay stuck after the tap */
+@media (hover: hover) {
+  .docs-drawer-toggle:hover {
+    background: var(--arn-accent);
+    color: var(--arn-accent-foreground);
+  }
+}
+
+/* Press feedback in place of the removed tap highlight (styles.css) */
+.docs-drawer-toggle:active {
   background: var(--arn-accent);
   color: var(--arn-accent-foreground);
 }
