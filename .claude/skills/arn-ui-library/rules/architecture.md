@@ -6,12 +6,13 @@
 
 | Bileşen türü | Kullanım şekli |
 |---|---|
-| Basit, native elemanı olanlar (button, input) | Hem attribute (`<button arnButton>`) hem element (`<arn-button label="..." icon="...">`) |
+| Basit, native elemanı olanlar (input) | Hem attribute (`<input arnInput>`) hem element (`<arn-input>`) |
+| button (0.1.0) | SADECE attribute (`button[arnButton]`, `a[arnButton]`); `<arn-button>` ertelendi (ROADMAP "Ertelenenler", [karar](../decisions/2026-11.md)) |
 | Karmaşık (select, mask input, dialog, date picker, tooltip vb.) | SADECE element (`<arn-select>`) |
 
 - Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*` vb. native davranış bedavaya çalışır).
 - Element sarmalayıcı içinde gerçek bir native eleman render eder (örn. `<arn-button>` içinde `<button>`). Dış `<arn-button>` etiketi tıklanabilir/odaklanabilir sahte bir kutu OLMAZ.
-- Sınıf adları: directive `ArnButtonDirective`, element `ArnButton`, aynı kalıp her bileşende.
+- Sınıf adları: iki yüzlü bileşende directive `Arn<Ad>Directive`, element `Arn<Ad>` (ör. `ArnInputDirective`, `ArnInput`). Element yüzü olmayan bileşende directive sınıfı `Arn<Ad>` (`ArnButton`); element sonradan gelirse adı ayrı karar.
 
 ## Paket ve import yapısı (eski §3)
 
