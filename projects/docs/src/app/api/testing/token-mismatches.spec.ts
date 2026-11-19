@@ -1,5 +1,11 @@
 import { THEME_CSS, themeStyleSheet } from './theme-source';
-import { scanTokens, tokenMismatches, type DocsTokenScan } from './token-mismatches';
+import {
+  componentTokenMismatches,
+  scanTokenReferences,
+  scanTokens,
+  tokenMismatches,
+  type DocsTokenScan,
+} from './token-mismatches';
 
 function sheet(css: string): CSSStyleSheet {
   const result = new CSSStyleSheet();
@@ -129,6 +135,70 @@ describe('tokenMismatches', () => {
     expect(
       tokenMismatches([{ name: '--arn-density' }], scan(), (name) => name === '--arn-density'),
     ).toEqual([]);
+  });
+});
+
+describe('scanTokenReferences', () => {
+  const css = `
+    .x { background: var(--arn-x-bg, var(--arn-primary)); }
+    @media (hover: hover) { .x:hover { color: var( --arn-x-fg ); } }
+    .x { border: var(--arn-border-width) solid var(--arn-x-border-color, transparent); }
+    .x { & .y { gap: var(--arn-x-gap, 1px); } }
+    .x { --docs-y: var(--docs-z); }
+  `;
+
+  it('finds names read with var(), in fallbacks, shorthands, @media and nested rules', () => {
+    expect([...scanTokenReferences(sheet(css))].sort()).toEqual([
+      '--arn-border-width',
+      '--arn-primary',
+      '--arn-x-bg',
+      '--arn-x-border-color',
+      '--arn-x-fg',
+      '--arn-x-gap',
+    ]);
+  });
+});
+
+describe('componentTokenMismatches', () => {
+  const css = `
+    .x { background: var(--arn-x-bg, var(--arn-primary)); color: var(--arn-x-fg, red); }
+  `;
+  const x = (name: string): boolean => name.startsWith('--arn-x-');
+
+  it('returns an empty list when the table lists exactly the tokens the sheet reads', () => {
+    expect(
+      componentTokenMismatches([{ name: '--arn-x-fg' }, { name: '--arn-x-bg' }], sheet(css), x),
+    ).toEqual([]);
+  });
+
+  it('reports a missing, an unknown, a duplicate and an out-of-scope row', () => {
+    expect(
+      componentTokenMismatches(
+        [
+          { name: '--arn-x-bg' },
+          { name: '--arn-x-bg' },
+          { name: '--arn-x-gap' },
+          { name: '--arn-y' },
+        ],
+        sheet(css),
+        x,
+      ),
+    ).toEqual([
+      'Duplicate token "--arn-x-bg" in the table',
+      'Unknown token "--arn-x-gap": the table has it, the stylesheet does not read it',
+      '"--arn-y" is outside the scope of this table',
+      'Missing token "--arn-x-fg": the stylesheet reads it, the table does not',
+    ]);
+  });
+
+  it('reports a component token the sheet defines instead of only reading it', () => {
+    expect(
+      componentTokenMismatches(
+        [{ name: '--arn-x-bg' }, { name: '--arn-x-fg' }],
+        sheet(`${css} .x { --arn-x-bg: blue; }`),
+        x,
+      ),
+    ).toEqual(['Token "--arn-x-bg" is defined (.x); it must only be read']);
   });
 });
 

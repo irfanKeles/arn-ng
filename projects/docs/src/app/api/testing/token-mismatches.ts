@@ -57,6 +57,78 @@ export function scanTokens(sheet: CSSStyleSheet): DocsTokenScan {
   return { root, elsewhere };
 }
 
+const REFERENCE = /var\(\s*(--arn-[a-z0-9-]+)/g;
+
+function walkReferences(rules: CSSRuleList, found: Set<string>): void {
+  for (const rule of Array.from(rules)) {
+    if (rule instanceof CSSStyleRule) {
+      // cssText keeps shorthands written with var() (their longhands read as empty in the CSSOM)
+      for (const match of rule.style.cssText.matchAll(REFERENCE)) {
+        if (match[1]) {
+          found.add(match[1]);
+        }
+      }
+    }
+
+    if ('cssRules' in rule && rule.cssRules instanceof CSSRuleList) {
+      walkReferences(rule.cssRules, found);
+    }
+  }
+}
+
+/** Every `--arn-*` name the sheet reads with `var()`, walking into grouping and nested rules. */
+export function scanTokenReferences(sheet: CSSStyleSheet): ReadonlySet<string> {
+  const found = new Set<string>();
+
+  walkReferences(sheet.cssRules, found);
+
+  return found;
+}
+
+/**
+ * Compares a component's Styling tables with its stylesheet. A component token is never defined:
+ * the stylesheet only reads it, with the library value as the fallback (`var(--arn-button-bg,
+ * var(--arn-primary))`). So the table must list exactly the names in scope that the sheet reads,
+ * and the sheet must define none of them. Returns one line per problem; empty means it matches.
+ */
+export function componentTokenMismatches(
+  documented: readonly { readonly name: string }[],
+  sheet: CSSStyleSheet,
+  inScope: (name: string) => boolean,
+): string[] {
+  const problems: string[] = [];
+  const seen = new Set<string>();
+  const read = scanTokenReferences(sheet);
+  const { root, elsewhere } = scanTokens(sheet);
+
+  for (const { name } of documented) {
+    if (!inScope(name)) {
+      problems.push(`"${name}" is outside the scope of this table`);
+    } else if (seen.has(name)) {
+      problems.push(`Duplicate token "${name}" in the table`);
+    } else if (!read.has(name)) {
+      problems.push(`Unknown token "${name}": the table has it, the stylesheet does not read it`);
+    }
+    seen.add(name);
+  }
+
+  for (const name of read) {
+    if (inScope(name) && !seen.has(name)) {
+      problems.push(`Missing token "${name}": the stylesheet reads it, the table does not`);
+    }
+  }
+
+  for (const name of [...root, ...elsewhere.keys()]) {
+    if (inScope(name)) {
+      const where = [...(root.has(name) ? [':root'] : []), ...(elsewhere.get(name) ?? [])];
+
+      problems.push(`Token "${name}" is defined (${where.join(' | ')}); it must only be read`);
+    }
+  }
+
+  return problems;
+}
+
 /**
  * Compares a Styling table with the tokens the theme defines on `:root`, in both directions, for
  * the names `inScope` selects (for example every name starting with `--arn-ripple-`). Returns one

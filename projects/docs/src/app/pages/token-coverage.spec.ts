@@ -1,5 +1,6 @@
 import { themeStyleSheet } from '../api/testing/theme-source';
 import { scanTokens } from '../api/testing/token-mismatches';
+import { BUTTON_COLOR_TOKENS, BUTTON_SIZE_TOKENS } from './button/button.api';
 import { RIPPLE_TOKENS } from './ripple/ripple.api';
 import { THEMING_TOKEN_GROUPS } from './theming/theming.tokens';
 
@@ -17,6 +18,7 @@ const NOT_ON_A_PAGE: Readonly<Record<string, string>> = {
 
 /** Every Styling table of the site, by page. Add a page's tables here when it gets them. */
 const DOCUMENTED: Readonly<Record<string, readonly { readonly name: string }[]>> = {
+  button: [...BUTTON_SIZE_TOKENS, ...BUTTON_COLOR_TOKENS],
   ripple: RIPPLE_TOKENS,
   theming: THEMING_TOKEN_GROUPS.flatMap((group) => group.rows),
 };

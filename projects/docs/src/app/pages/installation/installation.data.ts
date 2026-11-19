@@ -52,5 +52,6 @@ import { ARN_MESSAGES_TR } from '@arn-ng/ui/locales/tr';
 provideArn({ locale: 'tr-TR', messages: ARN_MESSAGES_TR });`;
 
 export const IMPORT_CODE = `import { ArnConfigDirective, ArnConfigService, provideArn } from '@arn-ng/ui/core';
+import { ArnButton } from '@arn-ng/ui/button';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
 import { ARN_MESSAGES_TR } from '@arn-ng/ui/locales/tr';`;

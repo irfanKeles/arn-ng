@@ -1,0 +1,23 @@
+/* Layout of the preview only; the buttons need no CSS of their own */
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 3);
+  align-items: center;
+}
+
+/* The look of the count is yours (the arn-badge component comes later); the slot places it */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  min-inline-size: calc(var(--arn-spacing) * 5);
+  block-size: calc(var(--arn-spacing) * 5);
+  padding-inline: calc(var(--arn-spacing) * 1.5);
+  border-radius: var(--arn-radius-full);
+  background: var(--arn-primary);
+  color: var(--arn-primary-foreground);
+  font-size: var(--arn-text-xs);
+  line-height: 1;
+}

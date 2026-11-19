@@ -1,0 +1,207 @@
+<h1>Button</h1>
+
+<p class="docs-lead">
+  <code>arnButton</code> styles a native <code>&lt;button&gt;</code> or <code>&lt;a&gt;</code>. The
+  element stays what it is: <code>type</code>, <code>form</code>, <code>href</code> and every
+  <code>aria-*</code> attribute work as they always do.
+</p>
+
+<docs-section sectionId="import" heading="Import">
+  <docs-code-block [code]="importCode" language="typescript" label="Import" />
+
+  <p>
+    The styles come with the component; the tokens they read are part of the theme file, which the
+    application adds once.
+  </p>
+
+  <docs-code-block [code]="themeCode" language="css" label="Theme" />
+
+  <p>
+    There is no <code>&lt;arn-button&gt;</code> element: put the attribute on the native element. A
+    <code>&lt;button&gt;</code> without <code>type</code> submits its form, as it always does, so
+    the examples write <code>type="button"</code>.
+  </p>
+</docs-section>
+
+<docs-section sectionId="variants" heading="Variants">
+  <p>
+    Six variants, with the shadcn/ui names. Without <code>variant</code> the button is
+    <code>default</code>. Use <code>destructive</code> for an action that deletes or cannot be
+    undone, <code>outline</code> and <code>ghost</code> for the quieter actions next to it.
+  </p>
+
+  <p>
+    <strong>link</strong> has no fill and no border you can see; its text is underlined only on
+    hover and while pressed. It keeps the button's height and padding, so it is not a fit for a link
+    inside running text: use a plain <code>&lt;a&gt;</code> there.
+  </p>
+
+  <docs-example [html]="variants.html" [ts]="variants.ts" [css]="variants.css">
+    <docs-button-variants-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="disabled" heading="Disabled">
+  <p>
+    On a <code>&lt;button&gt;</code>, <code>disabled</code> is the native attribute: the button
+    cannot be focused or clicked, also inside a disabled <code>&lt;fieldset&gt;</code>. A link has
+    no native disabled state, so on an <code>&lt;a&gt;</code> the button sets
+    <code>aria-disabled="true"</code>, takes the link out of the tab order and cancels its clicks
+    (<code>routerLink</code> included). The link keeps its <code>href</code>.
+  </p>
+
+  <docs-example [html]="disabled.html" [ts]="disabled.ts" [css]="disabled.css">
+    <docs-button-disabled-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="sizes" heading="Sizes">
+  <p>
+    Five sizes, <code>xs</code> to <code>xl</code>; the default is <code>md</code>. Without
+    <code>size</code> the button follows the <code>size</code> configuration of
+    <code>provideArn()</code> or the nearest <code>arnConfig</code> section (<a
+      routerLink="/configuration"
+      >Configuration</a
+    >). Compact density makes the button lower and narrower, never below 24px (<a
+      routerLink="/theming"
+      >Theming</a
+    >).
+  </p>
+
+  <docs-example [html]="sizes.html" [ts]="sizes.ts" [css]="sizes.css">
+    <docs-button-sizes-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="icons" heading="Icons">
+  <p>
+    Put an <code>&lt;svg&gt;</code> before or after the label: it takes the icon size of the button
+    and the gap follows the size. Hide a decorative icon with <code>aria-hidden="true"</code>. An
+    arrow that points the way of reading gets <code>arn-rtl-mirror</code>, so it turns around in
+    right-to-left pages.
+  </p>
+
+  <docs-example [html]="icons.html" [ts]="icons.ts" [css]="icons.css">
+    <docs-button-icons-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="icon-only-and-round" heading="Icon only and round">
+  <p>
+    <code>iconOnly</code> makes a square button for a single icon; give it a name with
+    <code>aria-label</code>. In development a warning in the console names an icon-only button that
+    has none. <code>round</code> makes the corners fully round: a circle with <code>iconOnly</code>,
+    a pill with a label.
+  </p>
+
+  <docs-example [html]="iconOnly.html" [ts]="iconOnly.ts" [css]="iconOnly.css">
+    <docs-button-icon-only-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="as-a-link" heading="As a link">
+  <p>
+    When the button takes the user somewhere, use <code>&lt;a arnButton&gt;</code> with an
+    <code>href</code> or a <code>routerLink</code>. It is announced as a link, opens in a new tab
+    with a middle click and follows Enter, not Space, as links do.
+  </p>
+
+  <docs-example [html]="link.html" [ts]="link.ts" [css]="link.css">
+    <docs-button-link-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="badge" heading="Badge">
+  <p>
+    A count inside the label is plain content. An element with the
+    <code>arnButtonBadge</code> attribute is placed on the top inline-end corner instead, ringed
+    with the background, mirrored in right-to-left pages and hidden while it is empty. The button
+    only places it; its look is your CSS (an <code>arn-badge</code> component comes later). Put the
+    count in the button's name too, as the second example does.
+  </p>
+
+  <docs-example [html]="badge.html" [ts]="badge.ts" [css]="badge.css">
+    <docs-button-badge-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="ripple" heading="Ripple">
+  <p>
+    The button carries the <a routerLink="/ripple">ripple</a> directive, opened as
+    <code>ripple</code>, <code>rippleColor</code> and <code>rippleCentered</code>. It is off by
+    default and follows the <code>ripple</code> configuration; an empty <code>ripple</code>
+    attribute turns it on for one button.
+  </p>
+
+  <docs-example [html]="ripple.html" [ts]="ripple.ts" [css]="ripple.css">
+    <docs-button-ripple-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="accessibility" heading="Accessibility">
+  <docs-table [view]="keys" />
+
+  <ul>
+    <li>
+      <strong>Native roles.</strong> A <code>&lt;button&gt;</code> is a button and an
+      <code>&lt;a href&gt;</code> is a link; the component adds no <code>role</code>.
+    </li>
+    <li>
+      <strong>Focus ring.</strong> A 3px ring in <code>--arn-ring</code> (<code
+        >--arn-destructive</code
+      >
+      for destructive) shows for keyboard focus; the border does not change. In forced-colors mode
+      an outline in the system color takes its place.
+    </li>
+    <li>
+      <strong>Contrast.</strong> Text against fill is at least 4.5:1 in every variant and state, in
+      light and dark, measured over <code>--arn-background</code>. A hover or pressed fill is partly
+      transparent, so on another surface the ratio is that surface's.
+    </li>
+    <li>
+      <strong>Target size.</strong> The smallest button, <code>xs</code> in compact density, is
+      still 24px high.
+    </li>
+    <li>
+      <strong>Disabled links.</strong>&ngsp;<code>aria-disabled="true"</code> tells assistive
+      technology, <code>tabindex="-1"</code> takes the link out of the tab order (a
+      <code>tabindex</code> of your own comes back when it is enabled again), and clicks are
+      cancelled.
+    </li>
+    <li>
+      <strong>Known limit: the ripple on a disabled button.</strong> Pointer events stay on while
+      disabled, and the browser still sends a press to a disabled button, so a button with the
+      ripple on draws a wave when pressed while disabled. Nothing else happens.
+    </li>
+  </ul>
+
+  <p>
+    The rules every component must meet:
+    <a routerLink="/accessibility">Accessibility</a>.
+  </p>
+</docs-section>
+
+<docs-section sectionId="api" heading="API">
+  <docs-api-table [table]="inputs" />
+  <docs-api-table [table]="slots" />
+
+  <p>The component has no outputs and no public methods.</p>
+</docs-section>
+
+<docs-section sectionId="styling" heading="Styling">
+  <p>
+    The button defines none of these tokens: it reads each with the library value as the fallback.
+    Set one on a container and every button inside follows; set it on one button and only that one
+    changes. <code>&lt;size&gt;</code> is the button's size.
+  </p>
+
+  <docs-token-table [rows]="sizeTokens" caption="Size" />
+  <docs-token-table [rows]="colorTokens" caption="Color" />
+
+  <p>
+    The library's rules have no specificity of their own, so a single class of yours wins over them.
+    The same holds for a global <code>button</code> reset in your styles.
+  </p>
+
+  <docs-code-block [code]="overrideCode" language="css" label="Overriding the tokens" />
+</docs-section>
