@@ -17,6 +17,7 @@ const semanticColorTokens = [
   'accent',
   'accent-foreground',
   'destructive',
+  'destructive-foreground',
   'border',
   'input',
   'ring',
@@ -24,6 +25,8 @@ const semanticColorTokens = [
 
 const scaleTokens = [
   'radius',
+  'radius-full',
+  'shadow-xs',
   'font-sans',
   'font-mono',
   'text-xs',
@@ -298,6 +301,40 @@ describe('theme.css', () => {
         });
       }
     }
+  });
+
+  it('--arn-black is the black end of the palette', () => {
+    expect(resolved('black')).toBe(backgroundOf(box(host, '', 'oklch(0% 0 0deg)')));
+  });
+
+  describe('destructive foreground', () => {
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`is white in ${scheme} mode`, () => {
+        expect(backgroundOf(box(host, scheme, 'var(--arn-destructive-foreground)'))).toBe(
+          resolved('white'),
+        );
+      });
+    }
+  });
+
+  it('--arn-radius-full is fixed and does not follow --arn-radius', () => {
+    const element = box(host, '', 'none');
+
+    element.style.setProperty('--arn-radius', '100px');
+    element.style.borderRadius = 'var(--arn-radius-full)';
+
+    expect(getComputedStyle(element).borderTopLeftRadius).toBe('9999px');
+  });
+
+  it('--arn-shadow-xs is a 1px 2px shadow in black at 5%', () => {
+    const element = box(host, '', 'none');
+
+    element.style.boxShadow = 'var(--arn-shadow-xs)';
+
+    const shadow = getComputedStyle(element).boxShadow;
+
+    expect(shadow).toContain('0px 1px 2px 0px');
+    expect(shadow).toMatch(/\/ 0\.05\)/);
   });
 
   it('the radius scale derives from --arn-radius', () => {
