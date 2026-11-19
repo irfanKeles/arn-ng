@@ -1,4 +1,5 @@
 // theme.css is loaded through the `styles` option of the ui test target in angular.json.
+import { contrastRatio } from './contrast';
 
 const semanticColorTokens = [
   'background',
@@ -273,70 +274,6 @@ describe('theme.css', () => {
     expect(backgroundOf(lightInDark)).toBe(resolved('neutral-900'));
   });
 
-  /** sRGB transfer function: linear luminance → gamma-encoded channel. */
-  const encode = (y: number): number =>
-    y <= 0.0031308 ? 12.92 * y : 1.055 * y ** (1 / 2.4) - 0.055;
-  /** Inverse sRGB transfer function: gamma-encoded channel → linear luminance. */
-  const decode = (c: number): number => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
-
-  /**
-   * Relative luminance of a computed achromatic oklch color: Y = L³. A translucent color is
-   * composited over the opaque `backdrop` in gamma-encoded sRGB (as the browser paints it).
-   */
-  function luminance(color: string, backdrop?: string): number {
-    const match = /^oklch\(([\d.]+)(%?) 0 0(?: \/ ([\d.]+))?\)$/.exec(color);
-
-    if (!match?.[1]) {
-      throw new Error(`Not an achromatic oklch color: ${color}`);
-    }
-
-    const own = (Number(match[1]) / (match[2] === '%' ? 100 : 1)) ** 3;
-    const alpha = match[3] === undefined ? 1 : Number(match[3]);
-
-    if (alpha === 1) {
-      return own;
-    }
-    if (backdrop === undefined) {
-      throw new Error(`A translucent color needs an opaque backdrop: ${color}`);
-    }
-
-    return decode(alpha * encode(own) + (1 - alpha) * encode(luminance(backdrop)));
-  }
-
-  /** WCAG contrast of `color` painted over the opaque `backdrop`. */
-  function contrast(color: string, backdrop: string): number {
-    const [light, dark] = [luminance(color, backdrop), luminance(backdrop)].sort(
-      (x, y) => y - x,
-    ) as [number, number];
-
-    return (light + 0.05) / (dark + 0.05);
-  }
-
-  describe('contrast helper', () => {
-    it('an opaque color ignores the backdrop', () => {
-      expect(luminance('oklch(0.5 0 0)')).toBeCloseTo(0.125, 6);
-      expect(luminance('oklch(50% 0 0)', 'oklch(0 0 0)')).toBeCloseTo(0.125, 6);
-      expect(luminance('oklch(0.5 0 0 / 1)', 'oklch(0 0 0)')).toBeCloseTo(0.125, 6);
-    });
-
-    it('composites a translucent color over the backdrop in gamma-encoded sRGB', () => {
-      // White at 40% over black is the encoded channel 0.4, linear ≈0.1329 (not 0.4)
-      expect(luminance('oklch(1 0 0 / 0.4)', 'oklch(0 0 0)')).toBeCloseTo(decode(0.4), 6);
-      expect(decode(0.4)).toBeCloseTo(0.1329, 4);
-      expect(luminance('oklch(1 0 0 / 0.4)', 'oklch(1 0 0)')).toBeCloseTo(1, 6);
-      expect(luminance('oklch(1 0 0 / 0)', 'oklch(0.5 0 0)')).toBeCloseTo(0.125, 6);
-    });
-
-    it('a translucent color without a backdrop throws', () => {
-      expect(() => luminance('oklch(1 0 0 / 0.4)')).toThrow(/opaque backdrop/);
-    });
-
-    it('the ratio is symmetric for opaque colors and 21:1 for black on white', () => {
-      expect(contrast('oklch(0 0 0)', 'oklch(1 0 0)')).toBeCloseTo(21, 6);
-      expect(contrast('oklch(1 0 0)', 'oklch(0 0 0)')).toBeCloseTo(21, 6);
-    });
-  });
-
   describe('focus ring', () => {
     for (const scheme of ['light', 'dark'] as const) {
       it(`is neutral-500 and has at least 3:1 against the background in ${scheme} mode`, () => {
@@ -344,7 +281,7 @@ describe('theme.css', () => {
         const background = backgroundOf(box(host, scheme, 'var(--arn-background)'));
 
         expect(ring).toBe(resolved('neutral-500'));
-        expect(contrast(ring, background)).toBeGreaterThanOrEqual(3);
+        expect(contrastRatio(ring, background)).toBeGreaterThanOrEqual(3);
       });
     }
   });
@@ -357,7 +294,7 @@ describe('theme.css', () => {
           const input = backgroundOf(box(host, scheme, 'var(--arn-input)'));
           const backdrop = backgroundOf(box(host, scheme, `var(--arn-${surface})`));
 
-          expect(contrast(input, backdrop)).toBeGreaterThanOrEqual(3);
+          expect(contrastRatio(input, backdrop)).toBeGreaterThanOrEqual(3);
         });
       }
     }

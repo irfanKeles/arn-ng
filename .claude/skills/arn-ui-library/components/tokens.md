@@ -105,7 +105,7 @@ Tüketicinin kuralı `theme.css` import'undan SONRA gelmelidir (aynı özgüllü
 
 ## 5. Davranış ve a11y
 
-Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir. Odak halkası `--arn-ring` iki temada da arka plana karşı en az 3:1 (WCAG 1.4.11): açıkta beyaz üstünde ≈4.7:1, koyuda neutral-950 üstünde ≈4.2:1. Kontrol kenarlığı `--arn-input` iki temada `--arn-background` ve `--arn-card`'a karşı en az 3:1: açıkta ≈3.23:1, koyuda ≈3.77:1 (950) / ≈3.82:1 (900); koyu değer yarı saydam, spec zemine sRGB'de karıştırıp hesaplar. `--arn-border` dekoratiftir, kapsam dışı; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test-build.options.styles`).
+Kontrast: `foreground`/`background`, `primary-foreground`/`primary` ve `muted-foreground`/`background` çiftleri shadcn değerleridir. Odak halkası `--arn-ring` iki temada da arka plana karşı en az 3:1 (WCAG 1.4.11): açıkta beyaz üstünde ≈4.7:1, koyuda neutral-950 üstünde ≈4.2:1. Kontrol kenarlığı `--arn-input` iki temada `--arn-background` ve `--arn-card`'a karşı en az 3:1: açıkta ≈3.23:1, koyuda ≈3.77:1 (950) / ≈3.82:1 (900); koyu değer yarı saydam, spec zemine sRGB'de karıştırıp hesaplar. Oranları paylaşımlı test helper'ı hesaplar (`projects/ui/testing/contrast.ts`: kromatik ve alfalı oklch, gamut dışı kanal kırpılır; [karar](../decisions/2026-11.md)). `--arn-border` dekoratiftir, kapsam dışı; bileşen spec'lerindeki axe testi `theme.css` yüklüyken koşar (`angular.json` → ui `test-build.options.styles`).
 
 ## 6. Form uyumu
 

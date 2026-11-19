@@ -74,7 +74,7 @@ Bölümler: `must-meet`, `target-size`, `focus-ring`, `reduced-motion`, `rtl`, `
 | Konu | Karar |
 |---|---|
 | Dil | "Garanti" değil kural: başta `role="note"` "No components yet … These are rules"; başlık "What every component must meet". Henüz olmayan bileşenler "must" / "will" ile anlatılır, şimdiki zamanla değil; bugün olan yalnız doğrulananla ("What exists today already does"). Testing metni gerçek kapsamı söyler (kütüphanede axe: config, overlay, ripple; docs: 17 sayfa/örnek spec'i + kabuk dört modda; klavye/odak testleri: overlay, kod sekmeleri, çekmece). Kontrast başka kütüphaneyle değil WCAG'le kıyaslanır. Spec metinde "guarantee" ve "shadcn" geçmediğini sınar |
-| Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (theme.spec.ts yöntemi) yeniden hesaplar ve metinde arar |
+| Sayılar | Yalnız doğrulananlar: 24px (`--arn-control-min-size: 1.5rem`), 3px (`--arn-ring-width`), halka ≈4.7:1 açık / ≈4.2:1 koyu. `RING_CONTRAST` sayfa bileşeninde; spec çözülmüş token'lardan (`projects/ui/testing/contrast.ts`) yeniden hesaplar ve metinde arar |
 | Token'lar | Tablo YOK (kapsam değişmezi iki sayfada belgelemeyi yasaklar); `/theming`'e bağlanır. Spec `docs-token-table` / `docs-api-table` olmadığını sınar |
 | axe örneği | Kütüphanenin iç test yardımcısı; kod yorumu paketin parçası olmadığını söyler |
 | Known limits | axe sorunların yalnız bir kısmı; gerçek ekran okuyucu testi yok (aramanın sonuç duyurusu dahil, 3d); test çalıştırıcısı gerçek tuşla kaydırmayı sınayamaz (sayfa metni çalıştırıcıyı adlandırmaz); ripple klavyede dalga çizmez (karar) |
