@@ -32,7 +32,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 
 ### Bileşenler ve doğrulama
 - [x] button (yalnız attribute: `button[arnButton]`, `a[arnButton]`, sınıf `ArnButton`; element ertelendi, bkz. Ertelenenler). Bitti (dal `feat/button`): docs "Components > Button", bileşen token'ları yedekle okunur, `[ripple]` `hostDirectives` ile, `components/button.md`, decisions 2026-11 "ArnButton uygulaması"
-- [ ] badge (`arn-badge` sayaç mantığı; button sayfasındaki satır içi ve köşe rozeti örneklerinin ötesi)
+- [ ] badge (`arn-badge` + `a[arnBadge]`, `ArnBadge`). Kütüphane bitti (dal `feat/badge`: `@arn-ng/ui/badge`, sayaç / dot / ikon / loading / link / devre dışı link, devre dışı link mantığı core'da `ɵdisabledLink`, `components/badge.md`, decisions 2026-11 "ArnBadge uygulaması" ve "Devre dışı link yardımcısı"). Kalan: docs "Components > Badge", Button sayfasının gerçek rozete geçişi, Verdaccio onuncu çalıştırma
 - [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer. Form test matrisi: `ngModel`, `formControl`, `formControlName`, `[formField]`; bilinen boşluklar (`ngModel`'de `required`; reactive'de `readonly` / `name` / `min` / `max`; blur'da `touch`) testle kilitlenir (decisions 2026-11 "Signal Forms stratejisi" (5))
 - [ ] checkbox
 - [ ] select

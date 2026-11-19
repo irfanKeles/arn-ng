@@ -13,6 +13,7 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | overlay (`ArnOverlayService`, `ArnOverlayRef`, katmanlar, preset'ler, ayar mirası, `data-state` sözleşmesi) | servis + ortak yapı | `@arn-ng/ui/core`, `@arn-ng/ui/theme.css` | [overlay.md](overlay.md) |
 | ripple (`arnRipple`, `ArnRippleDirective`, ripple token'ları) | directive | `@arn-ng/ui/ripple`, `@arn-ng/ui/theme.css` | [ripple.md](ripple.md) |
 | button (`button[arnButton]`, `a[arnButton]`, `ArnButton`, `--arn-button-*`, rozet yuvası) | directive | `@arn-ng/ui/button` | [button.md](button.md) |
+| badge (`arn-badge`, `a[arnBadge]`, `ArnBadge`, `--arn-badge-*`, sayaç, dot, loading) | element + directive | `@arn-ng/ui/badge` | [badge.md](badge.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
