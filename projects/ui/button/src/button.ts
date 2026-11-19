@@ -4,16 +4,13 @@ import {
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
-  DestroyRef,
-  effect,
   ElementRef,
   inject,
   input,
   PLATFORM_ID,
-  Renderer2,
   ViewEncapsulation,
 } from '@angular/core';
-import { type ArnSize, injectArnConfig, ɵdevWarn } from '@arn-ng/ui/core';
+import { type ArnSize, injectArnConfig, ɵdevWarn, ɵdisabledLink } from '@arn-ng/ui/core';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
 import type { ArnButtonVariant } from './button.types';
 
@@ -109,46 +106,10 @@ export class ArnButton {
 
   protected readonly resolvedSize = injectArnConfig('size', this.size);
 
-  /** The consumer's own `tabindex` on a link, kept while it is disabled; `undefined` = none kept. */
-  private keptTabindex: string | null | undefined;
-
   constructor() {
+    // A disabled link: clicks cancelled, out of the tab order, the consumer's tabindex kept
     if (!this.isButton) {
-      const renderer = inject(Renderer2);
-
-      /*
-       * A disabled link must not navigate or reach the other click listeners. A host listener runs
-       * too late: the template's (click) and RouterLink are registered on the element before it. A
-       * capture listener on the target runs before the bubbling ones on the same element.
-       */
-      const cancel = (event: Event): void => {
-        if (this.disabled()) {
-          event.preventDefault();
-          event.stopImmediatePropagation();
-        }
-      };
-
-      this.host.addEventListener('click', cancel, { capture: true });
-      inject(DestroyRef).onDestroy(() => {
-        this.host.removeEventListener('click', cancel, { capture: true });
-      });
-
-      // A host binding would replace the consumer's tabindex; this keeps and restores it
-      effect(() => {
-        if (this.disabled()) {
-          if (this.keptTabindex === undefined) {
-            this.keptTabindex = this.host.getAttribute('tabindex');
-          }
-          renderer.setAttribute(this.host, 'tabindex', '-1');
-        } else if (this.keptTabindex !== undefined) {
-          if (this.keptTabindex === null) {
-            renderer.removeAttribute(this.host, 'tabindex');
-          } else {
-            renderer.setAttribute(this.host, 'tabindex', this.keptTabindex);
-          }
-          this.keptTabindex = undefined;
-        }
-      });
+      ɵdisabledLink(this.host, this.disabled);
     }
 
     // Once the projected content is there; the name is a browser question (nothing on the server)
