@@ -83,7 +83,7 @@ Yok (uygulama). Hedef yüksekliği her yerde aynı ifade: `max(var(--arn-control
 | Route değişimi | `NavigationEnd`'de odak `<main>`'e (URL'de fragment varsa o bölümün başlığına), başlık route `title`'ından. İlk gezintide ve yalnız fragment değişince odak taşınmaz. `<main>` kabukta hep vardır, bu yüzden senkron (`afterNextRender` yok) |
 | Çekmece | Başlığın altında açılan disclosure (modal değil, odak tuzağı yok; başlık kullanılabilir kalır). Düğme `aria-expanded` + `aria-controls`; açılınca odak ilk bağlantıya (bağlantı yoksa arama alanına), kapanınca düğmeye; Esc, backdrop ve gezinti kapatır; açıkken `<main>` `inert` |
 | Arama | Sidebar'da, nav'ın üstünde `role="search"`; bölüm bağlantısında odak başlığa (çekmece önce kapanır). Ayrıntı: [docs-site-search.md](docs-site-search.md) |
-| Odak halkası | Global `:focus-visible:not(.arn-button)` (`--arn-ring-width`, `--arn-ring`); button kendi halkasını çizer |
+| Odak halkası | Global `:focus-visible:not(.arn-button)` (`--arn-ring-width`, `--arn-ring`); button kendi halkasını çizer. Tek istisna: `docs-section` başlığı (`tabindex="-1"`, etkileşimsiz) halka göstermez ([docs-site-toc-api.md](docs-site-toc-api.md) §5) |
 | Dokunma | `-webkit-tap-highlight-color` global kapalı (`styles.css`). Her yeni etkileşimli öğe (düğme, bağlantı, sekme) `:hover`'ını `@media (hover: hover)` içinde yazar, dokunma geri bildirimi için `:active` tanımlar |
 | RTL | Mantıksal CSS; yön bildiren tek simge (404 geri oku) `arn-rtl-mirror` taşır. Çekmecede kaydırma animasyonu yok (fiziksel `translate` gerektirirdi) |
 

@@ -57,8 +57,9 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 ## Docs backlog
 - [ ] Çekmece açılış/kapanış animasyonu (RTL'de fiziksel translate sorunu ve prefers-reduced-motion düşünülmeli)
 - [ ] Tema anahtarı / ayarlar açılır menüsü
-- [ ] "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
-- [ ] Sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
+- [ ] Dar ekranda "On this page" listesi (sayfa üstünde)
+- [x] "On this page" scrollspy (`aria-current="location"`) ve listeden tıklayınca yumuşak kaydırma (yalnız `prefers-reduced-motion: no-preference`; yalnız liste tıklaması, sayfa değişimi ve sidebar bölüm bağlantısı anında kalır). Bitti (dal `docs/page-polish`; decisions 2026-11 "On this page scrollspy ve tıklayınca kaydırma")
+- [x] Tek başına duran kod bloklarında yüzey ve kopyala düğmesi; `pre` yalnız taşarken Tab durağı; bölüm başlığında odak halkası yok. Bitti (dal `docs/page-polish`; decisions 2026-11 "Tek başına duran kod bloğu: yüzey ve kopyala düğmesi" ve "Bölüm başlığında odak halkası yok")
 - [x] Renkli sözdizimi paleti. Bitti: örnek kartı dalıyla (`docs/example-card`), iki temada ≥4.5:1 spec'te (decisions 2026-11 "Örnek kartı uygulaması" (6))
 
 ## Teknik backlog
@@ -86,6 +87,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - Angular 19 ile ölçülmüş docs bundle boyutlarının yeniden ölçümü
 - `@angular/aria`'nın Angular 22'deki durumu
 - `toSignal`'in `.d.ts` etiketi (yalnız `ToSignalOptions` `@publicApi 20.0` okundu)
+- Docs: Firefox ve WebKit'te bölüm başlığına taşınan odak (fareyle TOC tıklamasında halka çıkıyor mu; `h2:focus` kuralı orada da kapatıyor mu) ve `::selection` vurgusunun iki temada kod bloğunda ve sayfada görünürlüğü. Yalnız Chromium, Chrome ve Edge'de ölçüldü (decisions 2026-11 "Bölüm başlığında odak halkası yok")
 
 ## Ertelenenler
 - `<arn-button>` elemanı (0.1.0'da yok; yalnız `button[arnButton]`, `a[arnButton]`). Gerekçe: sarmalayıcı `type` / `form` / `name` / `value` / `aria-*` / `href` / `disabled`'ı iç elemana iletmek zorunda kalır, bu da erişilebilirlik ve form riski taşır (decisions 2026-11). Yeniden değerlendirme koşulu: somut tüketici ihtiyacı, ayrıca iletilen öznitelik listesinin testle kilitlenmesi. Gelirse sınıf adı ayrı karar (directive `ArnButton` adını aldı)

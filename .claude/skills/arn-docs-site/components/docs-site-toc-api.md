@@ -9,7 +9,7 @@
 | Selector | `docs-section` (sayfa bölümü), `docs-toc` ("On this page"), `docs-api-table`, `docs-token-table`, iç `docs-table` |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (docs bileşenleri + root servis + spec yardımcısı) |
-| Sınıf adları | `DocsSectionComponent`, `DocsTocComponent`, `DocsTocService`, `ApiTableComponent`, `TokenTableComponent`, `DocsTableComponent`; tipler `DocsTocEntry`, `DocsApiTable`, `DocsApiInput` / `Output` / `Method` / `Slot` / `Token`; token `DOCS_TOC_VIEWPORT` |
+| Sınıf adları | `DocsSectionComponent`, `DocsTocComponent`, `DocsTocService`, `ApiTableComponent`, `TokenTableComponent`, `DocsTableComponent`; tipler `DocsTocEntry`, `DocsApiTable`, `DocsApiInput` / `Output` / `Method` / `Slot` / `Token`; token'lar `DOCS_TOC_VIEWPORT`, `DOCS_SMOOTH_SCROLL`; sabitler `DOCS_MAIN_END_ID`, `DOCS_SCROLL_START_MS`, `DOCS_SCROLL_IDLE_MS`; saf `activeIndex` |
 | Dosya yolları | `projects/docs/src/app/toc/`, `projects/docs/src/app/api/` (yardımcı `api/testing/expect-api.ts`), kabuk `app.component.*`, `--docs-toc-width` `styles.css` |
 
 Adım 3b-2: "On this page" ile API ve Styling tabloları ([rules/docs-page.md](../../arn-ui-library/rules/docs-page.md), sayfa bölümleri 13-14).
@@ -32,9 +32,18 @@ Sayfa `<h2>` yazmaz; `<docs-section sectionId="status" heading="Status">` yazar.
 ### Liste: `DocsTocComponent`
 
 - Kabukta, route'un DIŞINDA durur; bu yüzden göreli `[routerLink]="[]"` kök route'a çözülür ve ana sayfaya giderdi. Kabuk sayfa yolunu `path` girdisiyle verir (`AppComponent.path`, sorgu ve fragment'sız; eski `currentPath` alanı bu signal'e dönüştü).
-- Bağlantı `[routerLink]="path()" [fragment]="id"`: gerçek `href` (`/#status`), orta tık ve "bağlantıyı kopyala" çalışır.
-- `app.config.ts`: `withInMemoryScrolling({ anchorScrolling: 'enabled' })`.
-- Tıklayınca (değiştirici tuşsuz birincil tık) hedef başlığa `focus()`: klavye kullanıcısı oradan devam eder; odak kaydırmayı da yapar, bu yüzden URL'de zaten olan fragment'a tıklamak da (router yok sayar) çalışır.
+- Bağlantı `RouterLink` DEĞİL: `href` = `LocationStrategy.prepareExternalUrl(router.serializeUrl(createUrlTree([path], { fragment })))`, RouterLink'in yazdığının aynısı (`/#status`); orta tık ve "bağlantıyı kopyala" çalışır. Gerekçe: `RouterLink` `scroll` seçeneği almaz.
+- `app.config.ts`: `withInMemoryScrolling({ anchorScrolling: 'enabled' })` (sidebar bölüm bağlantısı ve sayfa değişimi için kalır).
+- Değiştiricisiz birincil tık: `preventDefault`, `focusSection(document, id, behavior)` (`scrollIntoView({ block: 'start', behavior })` + `focus({ preventScroll: true })`), fragment URL'de değilse `router.navigate([path], { fragment, scroll: 'manual' })` (router kaydırmaz). `behavior` `DOCS_SMOOTH_SCROLL`'dan (`shell/viewport.ts`; `(prefers-reduced-motion: no-preference)` → `'smooth'`, değilse ve sunucuda `'instant'`). Değiştiricili tık tarayıcıya bırakılır.
+
+### Scrollspy
+
+- Aktif = `pinned() ?? spied()`; bağlantıda `aria-current="location"`. Saf hesap `toc/scroll-spy.ts` `activeIndex({ headingTops, line, atBottom, scrollable })`: kaydırılabilir sayfanın sonunda son, değilse çizgiye ulaşan son başlık, hiçbiri değilse ilk.
+- `IntersectionObserver` (`afterRenderEffect`; başlıklar `DocsTocEntry.element` ile, `docs-section` `viewChild`) başlıkları ve `#docs-main-end`'i (`DOCS_MAIN_END_ID`, kabukta `<main>`'in son çocuğu) gözler; `rootMargin` üstü `-çizgi`. Geri çağrı sayfayı okur, signal yazar (zoneless). Sunucuda ve IO yokken işaret yok.
+- Çizgi `--docs-scroll-margin` (`styles.css`; `.docs-page h2` `scroll-margin-block-start`), başlığın hesaplanmış değerinden +1px payla okunur.
+- Kilit: tıklanan bağlantı window `scrollend`'e kadar aktif; yedekler 1000 ms (`DOCS_SCROLL_START_MS`, kaydırma yoksa) ve son `scroll`'dan 150 ms (`DOCS_SCROLL_IDLE_MS`); capture `wheel` / `touchstart` / `keydown` / `pointerdown` hemen bırakır. `scrollend` capture'la dinlenmez (başka elemanın kaydırma sonu).
+- Uzun listede aktif bağlantı host'un `scrollTop`'uyla görünür alana gelir (`afterRenderEffect` `write`); `scrollIntoView` yok (window'u kaydırırdı).
+- URL kaydırırken yazılmaz.
 
 ### Kabukta görünürlük
 
@@ -47,7 +56,7 @@ Sayfa `<h2>` yazmaz; `<docs-section sectionId="status" heading="Status">` yazar.
 | Render | `@if (tocVisible())`: gizliyken DOM'da yok |
 | Konum | `main`'den sonra; sticky, `align-self: start`, `max-block-size: 100dvb`, `overflow: auto` (sidebar ile aynı) |
 | Çekmece | Çakışmaz: çekmece <48rem, liste ≥80rem. `!narrow()` yine de yazıldı; listeye `inert` gerekmez |
-| `scroll-margin` | Gerekmez: header sticky değil |
+| `scroll-margin` | `--docs-scroll-margin` (nefes payı ve scrollspy çizgisi); header sticky değil, olursa yüksekliği buraya girer |
 
 ### API ve Styling tabloları: elle yazılmış veri + spec doğrulaması
 
@@ -81,8 +90,10 @@ Yok (uygulama).
 |---|---|
 | Landmark | `<nav aria-labelledby="docs-toc-title">`; ikinci `nav` (sidebar `aria-label="Documentation"`) |
 | Etiket | Görünür `<p>` "On this page"; başlık DEĞİL (sayfanın başlık ağacına karışmaz) |
-| Bölüm başlığı | `h2`, `tabindex="-1"`: bağlantıdan odak alır, Tab sırasına girmez |
+| Bölüm başlığı | `h2`, `tabindex="-1"`: bağlantıdan odak alır, Tab sırasına girmez. Odak halkası yok (`docs-section.component.css` `h2:focus { outline: none }`; kapsülleme özniteliğiyle global `:focus-visible:not(.arn-button)`'ı özgüllükle yener). Başlık etkileşimsiz, odak yalnız okuma konumunu taşır; bağlantı, düğme ve form öğesi halkayı korur ([karar](../../arn-ui-library/decisions/2026-11.md) "Bölüm başlığında odak halkası yok") |
 | Odak | Sayfa değişince `<main>` (mevcut kural); yalnız fragment değişince `<main>`'e taşınmaz, liste bağlantısı başlığa taşır |
+| Aktif bağlantı | `aria-current="location"`; `--arn-foreground`, semibold, 2px `border-inline-start` `--arn-foreground` (≥3:1; her bağlantıda saydam aynı kenar, metin kaymaz); RTL'de sağda ([karar](../../arn-ui-library/decisions/2026-11.md) "On this page scrollspy ve tıklayınca kaydırma") |
+| Hareket | Liste tıklaması yalnız `prefers-reduced-motion: no-preference`'te yumuşak; odak `preventScroll` ile kaydırmayı kesmez |
 | Hedef boyutu | Bağlantılar compact'ta da ≥24px |
 | RTL | Mantıksal CSS; sütun `main`'in solunda |
 | Tablo yapısı | Görünür `<caption>`; `th scope="col"`; ad hücresi `th scope="row"` + `<code>` |
@@ -96,7 +107,8 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- Scrollspy (kaydırırken aktif bölüm vurgusu, IntersectionObserver) ve dar ekranda liste YOK: ROADMAP cila maddesi.
+- Dar ekranda liste YOK: ROADMAP cila maddesi. Scrollspy var (§2).
+- Sayfa sonuna yakın kısa bir bölüme tıklanınca kilit kalkınca son bölüm aktif olur (sayfa o başlığı çizgiye getiremez).
 - Sonradan (`@if`) gelen bölüm sırası bozulabilir; şimdilik bölümler koşulsuz yazılır.
 - Yalnız `h2` listelenir; `h3` alt bölümler listeye girmez.
 - `sectionId` sayfada benzersiz olmalı (denetlenmiyor).
@@ -110,10 +122,11 @@ Yok.
 | Spec | Kapsam |
 |---|---|
 | `toc/docs-toc.service.spec.ts` | Boş başlangıç, kayıt sırası, kimlikle silme (aynı id), kayıtlı olmayanı yok sayma |
-| `toc/docs-section.component.spec.ts` | `section > h2` (`id`, `tabindex`), içerik, `display: block`, sayfa sırası, girdi değişimi, yok olunca çıkış, axe |
-| `toc/docs-toc.component.spec.ts` | Görünür etiketle adlı `nav`, başlık yok; sıra ve `href` (`/guide#intro`); liste değişimi; tık → URL + başlığa odak; Ctrl+tık odaklamaz; compact hedef boyutu; axe light / dark / RTL / compact |
-| `shell/viewport.spec.ts` | `DOCS_TOC_VIEWPORT` tarayıcıda media query, sunucuda `false`; dar aralıkla çakışmaz |
-| `app.component.spec.ts` | İki `nav`, Overview'un üç bölümü ve `href`; kırılmada / <2 bölümde / dar modda yok ve sütun sayısı (2 / 2 / 1); viewport ile gelip gitme (3 ↔ 2 sütun); sayfa değişince eski bölümler gider; bağlantı → başlığa odak, `<main>`'e değil; sütun yeri LTR / RTL; axe dört mod × liste açık |
+| `toc/docs-section.component.spec.ts` | `section > h2` (`id`, `tabindex`), içerik, `display: block`, sayfa sırası, girdi değişimi, yok olunca çıkış; gerçek Tab (`userEvent.tab()`) ile bağlantıda halka var (`solid`, 3px), oradan script ile odaklanan başlık `:focus-visible` eşleşir ama `outline-style: none`; axe |
+| `toc/scroll-spy.spec.ts` (8) | Bölüm yok → -1; çizgiden önce ilk; çizgideki / üstündeki son; tam çizgide ulaşmış; kaydırılabilir sayfa sonunda son; kaydırılmayan sayfada sonu yok sayar; render olmamış başlık (Infinity); tek bölüm |
+| `toc/docs-toc.component.spec.ts` (28; önce 10) | Görünür etiketle adlı `nav`, başlık yok; sıra ve `href` (`/guide#intro`); liste değişimi; tık → URL + başlığa odak; Ctrl+tık odaklamaz, kaydırmaz; compact hedef boyutu. Scrollspy (uzun sayfa fixture'ı, gerçek `scrollTo` + `expect.poll`): başta yalnız ilk; kaydırınca o bölüm ve geri, router URL'i ve `location.hash` değişmez; sayfa sonunda kısa son bölüm; kaymayan sayfada ilk; IO yokken işaret yok; yok olunca `disconnect`; uzun listede aktif bağlantı görünür alanda (iki yön); kalınlık + 2px çizgi ≥3:1, diğerleri saydam aynı kenar (light / dark); RTL çizgi sağda. Tıklama: yumuşak (`behavior: 'smooth'`) ve anında (`'instant'`, başlık çizgide, odakta) ayrı, ikisinde `focus({ preventScroll: true })`; `navigate` `scroll: 'manual'` ile; URL'deki fragment'a `navigate` yok ama kaydırma var. Kilit (sahte `setTimeout`; ara bölüm içerik kısaltılarak çizgiye getirilir, gerçek kaydırma yok): `scrollend`'e kadar tıklanan aktif; `scrollend` gelmezse 1000 ms'de; tekerlekte hemen; başka elemanın `scrollend`'i bırakmaz. axe dört mod × aktif bağlantı |
+| `shell/viewport.spec.ts` | `DOCS_TOC_VIEWPORT` tarayıcıda media query, sunucuda `false`; dar aralıkla çakışmaz; `DOCS_SMOOTH_SCROLL` reduced-motion sorgusu, sunucuda `false` |
+| `app.component.spec.ts` (+3: liste tıklamasında `ViewportScroller.scrollToAnchor` çağrılmaz; ilk bölüm işaretli ve `<main>` `#docs-main-end` ile biter; 320px'te liste yok, taşma yok) | İki `nav`, Overview'un üç bölümü ve `href`; kırılmada / <2 bölümde / dar modda yok ve sütun sayısı (2 / 2 / 1); viewport ile gelip gitme (3 ↔ 2 sütun); sayfa değişince eski bölümler gider; bağlantı → başlığa odak, `<main>`'e değil; sütun yeri LTR / RTL; axe dört mod × liste açık |
 | `pages/overview/…spec.ts` | Üç bölüm sırasıyla servis listesinde ve `h2` id'leri |
 | `api/docs-table.spec.ts` | Saf görünüm: her kind'in başlığı ve sütunları, hücre türleri, boş varsayılan, sütun başına bir hücre; token tablosu |
 | `api/api-table.component.spec.ts` | Caption bölgeyi adlandırır; `scope` col / row; kod ve düz metin hücreleri; "—" + "None"; girdi değişimi; benzersiz caption id; 320px: sayfa taşmaz, yalnız bölge taşar (`overflow-x: auto`); kenarın ötesindeki boş varsayılan hücresiyle `document.documentElement.scrollWidth` render öncesinden büyümez (`.docs-page.scrollWidth` bunu görmüyordu; taban render öncesi genişlik: test çalıştırıcısının sayfası taşabilir, [docs-site-pages.md](docs-site-pages.md)); bölge `tabindex=0` ile odak alır ve kayan elemandır; RTL'de kod `ltr` + `isolate`, hücre `start`; axe light / dark / RTL / compact + 320px |
@@ -124,7 +137,7 @@ Sidebar seçicileri `app.component.spec.ts`'te `nav[aria-label="Documentation"]`
 
 Ctrl+tık testi varsayılan eylemi iptal eder: sentetik Ctrl+tık bağlantıda gerçekten yeni sekme açıp test penceresinin odağını alıyor, rastgele sırada sonraki odak testini (skip link) düşürüyordu.
 
-Boşluklar: gerçek kaydırma (`anchorScrolling`) tarayıcıda elle sınanır. Gerçek pencere daraltması bir kez Playwright ile ölçüldü (2026-10, repo dışı, `playwright-core` + sistem Chrome): `/ripple`, `/installation`, `/configuration` 1280 → 320px yenilemesiz `docs-narrow` alır, taşma 0. Tablo bölgesinin gerçek ok tuşuyla kaydırılması birim testte üretilemez (sentetik tuş olayı tarayıcıyı kaydırmaz; Karma'da doğrulandı, Vitest browser mode'da yeniden denenmedi); spec onun önkoşullarını sınar: bölge odaklanabilir, kayan eleman odur, sayfa kaymaz.
+Boşluklar: gerçek yumuşak kaydırma animasyonu birim testte oynatılmaz (spy + elle kilit); Playwright ile ölçüldü (decisions "On this page scrollspy…" (9)). Firefox ve WebKit ölçülmedi. Sidebar bağlantısının gerçek kaydırması (`anchorScrolling`) tarayıcıda elle sınanır. Gerçek pencere daraltması bir kez Playwright ile ölçüldü (2026-10, repo dışı, `playwright-core` + sistem Chrome): `/ripple`, `/installation`, `/configuration` 1280 → 320px yenilemesiz `docs-narrow` alır, taşma 0. Tablo bölgesinin gerçek ok tuşuyla kaydırılması birim testte üretilemez (sentetik tuş olayı tarayıcıyı kaydırmaz; Karma'da doğrulandı, Vitest browser mode'da yeniden denenmedi); spec onun önkoşullarını sınar: bölge odaklanabilir, kayan eleman odur, sayfa kaymaz.
 
 ## 9. Bağlantılar
 
