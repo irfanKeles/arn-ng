@@ -30,6 +30,7 @@ Kaynak: Tailwind neutral / red. Yazım Stylelint'e göre (`oklch(L% C Hdeg)`); s
 | Ad | L | Ad | L |
 |---|---|---|---|
 | `--arn-white` | 100% | `--arn-neutral-500` | 55.6% |
+| `--arn-black` | 0% | | |
 | `--arn-neutral-50` | 98.5% | `--arn-neutral-600` | 43.9% |
 | `--arn-neutral-100` | 97% | `--arn-neutral-700` | 37.1% |
 | `--arn-neutral-200` | 92.2% | `--arn-neutral-800` | 26.9% |
@@ -54,6 +55,7 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 | `--arn-secondary-foreground`, `--arn-accent-foreground` | neutral-900 | neutral-50 |
 | `--arn-muted-foreground` | neutral-500 | neutral-400 |
 | `--arn-destructive` | red-600 | red-400 |
+| `--arn-destructive-foreground` | white | white (güncel shadcn'de yok, §7) |
 | `--arn-border` | neutral-200 | `oklch(100% 0 0deg / 10%)` |
 | `--arn-input` | `oklch(65% 0 0deg)` (shadcn neutral-200'den sapma, §7) | `oklch(100% 0 0deg / 40%)` |
 | `--arn-ring` | neutral-500 (shadcn neutral-400'den sapma, §7) | neutral-500 |
@@ -65,6 +67,8 @@ shadcn karşılığı: aynı ad, `--arn-` öneksiz (`--arn-primary` ↔ `--prima
 | `--arn-radius` | `0.625rem` | Taban |
 | `--arn-radius-sm` / `-md` / `-lg` | taban × 0.6 / 0.8 / 1 | shadcn çarpanları |
 | `--arn-radius-xl` / `-2xl` / `-3xl` / `-4xl` | taban × 1.4 / 1.8 / 2.2 / 2.6 | Adımlar yalnızca global (`:root`) değişir; tüketici CSS'i için yardımcı, bileşenler kullanmaz |
+| `--arn-radius-full` | `9999px` | Sabit (türetilmez): bileşende ve container'da güvenli; button `round` |
+| `--arn-shadow-xs` | `0 1px 2px 0` + `--arn-black` %5 | shadcn `shadow-xs`; button `outline` |
 | `--arn-font-sans` | `ui-sans-serif, system-ui, sans-serif` + emoji fontları | shadcn font dayatmaz |
 | `--arn-font-mono` | `ui-monospace, 'SFMono-Regular', 'Menlo'…` | |
 | `--arn-text-xs` / `-sm` / `-base` / `-lg` / `-xl` | 0.75 / 0.875 / 1 / 1.125 / 1.25rem | Her biri için `--arn-text-<adım>-line-height` var |
@@ -113,8 +117,9 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- **shadcn'den sapmalar:** (1) dark mode `.dark` bloğunda yeniden tanımlama yerine `light-dark()`; gerekçe: değerler tek yerde, iç içe tema ve sistem tercihi bedava. (2) `.light` sınıfı eklendi. (3) oklch yazımı (yüzde ve `deg`); gerekçe: Stylelint kuralı kapatmamak. (4) `--arn-` öneki. (5) `--arn-ring` açık temada neutral-500 (shadcn neutral-400): neutral-400 beyaz üstünde ≈2.6:1, WCAG 1.4.11'in 3:1'inin altında; koyu tema shadcn'deki gibi neutral-500. (6) `--arn-input` açıkta `oklch(65% 0 0deg)`, koyuda beyaz %40 (shadcn neutral-200 / beyaz %15: ≈1.26:1 / ≈1.47:1); neutral-500 değil, odakta kenarlık rengi halkadan ayrı kalsın diye. Karar: [decisions/2026-11.md](../decisions/2026-11.md).
-- **Eklenmeyenler:** `chart-*`, `sidebar-*` (ilgili bileşen yok; iki resmi shadcn kaynağı chart için farklı değer veriyor), `success/warning/info` (shadcn'de yok), `destructive-foreground` (güncel shadcn'de yok). İhtiyaç duyan bileşenle ayrı karar.
+- **shadcn'den sapmalar:** (1) dark mode `.dark` bloğunda yeniden tanımlama yerine `light-dark()`; gerekçe: değerler tek yerde, iç içe tema ve sistem tercihi bedava. (2) `.light` sınıfı eklendi. (3) oklch yazımı (yüzde ve `deg`); gerekçe: Stylelint kuralı kapatmamak. (4) `--arn-` öneki. (5) `--arn-ring` açık temada neutral-500 (shadcn neutral-400): neutral-400 beyaz üstünde ≈2.6:1, WCAG 1.4.11'in 3:1'inin altında; koyu tema shadcn'deki gibi neutral-500. (6) `--arn-input` açıkta `oklch(65% 0 0deg)`, koyuda beyaz %40 (shadcn neutral-200 / beyaz %15: ≈1.26:1 / ≈1.47:1); neutral-500 değil, odakta kenarlık rengi halkadan ayrı kalsın diye. (7) `--arn-destructive-foreground` (güncel shadcn'de yok; shadcn button `text-white` yazar): iki temada white; koyu button dolgusunu `--arn-background`'la karıştırarak koyulaştırır (red-400 üstünde beyaz 2.89:1). Button ile geldi, birlikte `--arn-black`, `--arn-shadow-xs`, `--arn-radius-full` ([button.md](button.md)). Karar: [decisions/2026-11.md](../decisions/2026-11.md).
+- **Eklenmeyenler:** `chart-*`, `sidebar-*` (ilgili bileşen yok; iki resmi shadcn kaynağı chart için farklı değer veriyor), `success/warning/info` (shadcn'de yok). İhtiyaç duyan bileşenle ayrı karar.
+- **Nötr hue'su:** palet nötrleri `oklch(L 0 0deg)` yazılır; Chromium `color-mix(in oklch, …)`'te bu hue'yu 0° olarak karıştırır ("missing" saymaz), kromatik bir renkle karışım biraz 0°'ye kayar (button destructive oranları). `none` yazımı ROADMAP Teknik backlog'da.
 - **Tarayıcı tabanı:** `light-dark()` → Chrome 123, Firefox 120, Safari 17.5. Fallback yok ([../SKILL.md](../SKILL.md) hedef tarayıcı).
 - `sideEffects: false` kaldı; CSS, `styles` veya CSS `@import` ile eklenir, JS'ten import edilmez.
 - Font adları büyük harf içeriyorsa tırnaklanır (Stylelint `value-keyword-case`); `-apple-system`/`BlinkMacSystemFont` yerine `system-ui`.
@@ -122,7 +127,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; odak halkası iki temada neutral-500 ve arka plana karşı ≥3:1; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda otomatik görsel karşılaştırma yok (`/theming` sayfası elle bakmaya yarar: [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md)).
+`projects/ui/testing/theme.spec.ts`: tüm anlamlı token'lar tanımlı; `--arn-black`, `--arn-destructive-foreground` iki temada white, `--arn-radius-full` tabanı izlemez, `--arn-shadow-xs`; overlay katman token'ları artan tamsayı ve katman sınıfı tek başına etkisiz; ripple token'ları ve iki ripple sınıfı; sınıfsız durumda sistem tercihi; `.dark` / `.light` zorlaması; odak halkası iki temada neutral-500 ve arka plana karşı ≥3:1; iç içe sınıflar; radius ölçeği ve türetilmiş token tuzağı; boyut ve density testleri [tokens-sizes.md](tokens-sizes.md) §8'de. Paketlenmiş hali `local-package-test.md` akışıyla sınandı (2026-10: tüketici `@import` + `ng build`). Boşluk: gerçek tarayıcıda otomatik görsel karşılaştırma yok (`/theming` sayfası elle bakmaya yarar: [docs-site-pages-guides.md](../../arn-docs-site/components/docs-site-pages-guides.md)).
 
 ## 9. Bağlantılar
 

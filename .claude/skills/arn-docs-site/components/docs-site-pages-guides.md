@@ -12,7 +12,7 @@
 | Sınıf adları | `RipplePageComponent`, `InstallationPageComponent`, `ConfigurationPageComponent`, `ThemingPageComponent`, `AccessibilityPageComponent`, örnek bileşenleri; veri `RIPPLE_INPUTS`, `RIPPLE_TOKENS`, `LIBRARY_PEERS`, `CONFIG_PROPERTIES`, `CONFIG_SERVICE_METHODS`, `THEMING_TOKEN_GROUPS` |
 | Dosya yolları | `projects/docs/src/app/pages/{ripple,installation,configuration,theming,accessibility}/` (sayfa + `examples/` + `*.api.ts` / `*.data.ts` / `*.tokens.ts`), `pages/token-coverage.spec.ts` |
 
-Gezinti: Getting started → Overview, Installation; Guides → Configuration, Theming, Accessibility; Directives → Ripple. Her sayfa spec'i 320px'te belge taşmasını sınar (`expectNoPageOverflow`, [docs-site-pages.md](docs-site-pages.md)). Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
+Gezinti: Getting started → Overview, Installation; Guides → Configuration, Theming, Accessibility; Components → Button; Directives → Ripple. Button sayfası: `pages/button/` (sekiz örnek, `button.api.ts`; bileşen tarafı [button.md](../../arn-ui-library/components/button.md)). Her sayfa spec'i 320px'te belge taşmasını sınar (`expectNoPageOverflow`, [docs-site-pages.md](docs-site-pages.md)). Örnek kalıbı `pages/<sayfa>/examples/<ad>.example.{ts,html,css}` + `?source` ([docs-site-examples.md](docs-site-examples.md)); her örneğin kendi spec'i ve axe testi var.
 
 ## 2. Mimari ve CDK
 

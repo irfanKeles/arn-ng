@@ -19,31 +19,31 @@ Kapsam yalnızca CSS'tir. `size` / `density` TS tipleri (`ArnSize`, `ArnDensity`
 - **Kontrol token'ları** (`--arn-control-*`) anlamlı katmandadır, `:root`'ta durur. "Bu boyutta bir kontrol ne kadardır" sorusunun paylaşılan cevabıdır: button, input, select tetikleyicisi aynı satırda hizalanır.
 - **Sabit değerdir, `var()` içermez.** `--arn-control-font-size-sm: var(--arn-text-sm)` yazılsaydı tokens.md §4'teki tuzak oluşurdu. Sabit oldukları için container'da tek tek değiştirilebilirler.
 - **Density uygulanmamış ham ölçüdür.** Çarpan ve taban bileşen host'unda uygulanır.
-- **Sınır:** bileşen token'ı (`--arn-button-height`) bileşenin kendi host'unda, seçili boyutun kontrol token'ından hesaplanır. Bileşen CSS'i özelliklerde yalnızca kendi token'ını kullanır (`block-size: var(--arn-button-height)`).
+- **Sınır:** bileşen token'ı (`--arn-button-height`) TANIMLANMAZ; özellik onu seçili boyutun kontrol token'ından kurulan yedekle okur (`block-size: var(--arn-button-height, max(…))`). Yedek host'ta çözülür. Önceki örüntü (host'ta `--arn-button-*` tanımı) button'la değişti: container'da verilen değeri eziyordu ([karar](../decisions/2026-11.md) "ArnButton uygulaması").
 - **Density:** `--arn-density` çarpanı. `:root`'ta 1; `[data-density='compact']` 0.875, `[data-density='comfortable']` 1 yapar. Kalıtımla iner, en yakın `data-density` geçerlidir, iç içe çalışır.
 - **Kural sırası:** `[data-density]` kuralları `:root` bloğundan SONRA durur. İkisi aynı özgüllüktedir (0,1,0); `<html data-density="compact">` ancak bu sırayla çalışır. Spec sabitler.
 
 ### Host'ta hesaplama örüntüsü ([../rules/styling.md](../rules/styling.md))
 
 ```css
-:host {
-  --arn-button-height: max(
-    var(--arn-control-min-size),
-    calc(var(--arn-control-height-md) * var(--arn-density))
+:where(.arn-button[data-size='md']) {
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-md) * var(--arn-density)))
   );
-  --arn-button-padding-inline: calc(var(--arn-control-padding-inline-md) * var(--arn-density));
-  --arn-button-font-size: var(--arn-control-font-size-md);
-  --arn-button-icon-size: var(--arn-control-icon-size-md);
-  --arn-button-gap: var(--arn-control-gap-md);
-  --arn-button-radius: calc(var(--arn-radius) * 0.8);
-  block-size: var(--arn-button-height);
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-md) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-md));
+  gap: var(--arn-button-gap, var(--arn-control-gap-md));
 }
 ```
 
 - Density yalnızca yükseklik ve `padding-inline`'a uygulanır. Yazı, ikon ve gap'e uygulanmaz.
-- `--arn-<bileşen>-height` `max()`'li değeri taşır; taban yalnızca yüksekliğe uygulanır.
-- Radius adımı host'ta `--arn-radius`'tan hesaplanır; `--arn-radius-md` KULLANILMAZ (container'da tabanı izlemez).
-- Kenarlıklı host `box-sizing: border-box` olmalı: `content-box`'ta kenarlık yüksekliğe eklenir (1px kenarlıkla md 36 → 38px; Theming sayfasının ölçen örneği yakaladı, 3c). Faz 4 button / input bunu host'ta yazar.
+- Yükseklik yedeği `max()`'li değerdir; taban yalnızca yüksekliğe uygulanır.
+- Radius yedeği `--arn-radius`'tan hesaplanır; `--arn-radius-md` KULLANILMAZ (container'da tabanı izlemez).
+- Kenarlıklı host `box-sizing: border-box` olmalı: `content-box`'ta kenarlık yüksekliğe eklenir (1px kenarlıkla md 36 → 38px; Theming sayfasının ölçen örneği yakaladı, 3c). Button bunu yazar (spec'te sınanır); input da yazacak.
 
 ## 3. Token'lar
 
@@ -103,14 +103,14 @@ Yok.
 - **`xl` bizim ekimiz** (shadcn'de yok). Yükseklik 3rem (`h-12`). Padding 2rem: shadcn adımları 2 → 3 → 4 → 6, sıradaki 8; padding/yükseklik oranı 0.33 → 0.67 tekdüze artar. Yazı 1rem: 48px'te 14px küçük kalır. İkon 1.25rem: ikon/yükseklik oranı (0.42) md-lg bandında (0.44-0.40). Gap 0.5rem: shadcn `default`'tan sonra büyütmüyor.
 - **Density bizim ekimiz**; shadcn'de yok.
 - shadcn input'ta boyut varyantı yok (`h-9 px-3 text-base md:text-sm`). md'de input padding'i (0.75rem) kontrol token'ından (1rem) farklı; input kendi token'ında sapma olarak çözer (Faz 4).
-- shadcn ikonlu butonda padding'i daraltır (`has-[>svg]:px-3`) ve `icon-*` boyutları var; button kararı (Faz 4).
-- **Faz 4'e not:** `:host([data-size='sm'])` gibi boyut seçicisi tüketicinin tek sınıflı override'ından özgül olur; button yazılırken `:where()` ile ele alınacak.
+- shadcn ikonlu butonda padding'i daraltır (`has-[>svg]:px-3`) ve `icon-*` boyutları var. Button'da daraltma yok; `icon-*` yerine `iconOnly` (kare, `aspect-ratio: 1`) her boyutta ([button.md](button.md)).
+- Boyut seçicisi tüketicinin tek sınıflı override'ından özgül olmasın diye button kuralları `:where()` içinde (özgüllük 0); spec sınar.
 - **Dosya yeri:** ayrı CSS dosyası reddedildi (ikinci `exports`/import, unutulursa sıfır yükseklik). `theme.css` içinde.
 - **Tarayıcı:** `max()` / `calc()` evergreen; taban değişmedi.
 
 ## 8. Testler
 
-`projects/ui/testing/theme.spec.ts`. Henüz bileşen yok; spec host'u taklit eden geçici bir deneme elemanı (`probe`) kullanır, örüntü §2'dekiyle aynıdır. Kapsanan: token'lar tanımlı ve beklenen rem'e çözülür; yükseklik xs → xl artar; density yokken çarpan 1; compact'ta yükseklik ve padding × 0.875, yazı ve ikon değişmez; compact xs 24px; `--arn-control-min-size` container'da değişir; iç içe density; kök elemanda `data-density`; container'da `--arn-radius` değişince host'ta hesaplanan token izler, `--arn-radius-md` izlemez; container'da kontrol token'ı değişince host izler. Boşluk: gerçek bileşenle sınama (Faz 4).
+`projects/ui/testing/theme.spec.ts`. Henüz bileşen yok; spec host'u taklit eden geçici bir deneme elemanı (`probe`) kullanır, örüntü §2'dekiyle aynıdır. Kapsanan: token'lar tanımlı ve beklenen rem'e çözülür; yükseklik xs → xl artar; density yokken çarpan 1; compact'ta yükseklik ve padding × 0.875, yazı ve ikon değişmez; compact xs 24px; `--arn-control-min-size` container'da değişir; iç içe density; kök elemanda `data-density`; container'da `--arn-radius` değişince host'ta hesaplanan token izler, `--arn-radius-md` izlemez; container'da kontrol token'ı değişince host izler. Gerçek bileşenle sınama: `button.spec.ts` (beş boyut, compact, 24px tabanı, iç içe density; [button.md](button.md)).
 
 ## 9. Bağlantılar
 
