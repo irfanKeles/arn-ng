@@ -13,6 +13,7 @@
 
   /* Raw: palette */
   --arn-white: oklch(100% 0 0deg);
+  --arn-black: oklch(0% 0 0deg);
   --arn-neutral-50: oklch(98.5% 0 0deg);
   --arn-neutral-100: oklch(97% 0 0deg);
   --arn-neutral-200: oklch(92.2% 0 0deg);
@@ -44,6 +45,12 @@
   --arn-accent-foreground: light-dark(var(--arn-neutral-900), var(--arn-neutral-50));
   --arn-destructive: light-dark(var(--arn-red-600), var(--arn-red-400));
 
+  /*
+   * Not in current shadcn: text on a destructive fill. White in both themes; the dark button darkens
+   * its fill instead (red-400 under white is 2.89:1), see the button's stylesheet.
+   */
+  --arn-destructive-foreground: light-dark(var(--arn-white), var(--arn-white));
+
   /* Dark border and input are white with alpha in shadcn; the palette has no equivalent */
   --arn-border: light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%));
 
@@ -69,6 +76,12 @@
   --arn-radius-2xl: calc(var(--arn-radius) * 1.8);
   --arn-radius-3xl: calc(var(--arn-radius) * 2.2);
   --arn-radius-4xl: calc(var(--arn-radius) * 2.6);
+
+  /* Fully round (pill, circle). Fixed, not derived: safe to use in components and containers */
+  --arn-radius-full: 9999px;
+
+  /* shadcn shadow-xs */
+  --arn-shadow-xs: 0 1px 2px 0 color-mix(in oklch, var(--arn-black) 5%, transparent);
 
   /* Typography */
   --arn-font-sans:

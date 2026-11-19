@@ -2,4 +2,5 @@
  * Public API Surface of @arn-ng/ui/button
  */
 
-export {};
+export { ArnButton } from './button';
+export type { ArnButtonVariant } from './button.types';

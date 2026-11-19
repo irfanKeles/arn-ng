@@ -17,8 +17,10 @@
   <p>
     Tokens come in layers. The <strong>palette</strong> holds raw values;
     <strong>semantic</strong> tokens such as <code>--arn-primary</code> point to the palette and are
-    what components use. A component computes its own tokens, such as its height, on its own element
-    from the semantic ones. The shared scales:
+    what components use. A component defines no tokens of its own: it reads each of its tokens, such
+    as <code>--arn-button-height</code>, with the semantic or control token as the fallback, worked
+    out on its own element. So a component token set on a container reaches every component inside.
+    The shared scales:
   </p>
 
   <docs-token-table [rows]="paletteTokens" caption="Palette" />
@@ -109,6 +111,14 @@
   </p>
 
   <docs-code-block [code]="overrideCode" language="css" label="Overriding" />
+
+  <p>
+    <strong>Component styles have no specificity.</strong> The library's component rules sit inside
+    <code>:where()</code>, so a single class of yours wins over them, and so does a global
+    <code>button &#123;&nbsp;&#125;</code> or <code>a &#123;&nbsp;&#125;</code> rule in your styles:
+    it overrides the component's look. Leave the components out of such rules; this site does it
+    with <code>:not(.arn-button)</code>.
+  </p>
 
   <p>
     <strong>Derived tokens do not follow a base changed in a part of the page.</strong> A

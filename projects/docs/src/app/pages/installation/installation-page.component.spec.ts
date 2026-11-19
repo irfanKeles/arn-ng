@@ -1,6 +1,7 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
+import { ArnButton } from '@arn-ng/ui/button';
 import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { ARN_MESSAGES_TR } from '@arn-ng/ui/locales/tr';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
@@ -151,6 +152,7 @@ describe('InstallationPageComponent', () => {
       expect(typeof provideArn).toBe('function');
       expect(ArnConfigService).toBeDefined();
       expect(ArnRippleDirective).toBeDefined();
+      expect(ArnButton).toBeDefined();
       expect(ARN_MESSAGES_TR.common?.cancel).toBe('Vazgeç');
     });
   });

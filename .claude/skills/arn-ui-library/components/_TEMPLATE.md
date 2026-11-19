@@ -29,17 +29,16 @@ role ve aria-* bileşenin kendi elemanına yazılır (servis yazmaz). İçerik k
 ## 3. Token'lar
 
 <!--
-Bileşen token'ı bileşenin kendi host'unda hesaplanır (../rules/styling.md), :root'ta değil. Örüntü (tokens-sizes.md §2):
-  --arn-<ad>-height: max(var(--arn-control-min-size), calc(var(--arn-control-height-<boyut>) * var(--arn-density)));
-  --arn-<ad>-padding-inline: calc(var(--arn-control-padding-inline-<boyut>) * var(--arn-density));
-  --arn-<ad>-font-size: var(--arn-control-font-size-<boyut>);   (density uygulanmaz)
-  --arn-<ad>-radius: calc(var(--arn-radius) * 0.8);             (--arn-radius-md KULLANILMAZ)
-  block-size: var(--arn-<ad>-height);
-Yükseklik token'ı max()'li değeri taşır (24px tabanı, WCAG 2.2 SC 2.5.8). :root'ta türetilen adımlar
-(--arn-radius-sm vb.) bileşende kullanılmaz. "Hesap" sütununa host'taki ifadeyi yaz.
+Bileşen token'ı TANIMLANMAZ (ne host'ta ne :root'ta), özellik onu yedekle okur (../rules/styling.md, örnek: button.md). Örüntü (tokens-sizes.md §2):
+  block-size: var(--arn-<ad>-height, max(var(--arn-control-min-size), calc(var(--arn-control-height-<boyut>) * var(--arn-density))));
+  padding-inline: var(--arn-<ad>-padding-inline, calc(var(--arn-control-padding-inline-<boyut>) * var(--arn-density)));
+  font-size: var(--arn-<ad>-font-size, var(--arn-control-font-size-<boyut>));   (density uygulanmaz)
+  border-radius: var(--arn-<ad>-radius, calc(var(--arn-radius) * 0.8));          (--arn-radius-md KULLANILMAZ)
+Seçiciler :where() içinde. Yükseklik yedeği max()'lidir (24px tabanı, WCAG 2.2 SC 2.5.8). :root'ta türetilen adımlar
+(--arn-radius-sm vb.) bileşende kullanılmaz. "Hesap" sütununa yedek ifadeyi yaz.
 -->
 
-| Ad | Hesap (host'ta) | Bağlı anlamlı token |
+| Ad | Hesap (yedek) | Bağlı anlamlı token |
 |---|---|---|
 
 ## 4. Override rehberi

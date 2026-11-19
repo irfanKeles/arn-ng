@@ -18,6 +18,12 @@ const palette = (name: string, value: string): DocsApiToken => ({
 
 export const PALETTE_TOKENS: readonly DocsApiToken[] = [
   palette('--arn-white', 'oklch(100% 0 0deg)'),
+  {
+    name: '--arn-black',
+    default: 'oklch(0% 0 0deg)',
+    description:
+      'Raw palette value. Semantic tokens do not point to it; a few component states mix with it: the destructive hover and --arn-shadow-xs.',
+  },
   palette('--arn-neutral-50', 'oklch(98.5% 0 0deg)'),
   palette('--arn-neutral-100', 'oklch(97% 0 0deg)'),
   palette('--arn-neutral-200', 'oklch(92.2% 0 0deg)'),
@@ -110,6 +116,12 @@ export const COLOR_TOKENS: readonly DocsApiToken[] = [
     description: 'Dangerous actions and errors.',
   },
   {
+    name: '--arn-destructive-foreground',
+    default: 'light-dark(var(--arn-white), var(--arn-white))',
+    description:
+      'Text on a destructive fill. Not in current shadcn; white in both schemes (the dark button darkens its fill).',
+  },
+  {
     name: '--arn-border',
     default: 'light-dark(var(--arn-neutral-200), oklch(100% 0 0deg / 10%))',
     description: 'Borders and dividers.',
@@ -148,6 +160,11 @@ export const RADIUS_TOKENS: readonly DocsApiToken[] = [
   radiusStep('2xl', '1.8'),
   radiusStep('3xl', '2.2'),
   radiusStep('4xl', '2.6'),
+  {
+    name: '--arn-radius-full',
+    default: '9999px',
+    description: 'Fully round: pills and circles. Fixed, so it is safe in components.',
+  },
 ];
 
 const text = (step: string, size: string, lineHeight: string): DocsApiToken[] => [
@@ -190,6 +207,11 @@ export const SPACING_TOKENS: readonly DocsApiToken[] = [
   },
   { name: '--arn-border-width', default: '1px', description: 'Borders.' },
   { name: '--arn-ring-width', default: '3px', description: 'The focus ring.' },
+  {
+    name: '--arn-shadow-xs',
+    default: '0 1px 2px 0 color-mix(in oklch, var(--arn-black) 5%, transparent)',
+    description: 'A faint shadow under outlined controls (shadcn shadow-xs).',
+  },
 ];
 
 const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'] as const;
@@ -237,11 +259,11 @@ export const DENSITY_TOKENS: readonly DocsApiToken[] = [
   },
 ];
 
-const isPalette = (name: string): boolean => /^--arn-(white|neutral-\d+|red-\d+)$/.test(name);
+const isPalette = (name: string): boolean => /^--arn-(white|black|neutral-\d+|red-\d+)$/.test(name);
 const isRadius = (name: string): boolean => /^--arn-radius(-[a-z0-9]+)?$/.test(name);
 const isTypography = (name: string): boolean => /^--arn-(font-|text-)/.test(name);
 const isSpacing = (name: string): boolean =>
-  ['--arn-spacing', '--arn-border-width', '--arn-ring-width'].includes(name);
+  ['--arn-spacing', '--arn-border-width', '--arn-ring-width', '--arn-shadow-xs'].includes(name);
 const isSize = (name: string): boolean => name.startsWith('--arn-control-');
 const isDensity = (name: string): boolean => name === '--arn-density';
 const isOther = (name: string): boolean => /^--arn-(z|ripple)-/.test(name);

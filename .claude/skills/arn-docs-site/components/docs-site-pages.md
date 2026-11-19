@@ -9,7 +9,7 @@
 | Selector | Yok |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (spec yardımcıları + tablo türü) |
-| Sınıf adları | `apiMismatches` (directive desteğiyle), `directiveTemplateNames`, `scanTokens`, `tokenMismatches`, `themeStyleSheet`, `unknownInternalLinks`, `docsPaths`, `renderExample`, `A11Y_MODES`, `pageOverflow`, `expectNoPageOverflow`; tipler `DocsApiTemplateNames`, `DocsTokenScan`, `RenderedExample`; tablo türü `properties` |
+| Sınıf adları | `apiMismatches` (directive desteğiyle), `directiveTemplateNames`, `scanTokens`, `tokenMismatches`, `scanTokenReferences`, `componentTokenMismatches`, `themeStyleSheet`, `unknownInternalLinks`, `docsPaths`, `renderExample`, `A11Y_MODES`, `pageOverflow`, `expectNoPageOverflow`; tipler `DocsApiTemplateNames`, `DocsTokenScan`, `RenderedExample`; tablo türü `properties` |
 | Dosya yolları | `projects/docs/src/app/api/testing/` (`expect-api.ts`, `token-mismatches.ts`, `theme-source.ts`), `testing/links.ts`, `testing/render-example.ts`, `testing/page-overflow.ts`, `api/docs-api.ts`, `api/docs-table.ts` |
 
 Adım 3c-1b ve sonrası. Yardımcılar yalnız spec'lerde kullanılır (`properties` bir tablo türü); üretim paketine girmez. Sayfalar (Ripple, Installation, Configuration…): [docs-site-pages-guides.md](docs-site-pages-guides.md).
@@ -41,6 +41,10 @@ Adım 3c-1b ve sonrası. Yardımcılar yalnız spec'lerde kullanılır (`propert
 | `tokenMismatches(rows, scan, inScope)` | İki yönlü, yalnız `inScope(ad)` olanlar (ör. `--arn-ripple-` öneki): eksik, bilinmeyen, tekrar eden, kapsam dışı, `--arn-` olmayan satır; yalnız `:root` dışında tanımlı ad seçicileriyle raporlanır. Boş liste = uyumlu |
 
 `theme.css`'te `:root` dışında tanımlı tek `--arn-*`: `--arn-density` (`[data-density="comfortable"]`, `[data-density="compact"]`; `:root`'ta da var). Spec bunu sabitler: başka bir `:root` dışı tanım eklenirse test düşer ve karar gerekir.
+
+### Bileşen token'ları: `componentTokenMismatches`
+
+Bileşen token'ı tanımlanmaz, yedekle okunur (`rules/styling.md`). `scanTokenReferences(sheet)` kural metninden (`style.cssText`: `var()`'lı shorthand'in longhand'leri CSSOM'da boş okunur) her `var(--arn-…` adını toplar, `@media` ve iç içe kurallar dahil. `componentTokenMismatches(rows, sheet, inScope)`: tablo = okunan adlar (eksik, bilinmeyen, tekrar, kapsam dışı) ve kapsamdaki hiçbir ad tanımlı değil (tanım bulunursa seçicisiyle). Bileşen CSS'i `?source` ile alınır (Button: `ui/button/src/button.css`). Host directive girdileri `reflectComponentType`'ta görünmez; Button sayfası ripple alias'larını AOT derlenen bir probe şablonuyla sınar.
 
 ### Tablo türü `properties`
 
@@ -90,7 +94,7 @@ Yok.
 | Spec | Kapsam |
 |---|---|
 | `api/testing/expect-api.spec.ts` | Bileşen grubu (önceki); directive: uyumlu → boş; eksik girdi, fazla girdi, eksik output → dolu liste; `ArnRippleDirective` adları; ɵdir şekli (`[string, number, null]` ve output haritası) sabit; bilinmeyen şekil ve Angular dışı sınıf → "cannot be read"; sarmalayıcı directive'te geçer |
-| `api/testing/token-mismatches.spec.ts` | Fixture CSS: `@layer`, `@media` içinde `@supports`, seçici listesi, iç içe kural, `:root` dışı tanım, `--docs-*` atlanır; karşılaştırma: uyumlu, sıra, eksik, bilinmeyen, tekrar / kapsam dışı / `--arn-` olmayan, yalnız `:root` dışı, hem `:root` hem dışı; gerçek `theme.css`: metin okunur, ripple token'ları uyumlu, `:root` dışı yalnız `--arn-density` |
+| `api/testing/token-mismatches.spec.ts` | Fixture CSS: `@layer`, `@media` içinde `@supports`, seçici listesi, iç içe kural, `:root` dışı tanım, `--docs-*` atlanır; karşılaştırma: uyumlu, sıra, eksik, bilinmeyen, tekrar / kapsam dışı / `--arn-` olmayan, yalnız `:root` dışı, hem `:root` hem dışı; gerçek `theme.css`: metin okunur, ripple token'ları uyumlu, `:root` dışı yalnız `--arn-density`; `scanTokenReferences` (yedek, shorthand, `@media`, iç içe) ve `componentTokenMismatches` (uyumlu, eksik / bilinmeyen / tekrar / kapsam dışı, tanımlı token) |
 | `api/docs-table.spec.ts` | `properties`: başlık "Properties", sütun ve satırlar `inputs` ile aynı |
 | `testing/links.spec.ts` | Slug → yol; gerçek gezinti; var olan sayfa (fragment / sorgu ile) kabul; dış bağlantı atlanır; olmayan sayfa, çıplak fragment ve göreli yol → dolu liste |
 | `testing/page-overflow.spec.ts` | Sarılan metin 0; kendi kapsayıcısında kayan geniş içerik 0; konumsuz kaydırma kapsayıcısından kaçan mutlak eleman > 0, kapsayıcı konumlanınca 0; eleman yerine döner |

@@ -64,14 +64,14 @@ describe('AccessibilityPageComponent', () => {
       ]);
     });
 
-    it('links only to pages that exist, among them Theming, Configuration and Ripple', async () => {
+    it('links only to pages that exist, among them Theming, Configuration, Ripple and Button', async () => {
       const { element } = await render();
       const hrefs = Array.from(element.querySelectorAll('a[href]')).map((link) =>
         link.getAttribute('href'),
       );
 
       expect(unknownInternalLinks(element)).toEqual([]);
-      for (const page of ['/theming', '/configuration', '/ripple']) {
+      for (const page of ['/theming', '/configuration', '/ripple', '/button']) {
         expect(hrefs).toContain(page);
       }
     });
@@ -86,11 +86,13 @@ describe('AccessibilityPageComponent', () => {
   });
 
   describe('wording', () => {
-    it('says there are no components yet and speaks of rules, not guarantees', async () => {
+    it('names the one component so far and speaks of rules, not guarantees', async () => {
       const { element } = await render();
       const note = text(query(element, '[role="note"]'));
 
-      expect(note).toContain('No components yet.');
+      expect(note).toContain('One component so far.');
+      expect(note).not.toContain('No components yet.');
+      expect(query(element, '[role="note"]').querySelector('a[href="/button"]')).not.toBeNull();
       expect(note).toContain('These are rules');
       expect(text(element).toLowerCase()).not.toContain('guarantee');
       expect(text(query(element, 'docs-section:has(#must-meet) h2'))).toBe(

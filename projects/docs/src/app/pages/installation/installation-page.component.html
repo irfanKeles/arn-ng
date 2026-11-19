@@ -48,6 +48,13 @@
     <code>.dark</code> or <code>.light</code> on an element forces one. Every token, and how to
     change it: <a routerLink="/theming">Theming</a>.
   </p>
+
+  <p>
+    The components' own rules have no specificity (<code>:where()</code>). A global
+    <code>button &#123;&nbsp;&#125;</code> or <code>a &#123;&nbsp;&#125;</code> rule in your styles
+    therefore overrides the component's look; leave the components out of it, as this site does with
+    <code>:not(.arn-button)</code>.
+  </p>
 </docs-section>
 
 <docs-section sectionId="configuration" heading="Provide the configuration">
@@ -81,6 +88,7 @@
 
   <ul>
     <li><code>&#64;arn-ng/ui/core</code>: configuration and the shared overlay service</li>
+    <li><code>&#64;arn-ng/ui/button</code>: the button</li>
     <li><code>&#64;arn-ng/ui/ripple</code>: the ripple directive</li>
     <li><code>&#64;arn-ng/ui/locales/tr</code>: Turkish texts</li>
     <li><code>&#64;arn-ng/ui/theme.css</code>: the theme (a stylesheet, not a script)</li>

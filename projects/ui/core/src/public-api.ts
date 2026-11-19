@@ -4,6 +4,11 @@
 
 export { ArnConfigDirective } from './config/config.directive';
 export type { ArnConfigRef } from './config/config.scope';
+/**
+ * Internal: shared by the library's entry points, not a supported API (it may change in any
+ * release). The `ɵ` prefix marks it, as in Angular.
+ */
+export { devWarn as ɵdevWarn } from './config/dev-mode';
 export { ArnConfigService } from './config/config.service';
 export type {
   ArnColorScheme,

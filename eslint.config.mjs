@@ -96,9 +96,13 @@ export default tseslint.config(
         'error',
         { type: 'attribute', prefix: 'arn', style: 'camelCase' },
       ],
+      // Attribute components keep the native element (`button[arnButton]`; decisions 2026-11)
       '@angular-eslint/component-selector': [
         'error',
-        { type: 'element', prefix: 'arn', style: 'kebab-case' },
+        [
+          { type: 'element', prefix: 'arn', style: 'kebab-case' },
+          { type: 'attribute', prefix: 'arn', style: 'camelCase' },
+        ],
       ],
       // §2: element sınıfı `ArnButton`, directive `ArnButtonDirective`
       '@angular-eslint/component-class-suffix': 'off',

@@ -120,6 +120,32 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
     ],
   },
   {
+    id: 'components',
+    title: 'Components',
+    pages: [
+      {
+        slug: 'button',
+        title: 'Button',
+        sections: [
+          { id: 'import', heading: 'Import' },
+          { id: 'variants', heading: 'Variants' },
+          { id: 'disabled', heading: 'Disabled' },
+          { id: 'sizes', heading: 'Sizes' },
+          { id: 'icons', heading: 'Icons' },
+          { id: 'icon-only-and-round', heading: 'Icon only and round' },
+          { id: 'as-a-link', heading: 'As a link' },
+          { id: 'badge', heading: 'Badge' },
+          { id: 'ripple', heading: 'Ripple' },
+          { id: 'accessibility', heading: 'Accessibility' },
+          { id: 'api', heading: 'API' },
+          { id: 'styling', heading: 'Styling' },
+        ],
+        loadComponent: () =>
+          import('../pages/button/button-page.component').then((m) => m.ButtonPageComponent),
+      },
+    ],
+  },
+  {
     id: 'directives',
     title: 'Directives',
     pages: [

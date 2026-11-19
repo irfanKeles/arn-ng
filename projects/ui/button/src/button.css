@@ -1,0 +1,297 @@
+/*
+ * ArnButton (button[arnButton], a[arnButton]). Unencapsulated: every selector is wrapped in
+ * :where() so it has zero specificity and a consumer's single-class rule wins.
+ *
+ * Component tokens (--arn-button-*) are NOT defined here: each property reads its token with the
+ * library value as the fallback, e.g. background: var(--arn-button-bg, var(--arn-primary)). A token
+ * set on a container (or on the element) therefore reaches the button, and the semantic tokens of
+ * the fallback resolve on the button itself (decisions 2026-11, "ArnButton uygulaması").
+ *
+ * No transition in 0.1.0: hover and active colors change at once.
+ */
+
+:where(.arn-button) {
+  position: relative;
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border: var(--arn-border-width) solid var(--arn-button-border-color, transparent);
+  border-radius: var(--arn-button-radius, calc(var(--arn-radius) * 0.8));
+  padding-block: 0;
+  background: var(--arn-button-bg, var(--arn-primary));
+  color: var(--arn-button-fg, var(--arn-primary-foreground));
+  font-family: inherit;
+  font-weight: var(--arn-font-weight-medium);
+  text-decoration-line: none;
+  white-space: nowrap;
+  vertical-align: middle;
+  -webkit-tap-highlight-color: transparent;
+}
+
+:where(.arn-button) :where(svg) {
+  flex-shrink: 0;
+  pointer-events: none;
+}
+
+/* Sizes: height (density, 24px floor), inline padding (density), font, icon and gap */
+:where(.arn-button[data-size='xs']) {
+  gap: var(--arn-button-gap, var(--arn-control-gap-xs));
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-xs) * var(--arn-density)))
+  );
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-xs) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-xs));
+}
+
+:where(.arn-button[data-size='xs']) :where(svg) {
+  inline-size: var(--arn-button-icon-size, var(--arn-control-icon-size-xs));
+  block-size: var(--arn-button-icon-size, var(--arn-control-icon-size-xs));
+}
+
+:where(.arn-button[data-size='sm']) {
+  gap: var(--arn-button-gap, var(--arn-control-gap-sm));
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-sm) * var(--arn-density)))
+  );
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-sm) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-sm));
+}
+
+:where(.arn-button[data-size='sm']) :where(svg) {
+  inline-size: var(--arn-button-icon-size, var(--arn-control-icon-size-sm));
+  block-size: var(--arn-button-icon-size, var(--arn-control-icon-size-sm));
+}
+
+:where(.arn-button[data-size='md']) {
+  gap: var(--arn-button-gap, var(--arn-control-gap-md));
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-md) * var(--arn-density)))
+  );
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-md) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-md));
+}
+
+:where(.arn-button[data-size='md']) :where(svg) {
+  inline-size: var(--arn-button-icon-size, var(--arn-control-icon-size-md));
+  block-size: var(--arn-button-icon-size, var(--arn-control-icon-size-md));
+}
+
+:where(.arn-button[data-size='lg']) {
+  gap: var(--arn-button-gap, var(--arn-control-gap-lg));
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-lg) * var(--arn-density)))
+  );
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-lg) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-lg));
+}
+
+:where(.arn-button[data-size='lg']) :where(svg) {
+  inline-size: var(--arn-button-icon-size, var(--arn-control-icon-size-lg));
+  block-size: var(--arn-button-icon-size, var(--arn-control-icon-size-lg));
+}
+
+:where(.arn-button[data-size='xl']) {
+  gap: var(--arn-button-gap, var(--arn-control-gap-xl));
+  block-size: var(
+    --arn-button-height,
+    max(var(--arn-control-min-size), calc(var(--arn-control-height-xl) * var(--arn-density)))
+  );
+  padding-inline: var(
+    --arn-button-padding-inline,
+    calc(var(--arn-control-padding-inline-xl) * var(--arn-density))
+  );
+  font-size: var(--arn-button-font-size, var(--arn-control-font-size-xl));
+}
+
+:where(.arn-button[data-size='xl']) :where(svg) {
+  inline-size: var(--arn-button-icon-size, var(--arn-control-icon-size-xl));
+  block-size: var(--arn-button-icon-size, var(--arn-control-icon-size-xl));
+}
+
+/* Icon only: square (the width follows the height); round: a circle or, with a label, a pill */
+:where(.arn-button[data-icon-only]) {
+  aspect-ratio: 1;
+  padding-inline: 0;
+}
+
+:where(.arn-button[data-round]) {
+  border-radius: var(--arn-radius-full);
+}
+
+/* Variants. Every variant keeps the 1px border (transparent where none shows), so all are as tall */
+:where(.arn-button[data-variant='secondary']) {
+  background: var(--arn-button-bg, var(--arn-secondary));
+  color: var(--arn-button-fg, var(--arn-secondary-foreground));
+}
+
+/*
+ * Dark: red-400 under white is 2.89:1, so the fill is darkened toward the background instead
+ * (60%: 6.92:1). Light: red-600 under white is 4.76:1 (gamut-clipped, as Chromium paints it).
+ */
+:where(.arn-button[data-variant='destructive']) {
+  background: var(
+    --arn-button-bg,
+    light-dark(
+      var(--arn-destructive),
+      color-mix(in oklch, var(--arn-destructive) 60%, var(--arn-background))
+    )
+  );
+  color: var(--arn-button-fg, var(--arn-destructive-foreground));
+}
+
+:where(.arn-button[data-variant='outline']) {
+  border-color: var(--arn-button-border-color, var(--arn-border));
+  background: var(--arn-button-bg, var(--arn-background));
+  color: var(--arn-button-fg, var(--arn-foreground));
+  box-shadow: var(--arn-shadow-xs);
+}
+
+:where(.arn-button[data-variant='ghost']) {
+  background: var(--arn-button-bg, transparent);
+  color: var(--arn-button-fg, var(--arn-foreground));
+}
+
+:where(.arn-button[data-variant='link']) {
+  background: var(--arn-button-bg, transparent);
+  color: var(--arn-button-fg, var(--arn-primary));
+  text-underline-offset: var(--arn-spacing);
+}
+
+/* Hover: only where a pointer can hover, so a tap does not leave a sticky hover color */
+@media (hover: hover) {
+  :where(.arn-button:not(:disabled, [aria-disabled='true']):hover) {
+    background: var(
+      --arn-button-bg-hover,
+      color-mix(in oklch, var(--arn-primary) 90%, transparent)
+    );
+  }
+
+  :where(.arn-button[data-variant='secondary']:not(:disabled, [aria-disabled='true']):hover) {
+    background: var(
+      --arn-button-bg-hover,
+      color-mix(in oklch, var(--arn-secondary) 80%, transparent)
+    );
+  }
+
+  :where(.arn-button[data-variant='destructive']:not(:disabled, [aria-disabled='true']):hover) {
+    background: var(
+      --arn-button-bg-hover,
+      light-dark(
+        color-mix(in oklch, var(--arn-destructive) 92%, var(--arn-black)),
+        color-mix(in oklch, var(--arn-destructive) 50%, var(--arn-background))
+      )
+    );
+  }
+
+  :where(.arn-button[data-variant='outline']:not(:disabled, [aria-disabled='true']):hover),
+  :where(.arn-button[data-variant='ghost']:not(:disabled, [aria-disabled='true']):hover) {
+    background: var(--arn-button-bg-hover, var(--arn-accent));
+    color: var(--arn-button-fg, var(--arn-accent-foreground));
+  }
+
+  :where(.arn-button[data-variant='link']:not(:disabled, [aria-disabled='true']):hover) {
+    background: var(--arn-button-bg-hover, transparent);
+    text-decoration-line: underline;
+  }
+}
+
+/* Active (pressed): token based, also on touch */
+:where(.arn-button:not(:disabled, [aria-disabled='true']):active) {
+  background: var(--arn-button-bg-active, color-mix(in oklch, var(--arn-primary) 80%, transparent));
+}
+
+:where(.arn-button[data-variant='secondary']:not(:disabled, [aria-disabled='true']):active) {
+  background: var(
+    --arn-button-bg-active,
+    color-mix(in oklch, var(--arn-secondary), var(--arn-secondary-foreground) 10%)
+  );
+}
+
+:where(.arn-button[data-variant='destructive']:not(:disabled, [aria-disabled='true']):active) {
+  background: var(
+    --arn-button-bg-active,
+    light-dark(
+      color-mix(in oklch, var(--arn-destructive) 84%, var(--arn-black)),
+      color-mix(in oklch, var(--arn-destructive) 40%, var(--arn-background))
+    )
+  );
+}
+
+:where(.arn-button[data-variant='outline']:not(:disabled, [aria-disabled='true']):active),
+:where(.arn-button[data-variant='ghost']:not(:disabled, [aria-disabled='true']):active) {
+  background: var(
+    --arn-button-bg-active,
+    color-mix(in oklch, var(--arn-accent), var(--arn-accent-foreground) 10%)
+  );
+  color: var(--arn-button-fg, var(--arn-accent-foreground));
+}
+
+:where(.arn-button[data-variant='link']:not(:disabled, [aria-disabled='true']):active) {
+  background: var(--arn-button-bg-active, transparent);
+  text-decoration-line: underline;
+}
+
+/*
+ * Focus: a 3px ring in the full ring color, outside the border (the border does not change). The
+ * transparent outline shows in forced-colors mode, where box-shadow is not painted.
+ */
+:where(.arn-button:focus-visible) {
+  outline: var(--arn-ring-width) solid transparent;
+  box-shadow: 0 0 0 var(--arn-ring-width) var(--arn-button-ring-color, var(--arn-ring));
+}
+
+:where(.arn-button[data-variant='destructive']:focus-visible) {
+  box-shadow: 0 0 0 var(--arn-ring-width) var(--arn-button-ring-color, var(--arn-destructive));
+}
+
+:where(.arn-button[data-variant='outline']:focus-visible) {
+  box-shadow:
+    0 0 0 var(--arn-ring-width) var(--arn-button-ring-color, var(--arn-ring)),
+    var(--arn-shadow-xs);
+}
+
+/*
+ * Disabled: native :disabled on <button> (also inside a disabled fieldset), aria-disabled on <a>.
+ * Pointer events stay on (decisions 2026-11), so the ripple can still draw on a disabled button or
+ * link (Chromium sends pointerdown to a disabled <button> too).
+ */
+:where(.arn-button:disabled),
+:where(.arn-button[aria-disabled='true']) {
+  cursor: default;
+  opacity: 0.5;
+}
+
+/* Badge slot: on the top inline-end corner, ringed with the background; hidden while empty */
+:where(.arn-button) > :where([arnButtonBadge]) {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  translate: 35% -35%;
+  box-shadow: 0 0 0 calc(var(--arn-border-width) * 2) var(--arn-background);
+}
+
+:where(.arn-button) > :where([arnButtonBadge]:dir(rtl)) {
+  translate: -35% -35%;
+}
+
+:where(.arn-button) > :where([arnButtonBadge]:empty) {
+  display: none;
+}

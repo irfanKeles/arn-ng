@@ -81,6 +81,14 @@ describe('OverviewPageComponent', () => {
     ]);
   });
 
+  it('lists the button as the first component and says nothing is on npm yet', () => {
+    const section = query(create(), 'docs-section:has(#what-exists-today)');
+
+    expect(section.textContent).toContain('@arn-ng/ui/button');
+    expect(section.textContent).toContain('none has been released to npm yet');
+    expect(section.textContent).not.toContain('Components come next');
+  });
+
   it('carries the page class', () => {
     expect(create().classList.contains('docs-page')).toBe(true);
   });
