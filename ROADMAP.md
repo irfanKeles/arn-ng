@@ -28,7 +28,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [x] `ArnConfig` `forms.showErrorsOn: 'submitted'` kaldırma (ayrı kod PR'ı, input'tan önce; Signal Forms'ta karşılığı yok, decisions 2026-11 "Signal Forms stratejisi" (3))
 - [ ] Karar: top layer yeniden değerlendirme (dialog, tooltip ile). Önce gelir: dialog, tooltip
 - [x] Karar: bileşen docs sayfası şablonu (bölüm sırası, "Components" kategorisi, örnek kartı, iki temada ≥4.5:1 kod renkleri; decisions 2026-11)
-- [ ] Örnek kartı yenilemesi, mevcut 10 örneğin geçişi ve renkli kod paleti (ayrı docs PR'ı, button'dan önce; kontrast helper birleştirmesinden sonra)
+- [x] Örnek kartı yenilemesi, mevcut 10 örneğin geçişi ve renkli kod paleti (dal `docs/example-card`; decisions 2026-11 "Örnek kartı uygulaması")
 
 ### Bileşenler ve doğrulama
 - [ ] button (yalnız attribute: `button[arnButton]`, `a[arnButton]`, sınıf `ArnButton`; element ertelendi, bkz. Ertelenenler). Docs sayfası aynı PR'da, "Components > Button". Not: host `box-sizing: border-box` yazar (tokens-sizes.md); bileşen token katmanı ve `[ripple]` girdisi (`hostDirectives`) bununla gelir
@@ -59,7 +59,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Tema anahtarı / ayarlar açılır menüsü
 - [ ] "On this page" için scrollspy (aktif bölüm vurgusu) ve dar ekranda sayfa üstü liste
 - [ ] Sayfa içi gezintide `scroll-behavior: smooth` düşünülebilir; yalnız `prefers-reduced-motion: no-preference` altında ve yalnız fragment gezintisine uygulanmalı (sayfa değişiminde animasyon istenmiyor)
-- [ ] Renkli sözdizimi paleti (gerekçeli karar günlüğü sapmasıyla ve axe kontrastıyla). Güncelleme: örnek kartı PR'ıyla yapılır; karar verildi (decisions 2026-11 "Bileşen docs sayfası şablonu" (6))
+- [x] Renkli sözdizimi paleti. Bitti: örnek kartı dalıyla (`docs/example-card`), iki temada ≥4.5:1 spec'te (decisions 2026-11 "Örnek kartı uygulaması" (6))
 
 ## Teknik backlog
 - [ ] Test hijyeni: `overlay.presets.spec.ts:139-149` düğme temizliği `afterEach`'e taşınmalı

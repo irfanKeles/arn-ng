@@ -6,10 +6,10 @@
 
 | Alan | Değer |
 |---|---|
-| Selector | `docs-example` (örnek bloğu), `docs-code-block` (kod bloğu) |
+| Selector | `docs-example` (örnek kartı), `docs-code-block` (kod bloğu) |
 | Entry point | Yok (uygulama) |
 | Tür | ortak yapı (docs bileşenleri + tembel servis) |
-| Sınıf adları | `ExampleComponent`, `CodeBlockComponent`, `DocsHighlighterService`; token'lar `DOCS_HIGHLIGHT_LOADER`, `DOCS_CLIPBOARD`; tipler `DocsCodeLanguage`, `DocsCodeToken`, `DocsHighlight` |
+| Sınıf adları | `ExampleComponent` (+ sabit `COPIED_RESET_MS`), `CodeBlockComponent`, `DocsHighlighterService`; token'lar `DOCS_HIGHLIGHT_LOADER`, `DOCS_CLIPBOARD`; tipler `DocsCodeLanguage`, `DocsCodeToken`, `DocsHighlight` |
 | Dosya yolları | `projects/docs/src/app/example/`, `projects/docs/src/app/code/`, `projects/docs/src/text-imports.d.ts`, renkler `code/code-block.component.css` |
 
 Adım 3b-1'de yazıldı. İlk gerçek kullanım 3c Ripple sayfası ([docs-site-pages-guides.md](docs-site-pages-guides.md)); örnek yalnız kullanan sayfanın tembel parçasına girer (bkz. §7).
@@ -43,21 +43,26 @@ Her örnek gerçek bir `<ad>.example.ts` + `<ad>.example.html` çiftidir; stili 
 
 Çıktı `@for` ile `<span [style.color]>` olarak basılır: `innerHTML` ve `codeToHtml` yok ([rules/angular.md](../../arn-ui-library/rules/angular.md)). Şablondaki `<pre>` tek satırdır: Angular `<pre>` içinde boşluğu korur, araya girilen her boşluk koda eklenir (Prettier `<pre>` içine dokunmaz).
 
-CDK: `LiveAnnouncer` (kopya sonucu), `Directionality` (ok tuşu yönü).
+CDK: `LiveAnnouncer` (kopya sonucu, `polite`).
+
+Satır numaraları (`lineNumbers` girdisi, varsayılan `false`; yalnız örnek kartı açar): her satır `.docs-code-block-line`, numara CSS sayacıyla `::before { content: counter(docs-code-line) / "" }`. Üretilen içerik seçime ve kopyaya girmez, `user-select: none`, boş alt metin numarayı erişilebilirlik ağacından çıkarır. Satırlar düz metinde de bölünür (Shiki gelince boyut değişmez); son satır sonundan sonraki boş satır numaralanmaz. Sütun genişliği `--docs-code-digits` (en büyük numaranın basamak sayısı, `ch`). Numaralar yatay kaydırmada kodla birlikte kayar.
 
 ## 3. Token'lar
 
-Shiki renk taşımaz: tema yalnız `var(--docs-code-<ad>)` üretir. Değişkenler `code-block.component.css` `:host`'unda (global `styles.css`'te DEĞİL: orada initial CSS'i 0.85 kB büyütüyordu; Angular 19 ile ölçüldü) mevcut `--arn-*` token'larına bağlıdır (nötr palet, yeni renk değeri yok). `light-dark()` kullanım yerinde çözüldüğü için `.dark` / `.light` / sistem tercihi anında yansır.
+Shiki renk taşımaz: tema yalnız `var(--docs-code-<ad>)` üretir. Değişkenler `code-block.component.css` `:host`'unda (global `styles.css`'te DEĞİL: orada initial CSS'i 0.85 kB büyütüyordu; Angular 19 ile ölçüldü). Renkli palet docs'a özgü `light-dark(oklch(...), oklch(...))` literalleridir; yeni `--arn-*` token'ı açılmadı ([karar](../../arn-ui-library/decisions/2026-11.md) "Bileşen docs sayfası şablonu" (6)). Değerler sRGB gamutu içinde seçildi (kanal kırpılmaz). `light-dark()` kullanım yerinde çözüldüğü için `.dark` / `.light` / sistem tercihi anında yansır.
 
-| Değişken | Değer |
-|---|---|
-| `--docs-code-background` | `--arn-card` (`--arn-muted` DEĞİL: yorum rengi onun üstünde 4.5:1'in altında kalır) |
-| `--docs-code-foreground`, `-token-keyword`, `-token-function`, `-token-link`, `-token-inserted` / `-deleted` / `-changed` | `--arn-foreground` |
-| `-token-constant`, `-token-parameter` | `light-dark(--arn-neutral-700, --arn-neutral-300)` |
-| `-token-string`, `-token-string-expression` | `light-dark(--arn-neutral-600, --arn-neutral-400)` |
-| `-token-punctuation`, `-token-comment` | `--arn-muted-foreground` |
+| Değişken | Açık | Koyu | Oran (açık `--arn-card` beyaz / koyu neutral-900) |
+|---|---|---|---|
+| `--docs-code-background` | `--arn-card` | `--arn-card` | (`--arn-muted` DEĞİL: yorum rengi onun üstünde 4.5:1'in altında kalır) |
+| `--docs-code-foreground` | `--arn-foreground` | | |
+| `-token-keyword` (mor) | `oklch(50% 0.19 300deg)` | `oklch(78% 0.12 300deg)` | 6.5924 / 8.6200 |
+| `-token-function`, `-token-link` (mavi) | `oklch(50% 0.16 255deg)` | `oklch(79% 0.11 245deg)` | 6.0829 / 9.3617 |
+| `-token-string`, `-string-expression`, `-inserted` (yeşil) | `oklch(50% 0.13 150deg)` | `oklch(81% 0.15 150deg)` | 5.6498 / 10.4874 |
+| `-token-constant`, `-changed` (turuncu) | `oklch(52% 0.11 55deg)` | `oklch(81% 0.12 65deg)` | 5.7179 / 9.6946 |
+| `-token-parameter`, `-deleted` (kırmızı) | `oklch(52% 0.16 20deg)` | `oklch(79% 0.11 20deg)` | 5.9925 / 8.8543 |
+| `-token-punctuation`, `-token-comment`, `--docs-code-line-number` | `--arn-muted-foreground` | | 4.7323 / 6.9077 |
 
-Liste Shiki'nin `createCssVariablesTheme` kaynağındaki adların tamamıdır (`ansi-*` hariç). Renkli palet eklemek: yalnız bu değerler değişir, bileşen ve Shiki kodu değişmez (ROADMAP Faz 3, karar günlüğü sapması gerekir).
+Oranlar paylaşımlı helper'la (`projects/ui/testing/contrast.ts`) hesaplandı; spec her rengin iki temada ≥4.5:1 olduğunu sınar (`TEXT_COLORS` listesi; gerçek Shiki'nin kullandığı her ad listede olmalı). Liste Shiki'nin `createCssVariablesTheme` kaynağındaki adların tamamıdır (`ansi-*` hariç). Palet değişirse yalnız bu değerler değişir, bileşen ve Shiki kodu değişmez.
 
 ## 4. Override rehberi
 
@@ -67,17 +72,19 @@ Yok (uygulama).
 
 | Konu | Davranış |
 |---|---|
-| Demo | `<ng-content>`; örnek bileşen gerçekten çalışır |
-| Kodu göster | Disclosure düğmesi: `aria-expanded`, `aria-controls` (bölge hep DOM'da, `hidden`). Metin "Show code" / "Hide code" |
-| Sekmeler | `role=tablist` (`aria-label="Example code"`), `tab` (HTML, TS, `css` verilmişse CSS), tek `tabpanel` (`aria-labelledby` seçili sekme). `aria-selected`, `aria-controls`, roving `tabindex`. Ok tuşları (RTL'de ters, uçlarda sarar), Home / End; odaklanan sekme seçilir. Sekme listesi `computed`'dır (`tabs()`), gezinti de onu kullanır; seçili sekme listeden çıkarsa HTML'e dönülür |
-| Kod alanı | `<pre role="group" tabindex="0" aria-label="HTML code">`: klavyeyle kaydırılır (axe `scrollable-region-focusable`). Kaydırma gerekmese de odaklanabilir (taşmayı ölçmek gözlemci gerektirirdi) |
-| Kopyala | Gerçek `<button>`, seçili sekmenin kodu. Sonuç düğme metninde ("Copied" / "Copy failed") ve `LiveAnnouncer` ile. Pano yoksa da "Copy failed". Zamanlayıcı yok: durum sekme değişince veya blok kapanınca sıfırlanır |
+| Demo | `<ng-content>` kartın ortasında (`grid`, `justify-items: center`; çocuk en fazla kart genişliğinde). `.docs-example-demo` hostun ilk çocuğu kalır (Theming / Configuration spec'leri onu sorgular) |
+| Çubuk | Demo altında; başta görsel "Preview" etiketi (büyük harf CSS ile), sonda seçenekler, kopyala, kod açıkken gizle. `flex-wrap`, dar ekranda sarar; RTL'de aynalanır |
+| Seçenekler | `<button aria-pressed aria-controls=<kod bölgesi>>` HTML, TS, `css` verilmişse CSS; tablist değil ([karar](../../arn-ui-library/decisions/2026-11.md) "Bileşen docs sayfası şablonu" (5)). Basmak o dosyayı açar ve yalnız onu basılı yapar; basılıya tekrar basmak kapatmaz. Kod kapalıyken hiçbiri basılı değil. Ok / Home / End işlemez (her düğme Tab sırasında) |
+| Gizle | Kod açıkken ikon düğmesi, `aria-label="Hide code"`. Kapanınca DOM'dan kalkar; odak son seçilen seçeneğe taşınır (`viewChildren`, odak kaybı yok) |
+| Kod alanı | Bölge hep DOM'da (`hidden`); içinde `lineNumbers`'lı `docs-code-block`. `<pre role="group" tabindex="0" aria-label="HTML code">`: klavyeyle kaydırılır (axe `scrollable-region-focusable`) |
+| Kopyala | İkon düğmesi, `aria-label="Copy code"` (ad değişmez). Açıkken gösterilen dosyayı, kapalıyken HTML'i kopyalar. Başarı: ikon onay işaretine döner, `COPIED_RESET_MS` (3000) sonra geri döner. Hata (ret ya da pano yok): yanında görünür "Copy failed" metni (`--arn-destructive`); zamanlayıcıyla silinmez, sonraki seçenek, gizleme ya da kopyalamaya kadar kalır. İkisi de `LiveAnnouncer` ile `polite` ("Copied" / "Copy failed"). Zamanlayıcı yeni kopyada ve `DestroyRef`'te temizlenir. Animasyon yok |
+| İkonlar | Satır içi SVG, `aria-hidden="true"`, `focusable="false"`, `stroke: currentcolor`. İki temada düğme zeminine ≥3:1, hata metni ≥4.5:1 (spec) |
 | Pano | `DOCS_CLIPBOARD`: `DOCUMENT.defaultView?.navigator.clipboard`, `isPlatformBrowser`, try/catch; yoksa `null` |
 | RTL | Kod `direction: ltr`; düzen mantıksal CSS |
 | Dar ekran | Uzun satır yalnız `<pre>` içinde kayar (`overflow-x: auto`, host `min-inline-size: 0`) |
-| Yüklenme | Önce düz metin, sonra aynı kutuda token'lar: boyut değişmez |
+| Yüklenme | Shiki ilk seçenek basılınca yüklenir; önce düz metin, sonra aynı kutuda token'lar: boyut değişmez |
 
-Seçili sekme yalnız renkle değil, kenarlık ve kalınlıkla da ayrılır. Düğme yüksekliği kabuktaki hedef ifadesidir (docs-site.md §4).
+Basılı seçenek yalnız renkle değil, kenarlık ve kalınlıkla da ayrılır. Düğme boyutu (en ve yükseklik) kabuktaki hedef ifadesidir (docs-site.md §4).
 
 ## 6. Form uyumu
 
@@ -85,8 +92,8 @@ Yok.
 
 ## 7. Kısıtlar ve kararlar
 
-- **Sekme klavyesi elle yazıldı** (`event.key`). CDK `ListKeyManager` kullanımdan kalkmış `keyCode`'u okur; spec onu `no-deprecated` ihlali olmadan üretemez. [rules/forms-a11y.md](../../arn-ui-library/rules/forms-a11y.md)'deki CDK tercihinden bilinçli sapma ([karar](../../arn-ui-library/decisions/2026-10.md)).
-- **Tek `tabpanel`:** bütün sekmeler aynı paneli denetler; panel adı seçili sekmeden gelir.
+- **Sekme klavyesi yok:** seçenekler `aria-pressed` düğmeleridir; eski elle yazılmış ok / Home / End klavyesi ve onun CDK `ListKeyManager` sapması kalktı ([karar](../../arn-ui-library/decisions/2026-11.md)).
+- **Zamanlayıcı yalnız başarıda:** onay işareti 3000 ms sonra döner; hata bir sonraki etkileşime kadar kalır ([karar](../../arn-ui-library/decisions/2026-11.md) "Örnek kartı uygulaması").
 - **Bundle (prod, Angular 19 ile ölçüldü; yeniden ölçülmedi):** blok hiçbir sayfada yokken initial 248.16 kB, dosya adları öncekiyle aynı; örnek ve Shiki dizgeleri `dist/docs`'ta yok. Tembel bir sayfa kullanınca (Overview'da geçici önizlemeyle ölçüldü) initial 252.07 kB (+3.91 kB ham, +2.0 kB aktarım), `docs-highlight` ayrı tembel chunk (636.09 kB ham / 82.78 kB aktarım). Initial'daki artış Shiki değil: esbuild'in ana paketle ortak kullanılan CDK parçalarını ve yardımcılarını ortak chunk'lara ayırması; bütçe uyarısı yok. `shellscript` eklenince (3c-1a, `main.ts`'e geçici `import()` ile ölçüldü) initial aynı kaldı, `docs-highlight` 636.09 → 677.55 kB ham (82.78 → 87.69 kB aktarım).
 - Shiki sürüm yükseltmesinde tema değişken adları değişebilir; `highlighter.service.spec.ts` gerçek Shiki'nin kullandığı her rengin kod bloğunda tanımlı olduğunu `code-block.component.spec.ts` sınar.
 - Örnek dosya adı kalıbı: `<ad>.example.ts` / `.html` / (isteğe bağlı) `.css`, selector `docs-<ad>-example`. Gösterilen TS `templateUrl` ve `styleUrl` ile diğer dosyalara işaret eder; kopyalayan hepsini alır. Stil örneğin çalışması için gerekiyorsa (ör. ripple'da `position: relative`) CSS dosyası zorunludur: görünmeyen stil "kopyalanınca çalışır" kuralını bozar.
@@ -99,11 +106,11 @@ Docs testleri Vitest ile `docs:build:development,testing` hedefinin esbuild derl
 | Spec | Kapsam |
 |---|---|
 | `code/highlighter.service.spec.ts` | Tek yükleme, istenene kadar yüklememe, indirme hatası / fırlatan yükleyici / sunucu → `null`; gerçek Shiki ile dört dil (`shellscript` dahil): metin değişmez, birden çok stil, her renk bir `var(--docs-code-*)`; tek highlighter |
-| `code/code-block.component.spec.ts` | Yüklenene kadar düz metin; token'lara geçişte metin ve boyut aynı (±1px); renk değişkeni ve italik / kalın sınıfları; yükleme hatası ve fırlatan highlight → düz metin; geç gelen sonuç atılır; odaklanabilir ve adlı; 320px'te sayfa taşmaz; RTL'de `ltr`; kod rozeti stili uygulanmaz; gerçek Shiki'nin kullandığı her değişken tanımlı; axe |
+| `code/code-block.component.spec.ts` (18) | Yüklenene kadar düz metin; token'lara geçişte metin ve boyut aynı (±1px); renk değişkeni ve italik / kalın sınıfları; yükleme hatası ve fırlatan highlight → düz metin; geç gelen sonuç atılır; odaklanabilir ve adlı; 320px'te sayfa taşmaz; RTL'de `ltr`; kod rozeti stili uygulanmaz; gerçek Shiki'nin kullandığı her değişken tanımlı ve `TEXT_COLORS`'ta; satır numaraları: varsayılan yok, düz ve renkli aynı sayıda ve boyutta, seçime girmez (`getSelection()`; Chromium son satır sonunu seçime katmaz), `user-select: none` ve boş alt metin, basamak genişliği; her metin rengi light / dark ≥4.5:1; axe |
 | `example/clipboard.spec.ts` | Tarayıcıda `navigator.clipboard`, sunucuda `null` |
-| `example/example.component.spec.ts` | Demo çalışır; disclosure; gösterilen kod fixture dosyalarının metni; sekme rolleri, ilişkiler, roving tabindex, ok / Home / End, RTL'de ters; kopyalama başarı / ret / pano yok (elle yazılmış sahte pano ve duyurucu); 320px; hedef boyutu (compact); axe: light / dark / RTL / compact × kod gizli, renklendirilmiş HTML ve TS. CSS'li örnek: üç sekme ve ilişkileri, üç dosyanın metni (`styleUrl`), stil demoya uygulanır, ok tuşlarıyla üç sekmede iki uçta sarma, Home / End, RTL'de ters, CSS kopyalama, compact hedef boyutu, axe dört mod × renklendirilmiş CSS. CSS'siz davranış ve spec'leri değişmedi |
+| `example/example.component.spec.ts` (44) | Demo ilk çocuk ve ortada; Preview etiketi; seçenekler düğme, kapalıyken basılı değil, tablist yok; seçince açılır ve yalnız o basılı; basılıya tekrar basmak kapatmaz; gizle → basılı yok, düğme kalkar, odak son seçeneğe; ikon düğmelerinin adları ve gizli ikonlar; ok / Home / End işlemez; gösterilen kod fixture metni; numaralı panel; kopyalama: kapalıyken HTML, gösterilen dosya + onay ikonu + polite duyuru, ret, pano yok, 3000 ms sonra onay geri döner, hata o süreden sonra kalır ve seçenek / gizle / yeni kopyada silinir (yalnız `setTimeout` sahte), seçenek ve gizlemede onay sıfırlanır; ikon ≥3:1 ve hata metni ≥4.5:1 (light / dark); hareket yok; `expectNoPageOverflow` (kod ve hata açıkken); 320px'te kod içeride kayar; RTL'de çubuk aynalanır, kod `ltr`; compact'ta her düğme ≥24×24; axe `A11Y_MODES` × (kapalı, renkli HTML ve TS). CSS'li örnek: üçüncü seçenek ve ilişkisi, üç dosyanın metni (`styleUrl`), stil demoya uygulanır, CSS kopyası ve odak dönüşü, compact, axe dört mod × renkli CSS |
 
-Boşluklar: gerçek pano izni, gerçek ekran okuyucu duyurusu ve tarayıcıda görsel görünüm otomatik sınanmadı.
+Boşluklar: gerçek pano izni, gerçek ekran okuyucu duyurusu (boş alt metnin numarayı gerçekten gizlemesi dahil) ve Firefox / WebKit otomatik sınanmadı. Görünüm 10 örnekte 1100px light ve 360px dark ekran görüntüsüyle gözle kontrol edildi.
 
 ## 9. Bağlantılar
 

@@ -1,22 +1,24 @@
 /*
  * Code colors. The highlighter emits only these variable names, never a color, so the palette lives
- * here alone: neutral for now, mapped to the library's tokens.
+ * here alone. Each color is at least 4.5:1 on --docs-code-background in both schemes (the spec
+ * computes it); the chromatic values are inside the sRGB gamut, so no channel is clipped.
  */
 :host {
   --docs-code-background: var(--arn-card);
   --docs-code-foreground: var(--arn-foreground);
-  --docs-code-token-keyword: var(--arn-foreground);
-  --docs-code-token-function: var(--arn-foreground);
-  --docs-code-token-link: var(--arn-foreground);
-  --docs-code-token-constant: light-dark(var(--arn-neutral-700), var(--arn-neutral-300));
-  --docs-code-token-parameter: light-dark(var(--arn-neutral-700), var(--arn-neutral-300));
-  --docs-code-token-string: light-dark(var(--arn-neutral-600), var(--arn-neutral-400));
-  --docs-code-token-string-expression: light-dark(var(--arn-neutral-600), var(--arn-neutral-400));
+  --docs-code-token-keyword: light-dark(oklch(50% 0.19 300deg), oklch(78% 0.12 300deg));
+  --docs-code-token-function: light-dark(oklch(50% 0.16 255deg), oklch(79% 0.11 245deg));
+  --docs-code-token-link: light-dark(oklch(50% 0.16 255deg), oklch(79% 0.11 245deg));
+  --docs-code-token-constant: light-dark(oklch(52% 0.11 55deg), oklch(81% 0.12 65deg));
+  --docs-code-token-parameter: light-dark(oklch(52% 0.16 20deg), oklch(79% 0.11 20deg));
+  --docs-code-token-string: light-dark(oklch(50% 0.13 150deg), oklch(81% 0.15 150deg));
+  --docs-code-token-string-expression: light-dark(oklch(50% 0.13 150deg), oklch(81% 0.15 150deg));
   --docs-code-token-punctuation: var(--arn-muted-foreground);
   --docs-code-token-comment: var(--arn-muted-foreground);
-  --docs-code-token-inserted: var(--arn-foreground);
-  --docs-code-token-deleted: var(--arn-foreground);
-  --docs-code-token-changed: var(--arn-foreground);
+  --docs-code-token-inserted: light-dark(oklch(50% 0.13 150deg), oklch(81% 0.15 150deg));
+  --docs-code-token-deleted: light-dark(oklch(52% 0.16 20deg), oklch(79% 0.11 20deg));
+  --docs-code-token-changed: light-dark(oklch(52% 0.11 55deg), oklch(81% 0.12 65deg));
+  --docs-code-line-number: var(--arn-muted-foreground);
 
   display: block;
   min-inline-size: 0;
@@ -42,4 +44,28 @@
 
 .docs-code-block-bold {
   font-weight: var(--arn-font-weight-semibold);
+}
+
+.docs-code-block-numbered {
+  counter-reset: docs-code-line;
+}
+
+.docs-code-block-line {
+  counter-increment: docs-code-line;
+}
+
+/*
+ * Generated content is not part of the text: it is not selected or copied. The empty alternative
+ * text keeps the number out of the accessibility tree.
+ */
+.docs-code-block-line::before {
+  content: counter(docs-code-line) / '';
+  display: inline-block;
+  min-inline-size: calc(var(--docs-code-digits, 1) * 1ch);
+  margin-inline-end: calc(var(--arn-spacing) * 4);
+  color: var(--docs-code-line-number);
+  font-style: normal;
+  font-weight: normal;
+  text-align: end;
+  user-select: none;
 }

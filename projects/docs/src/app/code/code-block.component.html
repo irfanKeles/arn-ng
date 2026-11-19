@@ -3,4 +3,6 @@
   role="group"
   tabindex="0"
   [attr.aria-label]="label()"
-><code>@if (tokens(); as highlighted) {@for (token of highlighted; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}} @else {{{ code() }}}</code></pre>
+  [class.docs-code-block-numbered]="lineNumbers()"
+  [style.--docs-code-digits]="lineNumbers() ? numbered().digits : null"
+><code>@if (lineNumbers()) {@let block = numbered();@for (line of block.lines; track $index) {<span class="docs-code-block-line">@for (token of line; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}</span>@if (!$last || block.finalBreak) {{{ '\n' }}}}} @else if (tokens(); as highlighted) {@for (token of highlighted; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}} @else {{{ code() }}}</code></pre>

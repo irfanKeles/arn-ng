@@ -28,7 +28,7 @@ export class ExampleHostComponent {
   protected readonly ts = ts;
 }
 
-/** An example with a stylesheet: the block gets a third tab. */
+/** An example with a stylesheet: the card gets a third option. */
 @Component({
   selector: 'docs-styled-example-host',
   imports: [ExampleComponent, StyledExampleComponent],

@@ -1,44 +1,42 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
-import { Directionality } from '@angular/cdk/bidi';
-
 import {
   ChangeDetectionStrategy,
   Component,
   computed,
+  DestroyRef,
+  type ElementRef,
   inject,
   input,
   signal,
-  DOCUMENT,
+  viewChildren,
 } from '@angular/core';
 import { CodeBlockComponent } from '../code/code-block.component';
 import type { DocsCodeLanguage } from '../code/docs-code';
 import { DOCS_CLIPBOARD } from './clipboard';
 
-type ExampleTabId = 'html' | 'ts' | 'css';
+type ExampleFileId = 'html' | 'ts' | 'css';
 type CopyState = 'idle' | 'copied' | 'failed';
 
-interface ExampleTab {
-  readonly id: ExampleTabId;
+interface ExampleFile {
+  readonly id: ExampleFileId;
   readonly label: string;
   readonly language: DocsCodeLanguage;
 }
 
-const HTML_TAB: ExampleTab = { id: 'html', label: 'HTML', language: 'html' };
-const TS_TAB: ExampleTab = { id: 'ts', label: 'TS', language: 'typescript' };
-const CSS_TAB: ExampleTab = { id: 'css', label: 'CSS', language: 'css' };
+const HTML_FILE: ExampleFile = { id: 'html', label: 'HTML', language: 'html' };
+const TS_FILE: ExampleFile = { id: 'ts', label: 'TS', language: 'typescript' };
+const CSS_FILE: ExampleFile = { id: 'css', label: 'CSS', language: 'css' };
 
-const COPY_LABELS: Record<CopyState, string> = {
-  idle: 'Copy code',
-  copied: 'Copied',
-  failed: 'Copy failed',
-};
+/** How long the "copied" check mark stays. A failure stays until the next action. */
+export const COPIED_RESET_MS = 3000;
 
 let nextId = 0;
 
 /**
- * An example: the running demo (projected content) and, behind "Show code", its template, class
- * and, if it has one, stylesheet in tabs with a copy button. `html`, `ts` and `css` are the texts of
- * the files the demo is compiled from.
+ * An example card: the running demo (projected content) in the middle and, below it, a bar with a
+ * "Preview" label, one option per file (HTML, TS and, if the example has one, CSS), a copy button
+ * and, while code is shown, a button that hides it. An option shows that file in a numbered code
+ * panel under the bar. `html`, `ts` and `css` are the texts of the files the demo is compiled from.
  */
 @Component({
   selector: 'docs-example',
@@ -50,33 +48,31 @@ let nextId = 0;
 export class ExampleComponent {
   private readonly announcer = inject(LiveAnnouncer);
   private readonly clipboard = inject(DOCS_CLIPBOARD);
-  private readonly directionality = inject(Directionality);
-  private readonly document = inject(DOCUMENT);
   private readonly id = `docs-example-${String(nextId++)}`;
+  private readonly optionButtons = viewChildren<ElementRef<HTMLButtonElement>>('option');
+  private resetTimer: ReturnType<typeof setTimeout> | undefined;
 
   /** The text of the example's template file. */
   readonly html = input.required<string>();
   /** The text of the example's component file. */
   readonly ts = input.required<string>();
-  /** The text of the example's stylesheet; without it there is no CSS tab. */
+  /** The text of the example's stylesheet; without it there is no CSS option. */
   readonly css = input<string>();
 
-  protected readonly tabs = computed<readonly ExampleTab[]>(() =>
-    this.css() === undefined ? [HTML_TAB, TS_TAB] : [HTML_TAB, TS_TAB, CSS_TAB],
+  protected readonly files = computed<readonly ExampleFile[]>(() =>
+    this.css() === undefined ? [HTML_FILE, TS_FILE] : [HTML_FILE, TS_FILE, CSS_FILE],
   );
   protected readonly codeId = `${this.id}-code`;
-  protected readonly panelId = `${this.id}-panel`;
   protected readonly open = signal(false);
-  private readonly selected = signal<ExampleTabId>('html');
-  /** The selected tab; back to the first one if the selected tab goes away. */
-  protected readonly activeTab = computed(
-    () => this.tabs().find((tab) => tab.id === this.selected()) ?? HTML_TAB,
+  /** The last chosen file; remembered while the code is hidden, to return focus to its option. */
+  private readonly selected = signal<ExampleFileId>('html');
+  /** The chosen file; back to HTML if it goes away. */
+  protected readonly activeFile = computed(
+    () => this.files().find((file) => file.id === this.selected()) ?? HTML_FILE,
   );
-  protected readonly active = computed(() => this.activeTab().id);
   protected readonly copyState = signal<CopyState>('idle');
-  protected readonly copyLabel = computed(() => COPY_LABELS[this.copyState()]);
-  protected readonly activeCode = computed(() => {
-    switch (this.active()) {
+  protected readonly shownCode = computed(() => {
+    switch (this.activeFile().id) {
       case 'html':
         return this.html();
       case 'ts':
@@ -85,63 +81,47 @@ export class ExampleComponent {
         return this.css() ?? '';
     }
   });
+  /** What the copy button copies: the shown file, or the template while the code is hidden. */
+  private readonly copyText = computed(() => (this.open() ? this.shownCode() : this.html()));
 
-  protected tabId(id: ExampleTabId): string {
-    return `${this.id}-tab-${id}`;
+  constructor() {
+    inject(DestroyRef).onDestroy(() => {
+      this.clearTimer();
+    });
   }
 
-  protected toggle(): void {
-    this.open.update((open) => !open);
-    this.copyState.set('idle');
+  protected pressed(id: ExampleFileId): boolean {
+    return this.open() && this.activeFile().id === id;
   }
 
-  protected select(id: ExampleTabId): void {
-    this.selected.set(id);
-    this.copyState.set('idle');
-  }
-
-  /** Arrow keys, Home and End move between the tabs; the tab that gets focus is selected. */
-  protected onTabKeydown(event: KeyboardEvent): void {
-    const tabs = this.tabs();
-    const rtl = this.directionality.value === 'rtl';
-    const current = tabs.findIndex((tab) => tab.id === this.active());
-    let index: number;
-
-    switch (event.key) {
-      case 'ArrowRight':
-        index = current + (rtl ? -1 : 1);
-        break;
-      case 'ArrowLeft':
-        index = current + (rtl ? 1 : -1);
-        break;
-      case 'Home':
-        index = 0;
-        break;
-      case 'End':
-        index = tabs.length - 1;
-        break;
-      default:
-        return;
-    }
-
-    const tab = tabs[(index + tabs.length) % tabs.length];
-
-    if (!tab) {
+  /** Shows a file. Choosing the shown file again keeps it shown. */
+  protected select(id: ExampleFileId): void {
+    if (this.pressed(id)) {
       return;
     }
 
-    event.preventDefault();
-    this.select(tab.id);
-    // Both tabs stay in the DOM while the list is shown; tabindex="-1" does not block focus().
-    this.document.getElementById(this.tabId(tab.id))?.focus();
+    this.selected.set(id);
+    this.open.set(true);
+    this.resetCopy();
+  }
+
+  /** Hides the code. The hide button goes away with it, so focus moves to the last option. */
+  protected hide(): void {
+    const index = this.files().indexOf(this.activeFile());
+
+    this.open.set(false);
+    this.resetCopy();
+    this.optionButtons()[index]?.nativeElement.focus();
   }
 
   protected async copy(): Promise<void> {
     let copied = false;
 
+    this.clearTimer();
+
     try {
       if (this.clipboard) {
-        await this.clipboard.writeText(this.activeCode());
+        await this.clipboard.writeText(this.copyText());
         copied = true;
       }
     } catch {
@@ -149,6 +129,25 @@ export class ExampleComponent {
     }
 
     this.copyState.set(copied ? 'copied' : 'failed');
-    void this.announcer.announce(copied ? 'Code copied to clipboard' : 'Could not copy the code');
+    void this.announcer.announce(copied ? 'Copied' : 'Copy failed', 'polite');
+
+    if (copied) {
+      this.resetTimer = setTimeout(() => {
+        this.resetTimer = undefined;
+        this.copyState.set('idle');
+      }, COPIED_RESET_MS);
+    }
+  }
+
+  private resetCopy(): void {
+    this.clearTimer();
+    this.copyState.set('idle');
+  }
+
+  private clearTimer(): void {
+    if (this.resetTimer !== undefined) {
+      clearTimeout(this.resetTimer);
+      this.resetTimer = undefined;
+    }
   }
 }

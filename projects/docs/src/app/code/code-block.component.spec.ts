@@ -1,9 +1,28 @@
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { expectNoA11yViolations } from '../../../../ui/testing/a11y';
+import { contrastRatio } from '../../../../ui/testing/contrast';
 import { nextTask, query, resetDocument } from '../testing/dom';
 import { CodeBlockComponent } from './code-block.component';
 import type { DocsHighlight } from './docs-code';
 import { DOCS_HIGHLIGHT_LOADER, DocsHighlighterService } from './highlighter.service';
+
+/** Every text color of the block: the token colors, the plain text and the line numbers. */
+const TEXT_COLORS = [
+  '--docs-code-foreground',
+  '--docs-code-token-keyword',
+  '--docs-code-token-function',
+  '--docs-code-token-link',
+  '--docs-code-token-constant',
+  '--docs-code-token-parameter',
+  '--docs-code-token-string',
+  '--docs-code-token-string-expression',
+  '--docs-code-token-punctuation',
+  '--docs-code-token-comment',
+  '--docs-code-token-inserted',
+  '--docs-code-token-deleted',
+  '--docs-code-token-changed',
+  '--docs-code-line-number',
+] as const;
 
 describe('CodeBlockComponent', () => {
   const code = 'const answer = 42;\n\nexport { answer };\n';
@@ -222,9 +241,115 @@ describe('CodeBlockComponent', () => {
       for (const name of names) {
         expect(name).not.toBe('');
         expect(getComputedStyle(element).getPropertyValue(name)).not.toBe('');
+        // The contrast specs below check every color in the list.
+        expect(TEXT_COLORS).toContain(name);
       }
     }
   });
+
+  describe('line numbers', () => {
+    function numbered(loader: () => Promise<DocsHighlight>, source = code): Block {
+      const block = setup(loader, source);
+
+      block.fixture.componentRef.setInput('lineNumbers', true);
+      block.fixture.detectChanges();
+
+      return block;
+    }
+
+    function numbers(element: HTMLElement): string[] {
+      return Array.from(element.querySelectorAll('.docs-code-block-line')).map(
+        (line) => getComputedStyle(line, '::before').content,
+      );
+    }
+
+    it('has none unless asked for', async () => {
+      const { element, settle } = setup(() => Promise.resolve(fake));
+
+      await settle();
+
+      expect(element.querySelector('.docs-code-block-line')).toBeNull();
+    });
+
+    it('numbers each line, plain and highlighted alike, without changing the size', async () => {
+      const pending = deferred();
+      const { element, pre, settle } = numbered(pending.loader);
+      const before = pre.getBoundingClientRect();
+
+      // Three lines and a final line break, which starts no numbered line.
+      expect(element.querySelectorAll('.docs-code-block-line').length).toBe(3);
+      expect(pre.textContent).toBe(code);
+
+      pending.resolve(fake);
+      await settle();
+
+      const after = pre.getBoundingClientRect();
+      const lines = Array.from(element.querySelectorAll('.docs-code-block-line'));
+
+      expect(lines.map((line) => line.textContent)).toEqual([
+        'const answer = 42;',
+        '',
+        'export { answer };',
+      ]);
+      expect(element.querySelectorAll('.docs-code-block-line span').length).toBeGreaterThan(3);
+      expect(pre.textContent).toBe(code);
+      expect(Math.abs(after.height - before.height)).toBeLessThanOrEqual(1);
+      expect(Math.abs(after.width - before.width)).toBeLessThanOrEqual(1);
+      expect(new Set(numbers(element)).size).toBe(1);
+      expect(numbers(element)[0]).toContain('counter(docs-code-line)');
+    });
+
+    it('keeps the numbers out of the text: not selected, not copied, not read', async () => {
+      const { element, pre, settle } = numbered(() => Promise.resolve(fake));
+
+      await settle();
+
+      const selection = getSelection();
+
+      selection?.selectAllChildren(pre);
+
+      // Chromium leaves the final line break of a selected block out; no number gets in.
+      expect(selection?.toString()).toBe(code.replace(/\n$/, ''));
+
+      selection?.removeAllRanges();
+
+      const line = query(element, '.docs-code-block-line');
+      const before = getComputedStyle(line, '::before');
+
+      expect(before.userSelect).toBe('none');
+      // The empty alternative text keeps the number out of the accessibility tree.
+      expect(before.content).toMatch(/\/\s*""$/);
+    });
+
+    it('widens the number column for the digits of the highest number', () => {
+      const tens = Array.from({ length: 12 }, (_, index) => `line ${String(index + 1)}`).join('\n');
+      const { pre } = numbered(() => new Promise<DocsHighlight>(() => undefined), tens);
+
+      expect(pre.style.getPropertyValue('--docs-code-digits')).toBe('2');
+    });
+  });
+
+  for (const scheme of ['light', 'dark'] as const) {
+    it(`gives every text color at least 4.5:1 on the code background in the ${scheme} scheme`, () => {
+      const { element, pre } = setup(() => new Promise<DocsHighlight>(() => undefined));
+      const probe = document.createElement('span');
+
+      element.classList.add(scheme);
+      pre.append(probe);
+
+      const background = getComputedStyle(pre).backgroundColor;
+
+      for (const name of TEXT_COLORS) {
+        probe.style.color = `var(${name})`;
+
+        const ratio = contrastRatio(getComputedStyle(probe).color, background);
+
+        expect({ name, enough: ratio >= 4.5 }).toEqual({ name, enough: true });
+      }
+
+      probe.remove();
+    });
+  }
 
   it('has no accessibility violations, plain or highlighted', async () => {
     const pending = deferred();
