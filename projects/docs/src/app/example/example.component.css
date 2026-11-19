@@ -92,11 +92,6 @@
   stroke-width: 2;
 }
 
-.docs-example-status {
-  color: var(--arn-destructive);
-  font-size: var(--arn-control-font-size-sm);
-}
-
 /* Press feedback in place of the removed tap highlight (styles.css); after the pressed rule so it wins */
 .docs-example-button:active {
   background: var(--arn-accent);

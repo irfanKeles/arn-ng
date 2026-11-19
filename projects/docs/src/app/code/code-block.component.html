@@ -1,8 +1,15 @@
 <pre
+  #pre
   class="docs-code-block-pre"
   role="group"
-  tabindex="0"
+  [attr.tabindex]="scrollable() ? 0 : null"
   [attr.aria-label]="label()"
   [class.docs-code-block-numbered]="lineNumbers()"
   [style.--docs-code-digits]="lineNumbers() ? numbered().digits : null"
 ><code>@if (lineNumbers()) {@let block = numbered();@for (line of block.lines; track $index) {<span class="docs-code-block-line">@for (token of line; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}</span>@if (!$last || block.finalBreak) {{{ '\n' }}}}} @else if (tokens(); as highlighted) {@for (token of highlighted; track $index) {<span [style.color]="token.color" [class.docs-code-block-italic]="token.italic" [class.docs-code-block-bold]="token.bold">{{ token.content }}</span>}} @else {{{ code() }}}</code></pre>
+
+@if (!embedded()) {
+  <div class="docs-code-block-copy" [class.docs-code-block-copy-result]="copyResult()">
+    <docs-copy-button [text]="code()" />
+  </div>
+}

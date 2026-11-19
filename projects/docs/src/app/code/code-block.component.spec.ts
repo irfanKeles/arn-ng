@@ -1,7 +1,13 @@
+import { LiveAnnouncer } from '@angular/cdk/a11y';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
+import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
+import { userEvent } from 'vitest/browser';
 import { expectNoA11yViolations } from '../../../../ui/testing/a11y';
 import { contrastRatio } from '../../../../ui/testing/contrast';
-import { nextTask, query, resetDocument } from '../testing/dom';
+import { nextTask, query, queryAs, resetDocument, text } from '../testing/dom';
+import { expectNoPageOverflow } from '../testing/page-overflow';
+import { A11Y_MODES } from '../testing/render-example';
+import { DOCS_CLIPBOARD, type DocsClipboard } from './clipboard';
 import { CodeBlockComponent } from './code-block.component';
 import type { DocsHighlight } from './docs-code';
 import { DOCS_HIGHLIGHT_LOADER, DocsHighlighterService } from './highlighter.service';
@@ -68,6 +74,36 @@ describe('CodeBlockComponent', () => {
   }
 
   /** A loader that resolves or rejects when the test says so. */
+  const nextFrame = (): Promise<void> =>
+    new Promise((resolve) =>
+      requestAnimationFrame(() => {
+        resolve();
+      }),
+    );
+
+  /** Lets the size observer report and the render after it run. */
+  async function measured(block: Block): Promise<void> {
+    await block.settle();
+    await nextFrame();
+    await nextFrame();
+    await block.settle();
+  }
+
+  /**
+   * A real Tab from a stop just before the block: the browser's focus-visible heuristic sees
+   * keyboard use, and focus never leaves the test page (past its last stop, Tab would).
+   */
+  async function tabFromBefore(block: Block): Promise<void> {
+    const before = document.createElement('button');
+
+    before.type = 'button';
+    before.textContent = 'Before the block';
+    block.element.before(before);
+    before.focus();
+    await userEvent.tab();
+    before.remove();
+  }
+
   function deferred() {
     let resolve: (highlight: DocsHighlight) => void = () => undefined;
     let reject: (error: Error) => void = () => undefined;
@@ -159,10 +195,10 @@ describe('CodeBlockComponent', () => {
     expect(pre.textContent).toBe(longLine);
   });
 
-  it('is a focusable, named area, so the keyboard can scroll it', () => {
+  it('is a named area', () => {
     const { fixture, pre } = setup(() => Promise.resolve(fake));
 
-    expect(pre.tabIndex).toBe(0);
+    expect(pre.getAttribute('role')).toBe('group');
     expect(pre.getAttribute('aria-label')).toBe('Code');
 
     fixture.componentRef.setInput('label', 'HTML code');
@@ -329,27 +365,534 @@ describe('CodeBlockComponent', () => {
     });
   });
 
-  for (const scheme of ['light', 'dark'] as const) {
-    it(`gives every text color at least 4.5:1 on the code background in the ${scheme} scheme`, () => {
-      const { element, pre } = setup(() => new Promise<DocsHighlight>(() => undefined));
+  for (const surface of ['standalone', 'embedded'] as const) {
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`gives every text color at least 4.5:1 on the ${surface} background in the ${scheme} scheme`, () => {
+        const { fixture, element, pre } = setup(() => new Promise<DocsHighlight>(() => undefined));
+        const probe = document.createElement('span');
+
+        fixture.componentRef.setInput('embedded', surface === 'embedded');
+        fixture.detectChanges();
+        element.classList.add(scheme);
+        pre.append(probe);
+
+        const background = getComputedStyle(pre).backgroundColor;
+
+        for (const name of TEXT_COLORS) {
+          probe.style.color = `var(${name})`;
+
+          const ratio = contrastRatio(getComputedStyle(probe).color, background);
+
+          expect({ name, enough: ratio >= 4.5 }).toEqual({ name, enough: true });
+        }
+
+        probe.remove();
+      });
+    }
+  }
+
+  describe('surface', () => {
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`stands apart from the page on its own in the ${scheme} scheme: an edge and the muted background`, () => {
+        const { element, pre } = setup(() => Promise.resolve(fake));
+
+        document.documentElement.classList.add(scheme);
+
+        const style = getComputedStyle(element);
+        const page = getComputedStyle(document.body).backgroundColor;
+        const probe = document.createElement('span');
+
+        probe.style.color = 'var(--arn-muted)';
+        element.append(probe);
+
+        expect(style.borderTopStyle).toBe('solid');
+        expect(style.borderTopWidth).toBe('1px');
+        expect(style.borderTopLeftRadius).not.toBe('0px');
+        expect(style.backgroundColor).toBe(getComputedStyle(probe).color);
+        expect(getComputedStyle(pre).backgroundColor).toBe(style.backgroundColor);
+        expect(style.backgroundColor).not.toBe(page);
+
+        probe.remove();
+      });
+    }
+
+    it('has no surface of its own inside the example card', () => {
+      const { fixture, element, pre } = setup(() => Promise.resolve(fake));
+
+      fixture.componentRef.setInput('embedded', true);
+      fixture.detectChanges();
+
       const probe = document.createElement('span');
 
-      element.classList.add(scheme);
-      pre.append(probe);
+      probe.style.color = 'var(--arn-card)';
+      element.append(probe);
 
-      const background = getComputedStyle(pre).backgroundColor;
-
-      for (const name of TEXT_COLORS) {
-        probe.style.color = `var(${name})`;
-
-        const ratio = contrastRatio(getComputedStyle(probe).color, background);
-
-        expect({ name, enough: ratio >= 4.5 }).toEqual({ name, enough: true });
-      }
+      expect(getComputedStyle(element).borderTopStyle).toBe('none');
+      expect(getComputedStyle(pre).backgroundColor).toBe(getComputedStyle(probe).color);
 
       probe.remove();
     });
-  }
+  });
+
+  describe('copy button', () => {
+    function withClipboard(
+      clipboard: DocsClipboard | null,
+      source = code,
+    ): Block & { announced: string[] } {
+      const announced: string[] = [];
+
+      TestBed.configureTestingModule({
+        providers: [
+          provideArn({ applyToDocument: true }),
+          { provide: DOCS_CLIPBOARD, useValue: clipboard },
+          {
+            provide: LiveAnnouncer,
+            useValue: {
+              announce: (message: string, politeness?: string) => {
+                announced.push(`${message} (${politeness ?? 'default'})`);
+
+                return Promise.resolve();
+              },
+            },
+          },
+        ],
+      });
+
+      return { ...setup(() => Promise.resolve(fake), source), announced };
+    }
+
+    function copyButton(element: HTMLElement): HTMLButtonElement {
+      return queryAs(element, '.docs-code-block-copy button', HTMLButtonElement);
+    }
+
+    function column(element: HTMLElement): HTMLElement {
+      return query(element, '.docs-code-block-copy');
+    }
+
+    it('copies the code, with a check mark and a polite announcement', async () => {
+      const copied: string[] = [];
+      const block = withClipboard({
+        writeText: (value) => {
+          copied.push(value);
+
+          return Promise.resolve();
+        },
+      });
+      const button = copyButton(block.element);
+
+      expect(button.type).toBe('button');
+      expect(button.getAttribute('aria-label')).toBe('Copy code');
+      expect(button.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+      expect(button.querySelector('svg')?.getAttribute('focusable')).toBe('false');
+
+      button.click();
+      await block.settle();
+
+      expect(copied).toEqual([code]);
+      expect(button.querySelector('svg')?.getAttribute('data-icon')).toBe('check');
+      expect(block.announced).toEqual(['Copied (polite)']);
+    });
+
+    it('shows and announces a failure when there is no clipboard, and keeps the button shown', async () => {
+      const block = withClipboard(null);
+
+      copyButton(block.element).click();
+      await block.settle();
+      copyButton(block.element).blur();
+
+      expect(text(query(block.element, '.docs-copy-status'))).toBe('Copy failed');
+      expect(block.announced).toEqual(['Copy failed (polite)']);
+      expect(getComputedStyle(column(block.element)).opacity).toBe('1');
+    });
+
+    it('is not there inside the example card', () => {
+      const { fixture, element } = setup(() => Promise.resolve(fake));
+
+      fixture.componentRef.setInput('embedded', true);
+      fixture.detectChanges();
+
+      expect(element.querySelector('button')).toBeNull();
+      expect(element.querySelector('.docs-code-block-copy')).toBeNull();
+    });
+
+    it('hides until hover or focus, but stays in the tab order', async () => {
+      const block = withClipboard(null, longLine);
+      const button = copyButton(block.element);
+
+      await measured(block);
+
+      // The test runner's pointer is not over the block.
+      expect(getComputedStyle(column(block.element)).opacity).toBe('0');
+      expect(button.tabIndex).toBe(0);
+      expect(getComputedStyle(button).visibility).toBe('visible');
+      expect(getComputedStyle(button).display).not.toBe('none');
+
+      button.focus();
+      await block.settle();
+
+      expect(getComputedStyle(column(block.element)).opacity).toBe('1');
+
+      block.pre.focus();
+      await block.settle();
+
+      expect(getComputedStyle(column(block.element)).opacity).toBe('1');
+    });
+
+    it('shows while a pointer hovers the block', async () => {
+      const block = withClipboard(null);
+
+      // The browser updates the hover state on its next frame, not inside the pointer move.
+      await userEvent.hover(block.pre);
+      await expect.poll(() => getComputedStyle(column(block.element)).opacity).toBe('1');
+
+      await userEvent.unhover(block.pre);
+      await expect.poll(() => getComputedStyle(column(block.element)).opacity).toBe('0');
+    });
+
+    it('shows on hover where a pointer hovers, and always where nothing hovers', () => {
+      withClipboard(null);
+
+      const rules = (media: string): string[] =>
+        Array.from(document.styleSheets)
+          .flatMap((sheet) => Array.from(sheet.cssRules))
+          .filter(
+            (rule): rule is CSSMediaRule =>
+              rule instanceof CSSMediaRule && rule.conditionText === media,
+          )
+          .flatMap((rule) => Array.from(rule.cssRules))
+          .filter(
+            (rule): rule is CSSStyleRule =>
+              rule instanceof CSSStyleRule &&
+              rule.selectorText.includes('docs-code-block-copy') &&
+              rule.style.opacity === '1',
+          )
+          .map((rule) => rule.selectorText);
+
+      expect(rules('(hover: none)').length).toBe(1);
+      expect(rules('(hover: hover)').some((selector) => selector.includes(':hover'))).toBe(true);
+    });
+
+    it('never covers the code: a scrolled long line ends at the edge of the pre', async () => {
+      const block = withClipboard(null, longLine);
+
+      await block.settle();
+      block.pre.scrollLeft = block.pre.scrollWidth;
+
+      const pre = block.pre.getBoundingClientRect();
+      const button = copyButton(block.element).getBoundingClientRect();
+
+      expect(block.pre.scrollLeft).toBeGreaterThan(0);
+      expect(button.left).toBeGreaterThanOrEqual(pre.right);
+      expect(button.top).toBeLessThan(pre.top + pre.height / 2);
+    });
+
+    it('sits at the inline end in a right-to-left page; the code stays left-to-right', async () => {
+      const block = withClipboard(null);
+
+      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
+      await block.settle();
+
+      expect(copyButton(block.element).getBoundingClientRect().right).toBeLessThanOrEqual(
+        block.pre.getBoundingClientRect().left,
+      );
+      expect(getComputedStyle(block.pre).direction).toBe('ltr');
+    });
+
+    it('does not make a 320px page scroll sideways, with a long line and a failure shown', async () => {
+      const block = withClipboard(null, longLine);
+
+      copyButton(block.element).click();
+      await block.settle();
+
+      expect(block.element.querySelector('.docs-copy-status')).not.toBeNull();
+      await expectNoPageOverflow(block.element, block.settle);
+    });
+
+    it('gives the button a target of at least 24 by 24px in compact mode', async () => {
+      const block = withClipboard(null);
+
+      TestBed.inject(ArnConfigService).update({ density: 'compact' });
+      await block.settle();
+
+      const box = copyButton(block.element).getBoundingClientRect();
+
+      expect(box.width).toBeGreaterThanOrEqual(24);
+      expect(box.height).toBeGreaterThanOrEqual(24);
+    });
+
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`keeps the icon at 3:1 and the failure text at 4.5:1 in the ${scheme} scheme`, async () => {
+        const block = withClipboard(null);
+
+        TestBed.inject(ArnConfigService).update({ colorScheme: scheme });
+        copyButton(block.element).click();
+        await block.settle();
+
+        const button = copyButton(block.element);
+        const svg = button.querySelector('svg') ?? button;
+        const status = query(block.element, '.docs-copy-status');
+
+        expect(getComputedStyle(svg).stroke).toBe(getComputedStyle(svg).color);
+        expect(
+          contrastRatio(getComputedStyle(svg).color, getComputedStyle(button).backgroundColor),
+        ).toBeGreaterThanOrEqual(3);
+        // The icon identifies the button; it holds 3:1 against the block around the button too.
+        expect(
+          contrastRatio(
+            getComputedStyle(svg).color,
+            getComputedStyle(block.element).backgroundColor,
+          ),
+        ).toBeGreaterThanOrEqual(3);
+        expect(
+          contrastRatio(getComputedStyle(status).color, getComputedStyle(status).backgroundColor),
+        ).toBeGreaterThanOrEqual(4.5);
+      });
+    }
+
+    describe('tab stop', () => {
+      const mediumLine = `const value = '${'x'.repeat(100)}';\n`;
+
+      /** Puts the block in a box of the given width, as a narrow or a wide page would. */
+      function inPage(block: Block, width: string): HTMLElement {
+        const page = document.createElement('div');
+
+        page.style.inlineSize = width;
+        block.element.before(page);
+        page.append(block.element);
+        onTestFinished(() => {
+          page.remove();
+        });
+
+        return page;
+      }
+
+      it('is no tab stop when the code fits: Tab goes straight to the copy button', async () => {
+        const block = withClipboard(null);
+
+        await measured(block);
+
+        expect(block.pre.scrollWidth).toBeLessThanOrEqual(block.pre.clientWidth);
+        expect(block.pre.hasAttribute('tabindex')).toBe(false);
+
+        await tabFromBefore(block);
+
+        expect(document.activeElement).toBe(copyButton(block.element));
+      });
+
+      it('is a tab stop when a long line overflows a 320px page: the ring shows, arrows scroll it', async () => {
+        const block = withClipboard(null, longLine);
+
+        inPage(block, '320px');
+        await measured(block);
+
+        expect(block.pre.getAttribute('tabindex')).toBe('0');
+
+        await tabFromBefore(block);
+
+        expect(document.activeElement).toBe(block.pre);
+        expect(block.pre.matches(':focus-visible')).toBe(true);
+        expect(getComputedStyle(block.pre).outlineStyle).toBe('solid');
+
+        await userEvent.keyboard('{ArrowRight}');
+        await expect.poll(() => block.pre.scrollLeft).toBeGreaterThan(0);
+      });
+
+      it('becomes a tab stop when the page narrows, and stops being one when it widens', async () => {
+        const block = withClipboard(null, mediumLine);
+        const page = inPage(block, '1400px');
+
+        await measured(block);
+
+        expect(block.pre.hasAttribute('tabindex')).toBe(false);
+
+        page.style.inlineSize = '320px';
+        await expect.poll(() => block.pre.getAttribute('tabindex')).toBe('0');
+
+        page.style.inlineSize = '1400px';
+        await expect.poll(() => block.pre.hasAttribute('tabindex')).toBe(false);
+      });
+
+      it('measures again when the code changes in the same box', async () => {
+        const block = withClipboard(null);
+
+        inPage(block, '800px');
+        await measured(block);
+
+        expect(block.pre.hasAttribute('tabindex')).toBe(false);
+
+        block.fixture.componentRef.setInput('code', longLine);
+        await expect.poll(() => block.pre.getAttribute('tabindex')).toBe('0');
+      });
+
+      it('has no scrollable-region-focusable violation, fitting or overflowing', async () => {
+        const fits = withClipboard(null);
+
+        await measured(fits);
+        await expectNoA11yViolations(fits.element);
+
+        TestBed.resetTestingModule();
+
+        const overflows = withClipboard(null, longLine);
+
+        inPage(overflows, '320px');
+        await measured(overflows);
+
+        expect(overflows.pre.getAttribute('tabindex')).toBe('0');
+        await expectNoA11yViolations(overflows.element);
+      });
+
+      it('is no tab stop without ResizeObserver, even when the code overflows', async () => {
+        vi.stubGlobal('ResizeObserver', undefined);
+        onTestFinished(() => {
+          vi.unstubAllGlobals();
+        });
+
+        const block = withClipboard(null, longLine);
+
+        inPage(block, '320px');
+        await measured(block);
+
+        expect(block.pre.scrollWidth).toBeGreaterThan(block.pre.clientWidth);
+        expect(block.pre.hasAttribute('tabindex')).toBe(false);
+      });
+
+      it('disconnects its observer when destroyed', async () => {
+        const disconnect = vi.spyOn(ResizeObserver.prototype, 'disconnect');
+        const block = withClipboard(null);
+
+        await measured(block);
+        block.fixture.destroy();
+
+        expect(disconnect).toHaveBeenCalled();
+        disconnect.mockRestore();
+      });
+    });
+
+    describe('focus ring', () => {
+      /** The box the outline paints: the border box grown by offset plus width. */
+      function ringBox(target: HTMLElement): DOMRect {
+        const style = getComputedStyle(target);
+        const grow = parseFloat(style.outlineOffset) + parseFloat(style.outlineWidth);
+        const box = target.getBoundingClientRect();
+
+        return new DOMRect(box.x - grow, box.y - grow, box.width + grow * 2, box.height + grow * 2);
+      }
+
+      /** The block clips its overflow at the padding box, inside the border. */
+      function clipBox(element: HTMLElement): DOMRect {
+        const style = getComputedStyle(element);
+        const box = element.getBoundingClientRect();
+        const top = parseFloat(style.borderTopWidth);
+        const right = parseFloat(style.borderRightWidth);
+        const bottom = parseFloat(style.borderBottomWidth);
+        const left = parseFloat(style.borderLeftWidth);
+
+        return new DOMRect(
+          box.x + left,
+          box.y + top,
+          box.width - left - right,
+          box.height - top - bottom,
+        );
+      }
+
+      function expectUnclipped(ring: DOMRect, clip: DOMRect): void {
+        expect(ring.top).toBeGreaterThanOrEqual(clip.top);
+        expect(ring.left).toBeGreaterThanOrEqual(clip.left);
+        expect(ring.bottom).toBeLessThanOrEqual(clip.bottom);
+        expect(ring.right).toBeLessThanOrEqual(clip.right);
+      }
+
+      async function tabTo(block: Block, target: HTMLElement): Promise<void> {
+        await tabFromBefore(block);
+        if (document.activeElement !== target) {
+          await userEvent.tab();
+        }
+
+        expect(document.activeElement).toBe(target);
+        expect(target.matches(':focus-visible')).toBe(true);
+      }
+
+      /** The ring of the pre is drawn inside it, in its padding: on all four edges, over no code. */
+      function expectPreRing(block: Block): void {
+        const style = getComputedStyle(block.pre);
+        const inset = -parseFloat(style.outlineOffset);
+
+        expect(style.outlineStyle).toBe('solid');
+        expectUnclipped(ringBox(block.pre), clipBox(block.element));
+        expect(inset).toBeGreaterThanOrEqual(parseFloat(style.outlineWidth));
+        for (const side of ['Top', 'Right', 'Bottom', 'Left'] as const) {
+          expect(inset).toBeLessThanOrEqual(parseFloat(style[`padding${side}`]));
+        }
+      }
+
+      for (const scheme of ['light', 'dark'] as const) {
+        it(`shows the ring of the focused code on all four edges in the ${scheme} scheme, at 3:1`, async () => {
+          const block = withClipboard(null, longLine);
+
+          TestBed.inject(ArnConfigService).update({ colorScheme: scheme });
+          await measured(block);
+          await tabTo(block, block.pre);
+
+          expectPreRing(block);
+          expect(
+            contrastRatio(
+              getComputedStyle(block.pre).outlineColor,
+              getComputedStyle(block.pre).backgroundColor,
+            ),
+          ).toBeGreaterThanOrEqual(3);
+        });
+      }
+
+      it('shows the ring of the focused code on all four edges in a right-to-left page', async () => {
+        const block = withClipboard(null, longLine);
+
+        TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
+        await measured(block);
+        await tabTo(block, block.pre);
+
+        expectPreRing(block);
+      });
+
+      it('shows the ring of the focused code on all four edges on a 320px page', async () => {
+        const block = withClipboard(null, longLine);
+        const page = document.createElement('div');
+
+        page.style.inlineSize = '320px';
+        block.element.before(page);
+        page.append(block.element);
+        await measured(block);
+        await tabTo(block, block.pre);
+
+        expectPreRing(block);
+
+        block.element.remove();
+        page.remove();
+      });
+
+      it('shows the whole ring of the copy button when Tab reaches it', async () => {
+        const block = withClipboard(null);
+        const button = copyButton(block.element);
+
+        await measured(block);
+        await tabTo(block, button);
+
+        expect(getComputedStyle(button).outlineStyle).toBe('solid');
+        expectUnclipped(ringBox(button), clipBox(block.element));
+      });
+    });
+
+    for (const mode of A11Y_MODES) {
+      it(`has no accessibility violations in ${mode.name} mode, with a failure shown`, async () => {
+        const block = withClipboard(null);
+
+        TestBed.inject(ArnConfigService).update(mode.config);
+        copyButton(block.element).click();
+        await block.settle();
+
+        await expectNoA11yViolations(block.element);
+      });
+    }
+  });
 
   it('has no accessibility violations, plain or highlighted', async () => {
     const pending = deferred();

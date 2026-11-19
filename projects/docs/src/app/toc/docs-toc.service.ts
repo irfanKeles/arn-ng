@@ -5,6 +5,8 @@ export interface DocsTocEntry {
   /** The id of the section heading; also the URL fragment. */
   readonly id: Signal<string>;
   readonly heading: Signal<string>;
+  /** The heading element once the section has rendered (`undefined` before): the list watches it. */
+  readonly element: Signal<HTMLElement | undefined>;
 }
 
 /**

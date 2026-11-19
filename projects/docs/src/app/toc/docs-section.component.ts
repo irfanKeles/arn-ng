@@ -1,4 +1,13 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  viewChild,
+} from '@angular/core';
 import { DocsTocService, type DocsTocEntry } from './docs-toc.service';
 
 /**
@@ -16,10 +25,16 @@ export class DocsSectionComponent {
   readonly sectionId = input.required<string>();
   readonly heading = input.required<string>();
 
+  private readonly headingElement = viewChild<ElementRef<HTMLElement>>('title');
+
   constructor() {
     const toc = inject(DocsTocService);
-    // The signals are read later, by the list: the inputs are not set yet.
-    const entry: DocsTocEntry = { id: this.sectionId, heading: this.heading };
+    // The signals are read later, by the list: the inputs are not set yet, nor is the view.
+    const entry: DocsTocEntry = {
+      id: this.sectionId,
+      heading: this.heading,
+      element: computed(() => this.headingElement()?.nativeElement),
+    };
 
     toc.register(entry);
     inject(DestroyRef).onDestroy(() => {

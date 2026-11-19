@@ -24,6 +24,61 @@
   min-inline-size: 0;
 }
 
+/*
+ * On its own the block is a surface: an edge and the muted background, apart from the page in both
+ * schemes. --arn-muted-foreground is below 4.5:1 on light --arn-muted, so the muted text colors
+ * take neutral-600 there; the dark values stay. The example card frames the block itself.
+ */
+:host(:not(.docs-code-block-embedded)) {
+  --docs-code-background: var(--arn-muted);
+  --docs-code-muted-text: light-dark(var(--arn-neutral-600), var(--arn-muted-foreground));
+  --docs-code-token-punctuation: var(--docs-code-muted-text);
+  --docs-code-token-comment: var(--docs-code-muted-text);
+  --docs-code-line-number: var(--docs-code-muted-text);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  margin-block: 0 calc(var(--arn-spacing) * 4);
+  overflow: hidden;
+  border: var(--arn-border-width) solid var(--arn-border);
+  border-radius: var(--arn-radius);
+  background: var(--docs-code-background);
+}
+
+/*
+ * The copy button has a column of its own in the top end corner: scrolled code is clipped at the
+ * edge of the pre, so it never runs under the button. Hidden with opacity, not display, so the
+ * button stays in the tab order and the accessibility tree; it shows on hover, on focus anywhere in
+ * the block, while a copy result shows, and always where nothing hovers (touch).
+ */
+.docs-code-block-copy {
+  display: flex;
+  flex-direction: column;
+  gap: var(--arn-spacing);
+  align-items: end;
+  padding-block-start: calc(var(--arn-spacing) * 2);
+  padding-inline-end: calc(var(--arn-spacing) * 2);
+  opacity: 0;
+}
+
+:host(:focus-within) .docs-code-block-copy,
+.docs-code-block-copy-result {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  :host(:hover) .docs-code-block-copy {
+    opacity: 1;
+  }
+}
+
+@media (hover: none) {
+  .docs-code-block-copy {
+    opacity: 1;
+  }
+}
+
 /* Code reads left to right in a right-to-left page too; a long line scrolls inside the block. */
 .docs-code-block-pre {
   margin: 0;
@@ -36,6 +91,20 @@
   line-height: var(--arn-text-sm-line-height);
   direction: ltr;
   tab-size: 2;
+}
+
+/*
+ * The block clips its overflow (for the rounded corners), so the site ring, drawn outside the
+ * element, would be cut on three edges of the scrollable pre. Drawn inside instead, in the padding,
+ * it shows on all four edges and covers no code; the start corners follow the block's radius.
+ */
+:host(:not(.docs-code-block-embedded)) .docs-code-block-pre {
+  border-start-start-radius: calc(var(--arn-radius) - var(--arn-border-width));
+  border-end-start-radius: calc(var(--arn-radius) - var(--arn-border-width));
+}
+
+:host(:not(.docs-code-block-embedded)) .docs-code-block-pre:focus-visible {
+  outline-offset: calc(var(--arn-ring-width) * -1);
 }
 
 .docs-code-block-italic {

@@ -9,11 +9,19 @@ export function isPlainClick(event: MouseEvent): boolean {
 /**
  * Moves focus to the section heading with this id (`docs-section` headings carry
  * `tabindex="-1"`), which also scrolls it into view. Returns whether it was found.
+ *
+ * With `scroll`, the heading is scrolled to the top with that behavior first, and focus then moves
+ * without scrolling again, so a smooth scroll is not cut short by the jump focusing makes.
  */
-export function focusSection(document: Document, id: string): boolean {
+export function focusSection(document: Document, id: string, scroll?: ScrollBehavior): boolean {
   const heading = document.getElementById(id);
 
-  heading?.focus();
+  if (heading && scroll) {
+    heading.scrollIntoView({ block: 'start', behavior: scroll });
+    heading.focus({ preventScroll: true });
+  } else {
+    heading?.focus();
+  }
 
   return heading !== null;
 }

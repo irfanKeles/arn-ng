@@ -6,6 +6,13 @@
   --docs-toc-width: calc(var(--arn-spacing) * 56);
   --docs-content-width: calc(var(--arn-spacing) * 192);
   --docs-gutter: calc(var(--arn-spacing) * 6);
+
+  /*
+   * Room above a heading scrolled to the top, and the reading line of "On this page": a heading
+   * at or above it is the one being read. The header does not stick; if it ever does, its height
+   * goes in here and both follow.
+   */
+  --docs-scroll-margin: calc(var(--arn-spacing) * 4);
 }
 
 body {
@@ -61,6 +68,7 @@ summary {
   font-size: var(--arn-text-xl);
   font-weight: var(--arn-font-weight-semibold);
   line-height: var(--arn-text-xl-line-height);
+  scroll-margin-block-start: var(--docs-scroll-margin);
 }
 
 .docs-page p,

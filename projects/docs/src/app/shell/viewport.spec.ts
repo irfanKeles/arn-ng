@@ -1,11 +1,26 @@
 import { PLATFORM_ID } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import {
+  DOCS_MOTION_QUERY,
   DOCS_NARROW_QUERY,
   DOCS_NARROW_VIEWPORT,
+  DOCS_SMOOTH_SCROLL,
   DOCS_TOC_QUERY,
   DOCS_TOC_VIEWPORT,
 } from './viewport';
+
+describe('DOCS_SMOOTH_SCROLL', () => {
+  it('follows prefers-reduced-motion in the browser', () => {
+    expect(DOCS_MOTION_QUERY).toBe('(prefers-reduced-motion: no-preference)');
+    expect(TestBed.inject(DOCS_SMOOTH_SCROLL)()).toBe(matchMedia(DOCS_MOTION_QUERY).matches);
+  });
+
+  it('does not animate on the server', () => {
+    TestBed.configureTestingModule({ providers: [{ provide: PLATFORM_ID, useValue: 'server' }] });
+
+    expect(TestBed.inject(DOCS_SMOOTH_SCROLL)()).toBe(false);
+  });
+});
 
 describe('DOCS_NARROW_VIEWPORT', () => {
   it('reflects the media query in the browser', () => {

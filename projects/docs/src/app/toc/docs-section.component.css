@@ -2,3 +2,13 @@
 :host {
   display: block;
 }
+
+/*
+ * The heading takes focus only as a reading position ("On this page", search, a page link with a
+ * fragment); it is not interactive, so it shows no ring. Only this heading: links, buttons and form
+ * controls keep the site's :focus-visible ring. Beats it by specificity (the attribute of
+ * encapsulation), not by order.
+ */
+h2:focus {
+  outline: none;
+}
