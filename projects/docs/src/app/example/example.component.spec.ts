@@ -8,7 +8,7 @@ import { DocsHighlighterService } from '../code/highlighter.service';
 import { nextTask, query, queryAs, resetDocument, text } from '../testing/dom';
 import { expectNoPageOverflow } from '../testing/page-overflow';
 import { A11Y_MODES } from '../testing/render-example';
-import { DOCS_CLIPBOARD, type DocsClipboard } from './clipboard';
+import { DOCS_CLIPBOARD, type DocsClipboard } from '../code/clipboard';
 import { COPIED_RESET_MS } from './example.component';
 import {
   BASIC_EXAMPLE_HTML,
@@ -98,7 +98,7 @@ describe('ExampleComponent', () => {
   }
 
   function copyButton(element: HTMLElement): HTMLButtonElement {
-    return queryAs(element, '.docs-example-copy', HTMLButtonElement);
+    return queryAs(element, '.docs-copy-button', HTMLButtonElement);
   }
 
   function hideButton(element: HTMLElement): HTMLButtonElement | null {
@@ -106,7 +106,7 @@ describe('ExampleComponent', () => {
   }
 
   function status(element: HTMLElement): string {
-    const found = element.querySelector('.docs-example-status');
+    const found = element.querySelector('.docs-copy-status');
 
     return found ? text(found) : '';
   }
@@ -339,6 +339,31 @@ describe('ExampleComponent', () => {
       expect(query(example.element, '.docs-example-code').hidden).toBe(true);
     });
 
+    it('has one copy button, in the bar: the code panel adds none of its own', async () => {
+      const example = setup();
+
+      await show(example, 'TS');
+
+      const buttons = example.element.querySelectorAll('[aria-label="Copy code"]');
+
+      expect(buttons.length).toBe(1);
+      expect(query(example.element, '.docs-example-actions').contains(buttons[0] ?? null)).toBe(
+        true,
+      );
+      expect(query(example.element, '.docs-example-code').querySelector('button')).toBeNull();
+    });
+
+    it('keeps the card frame around the code panel, not a second surface', async () => {
+      const example = setup();
+
+      await show(example);
+
+      const block = query(example.element, 'docs-code-block');
+
+      expect(block.classList.contains('docs-code-block-embedded')).toBe(true);
+      expect(getComputedStyle(block).borderTopStyle).toBe('none');
+    });
+
     it('copies the shown file, shows a check mark and announces it politely', async () => {
       const copied: string[] = [];
       const example = setup(recording(copied));
@@ -502,7 +527,7 @@ describe('ExampleComponent', () => {
         // which the buttons share.
         expect(
           contrastRatio(
-            getComputedStyle(query(example.element, '.docs-example-status')).color,
+            getComputedStyle(query(example.element, '.docs-copy-status')).color,
             getComputedStyle(copyButton(example.element)).backgroundColor,
           ),
         ).toBeGreaterThanOrEqual(4.5);
@@ -518,7 +543,7 @@ describe('ExampleComponent', () => {
       for (const element of [
         copyButton(example.element),
         copyButton(example.element).querySelector('svg') ?? example.element,
-        query(example.element, '.docs-example-status'),
+        query(example.element, '.docs-copy-status'),
       ]) {
         const style = getComputedStyle(element);
 
@@ -558,6 +583,28 @@ describe('ExampleComponent', () => {
       page.remove();
     });
 
+    it('makes the code panel a tab stop only while its code overflows, as a block on its own', async () => {
+      const example = setup();
+      const page = document.createElement('div');
+
+      page.style.inlineSize = '320px';
+      example.element.before(page);
+      page.append(example.element);
+
+      await show(example, 'TS');
+
+      const pre = query(example.element, 'pre');
+
+      await expect.poll(() => pre.getAttribute('tabindex')).toBe('0');
+
+      page.style.inlineSize = '1400px';
+      await expect.poll(() => pre.hasAttribute('tabindex')).toBe(false);
+      expect(pre.scrollWidth).toBeLessThanOrEqual(pre.clientWidth);
+
+      example.element.remove();
+      page.remove();
+    });
+
     it('mirrors the bar in a right-to-left page and keeps the code left-to-right', async () => {
       const example = setup();
 
@@ -579,7 +626,7 @@ describe('ExampleComponent', () => {
       TestBed.inject(ArnConfigService).update({ density: 'compact' });
       await show(example);
 
-      const buttons = Array.from(example.element.querySelectorAll('.docs-example-button'));
+      const buttons = Array.from(example.element.querySelectorAll('.docs-example-bar button'));
 
       expect(buttons.length).toBe(4);
 

@@ -17,39 +17,7 @@
       </button>
     }
 
-    <button
-      type="button"
-      class="docs-example-button docs-example-icon docs-example-copy"
-      aria-label="Copy code"
-      (click)="copy()"
-    >
-      @if (copyState() === 'copied') {
-        <svg
-          class="docs-example-svg"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-          focusable="false"
-          data-icon="check"
-        >
-          <path d="M5 12.5l4.5 4.5L19 7.5" />
-        </svg>
-      } @else {
-        <svg
-          class="docs-example-svg"
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-          focusable="false"
-          data-icon="copy"
-        >
-          <rect x="9" y="9" width="11" height="11" rx="2" />
-          <path d="M5 15V6a2 2 0 0 1 2-2h8" />
-        </svg>
-      }
-    </button>
-
-    @if (copyState() === 'failed') {
-      <span class="docs-example-status">Copy failed</span>
-    }
+    <docs-copy-button [text]="copyText()" />
 
     @if (open()) {
       <button
@@ -79,6 +47,7 @@
       [language]="activeFile().language"
       [label]="activeFile().label + ' code'"
       [lineNumbers]="true"
+      [embedded]="true"
     />
   }
 </div>

@@ -1,3 +1,4 @@
+import { ViewportScroller } from '@angular/common';
 import { signal, type WritableSignal } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
 import { provideRouter, Router } from '@angular/router';
@@ -8,6 +9,7 @@ import { routes } from './app.routes';
 import { DOCS_STORAGE } from './settings/docs-storage';
 import { DOCS_NARROW_VIEWPORT, DOCS_TOC_VIEWPORT } from './shell/viewport';
 import { nextTask, query, queryAs, resetDocument, text } from './testing/dom';
+import { DOCS_MAIN_END_ID } from './toc/docs-toc.component';
 import { expectNoPageOverflow } from './testing/page-overflow';
 
 /** The sidebar; "On this page" is a second navigation landmark. */
@@ -276,6 +278,39 @@ describe('AppComponent', () => {
 
       expect(router.url).toBe('/#what-exists-today');
       expect(document.activeElement).toBe(query(main(element), '#what-exists-today'));
+    });
+
+    it('leaves the scroll of a link to the list: the router does not scroll to the anchor', async () => {
+      const { element, fixture } = await setup({ toc: true });
+      const anchor = vi.spyOn(TestBed.inject(ViewportScroller), 'scrollToAnchor');
+
+      queryAs(element, 'docs-toc a[href="/#what-exists-today"]', HTMLAnchorElement).click();
+      await fixture.whenStable();
+      // The router schedules its scroll after a task and a frame.
+      await nextTask();
+      await new Promise((resolve) => requestAnimationFrame(resolve));
+
+      expect(anchor).not.toHaveBeenCalled();
+    });
+
+    it('marks the section being read; the end of the content closes main', async () => {
+      const { element } = await setup({ toc: true });
+
+      expect(main(element).lastElementChild?.id).toBe(DOCS_MAIN_END_ID);
+      await expect
+        .poll(() =>
+          Array.from(element.querySelectorAll('docs-toc a[aria-current="location"]')).map((link) =>
+            link.getAttribute('href'),
+          ),
+        )
+        .toEqual(['/#status']);
+    });
+
+    it('is not there at 320px, and the page does not scroll sideways', async () => {
+      const { element, fixture } = await setup({ toc: false, narrow: true });
+
+      expect(tocList(element)).toBeNull();
+      await expectNoPageOverflow(element, () => fixture.whenStable());
     });
 
     it('sits in a third column after main, on the inline-end side', async () => {

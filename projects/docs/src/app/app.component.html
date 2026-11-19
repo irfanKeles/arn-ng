@@ -56,6 +56,8 @@
     [attr.inert]="drawerVisible() ? '' : null"
   >
     <router-outlet />
+    <!-- The end of the content: in view, "On this page" marks the last section -->
+    <div id="docs-main-end"></div>
   </main>
 
   @if (tocVisible()) {

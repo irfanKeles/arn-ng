@@ -4,7 +4,7 @@ import { DocsTocService, type DocsTocEntry } from './docs-toc.service';
 
 describe('DocsTocService', () => {
   function entry(id: string): DocsTocEntry {
-    return { id: signal(id), heading: signal(id.toUpperCase()) };
+    return { id: signal(id), heading: signal(id.toUpperCase()), element: signal(undefined) };
   }
 
   function ids(service: DocsTocService): string[] {

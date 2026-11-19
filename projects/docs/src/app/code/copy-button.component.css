@@ -1,0 +1,62 @@
+/* No box of its own: the button and the failure text take part in the parent's layout */
+:host {
+  display: contents;
+}
+
+/* The target expression of the shell: at least 24px, compact included */
+.docs-copy-button {
+  display: inline-grid;
+  place-items: center;
+  box-sizing: border-box;
+  inline-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  block-size: max(
+    var(--arn-control-min-size),
+    calc(var(--arn-control-height-sm) * var(--arn-density))
+  );
+  padding: 0;
+  border: var(--arn-border-width) solid var(--arn-input);
+  border-radius: calc(var(--arn-radius) * 0.8);
+  background: var(--arn-background);
+  color: var(--arn-foreground);
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .docs-copy-button:hover {
+    background: var(--arn-accent);
+    color: var(--arn-accent-foreground);
+  }
+}
+
+/* Press feedback in place of the removed tap highlight (styles.css) */
+.docs-copy-button:active {
+  background: var(--arn-accent);
+  color: var(--arn-accent-foreground);
+}
+
+.docs-copy-svg {
+  inline-size: 1rem;
+  block-size: 1rem;
+  fill: none;
+  stroke: currentcolor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+/*
+ * The failure text carries the page background, so it keeps 4.5:1 on any surface
+ * (--arn-destructive on --arn-muted is below that in the light scheme).
+ */
+.docs-copy-status {
+  padding-inline: var(--arn-spacing);
+  border-radius: calc(var(--arn-radius) * 0.6);
+  background: var(--arn-background);
+  color: var(--arn-destructive);
+  font-family: var(--arn-font-sans);
+  font-size: var(--arn-control-font-size-sm);
+  white-space: nowrap;
+}

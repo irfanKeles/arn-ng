@@ -4,10 +4,12 @@
     @for (section of sections(); track section) {
       <li>
         <a
+          #link
           class="docs-toc-link"
-          [routerLink]="path()"
-          [fragment]="section.id()"
-          (click)="focusSection($event, section.id())"
+          [href]="href(section.id())"
+          [attr.data-section]="section.id()"
+          [attr.aria-current]="active() === section.id() ? 'location' : null"
+          (click)="follow($event, section.id())"
         >
           {{ section.heading() }}
         </a>
