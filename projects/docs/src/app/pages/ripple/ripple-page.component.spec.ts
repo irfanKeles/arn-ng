@@ -100,8 +100,8 @@ describe('RipplePageComponent', () => {
   });
 
   describe('examples', () => {
-    it('shows four examples, each with HTML, TS and CSS tabs', async () => {
-      const { fixture, element } = await render();
+    it('shows four examples, each with HTML, TS and CSS options', async () => {
+      const { element } = await render();
       const examples = Array.from(element.querySelectorAll('docs-example'));
 
       expect(
@@ -114,13 +114,10 @@ describe('RipplePageComponent', () => {
       ]);
 
       for (const example of examples) {
-        queryAs(example, '.docs-example-toggle', HTMLButtonElement).click();
-      }
-      await fixture.whenStable();
-
-      for (const example of examples) {
         expect(
-          Array.from(example.querySelectorAll('[role="tab"]')).map((tab) => text(tab)),
+          Array.from(example.querySelectorAll('button[aria-pressed]')).map((option) =>
+            text(option),
+          ),
         ).toEqual(['HTML', 'TS', 'CSS']);
       }
     });

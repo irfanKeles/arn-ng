@@ -1,11 +1,15 @@
 import { LiveAnnouncer } from '@angular/cdk/a11y';
 import type { Type } from '@angular/core';
 import { TestBed, type ComponentFixture } from '@angular/core/testing';
-import { ArnConfigService, provideArn, type ArnConfig } from '@arn-ng/ui/core';
+import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { expectNoA11yViolations } from '../../../../ui/testing/a11y';
+import { contrastRatio } from '../../../../ui/testing/contrast';
 import { DocsHighlighterService } from '../code/highlighter.service';
 import { nextTask, query, queryAs, resetDocument, text } from '../testing/dom';
+import { expectNoPageOverflow } from '../testing/page-overflow';
+import { A11Y_MODES } from '../testing/render-example';
 import { DOCS_CLIPBOARD, type DocsClipboard } from './clipboard';
+import { COPIED_RESET_MS } from './example.component';
 import {
   BASIC_EXAMPLE_HTML,
   BASIC_EXAMPLE_TS,
@@ -37,8 +41,8 @@ describe('ExampleComponent', () => {
         {
           provide: LiveAnnouncer,
           useValue: {
-            announce: (message: string) => {
-              announced.push(message);
+            announce: (message: string, politeness?: string) => {
+              announced.push(`${message} (${politeness ?? 'default'})`);
 
               return Promise.resolve();
             },
@@ -62,92 +66,222 @@ describe('ExampleComponent', () => {
     };
   }
 
-  function toggle(element: HTMLElement): HTMLButtonElement {
-    return queryAs(element, '.docs-example-toggle', HTMLButtonElement);
+  /** A clipboard that records what it is given. */
+  function recording(copied: string[]): DocsClipboard {
+    return {
+      writeText: (value) => {
+        copied.push(value);
+
+        return Promise.resolve();
+      },
+    };
   }
 
-  function tabs(element: HTMLElement): HTMLElement[] {
-    return Array.from(element.querySelectorAll<HTMLElement>('[role="tab"]'));
+  function options(element: HTMLElement): HTMLButtonElement[] {
+    return Array.from(element.querySelectorAll<HTMLButtonElement>('.docs-example-option'));
   }
 
-  function tab(element: HTMLElement, label: string): HTMLElement {
-    const found = tabs(element).find((candidate) => text(candidate) === label);
+  function option(element: HTMLElement, label: string): HTMLButtonElement {
+    const found = options(element).find((candidate) => text(candidate) === label);
 
     if (!found) {
-      throw new Error(`No tab is labelled "${label}".`);
+      throw new Error(`No option is labelled "${label}".`);
     }
 
     return found;
   }
 
-  function selected(element: HTMLElement): string {
-    return text(query(element, '[role="tab"][aria-selected="true"]'));
+  function pressed(element: HTMLElement): string[] {
+    return options(element)
+      .filter((candidate) => candidate.getAttribute('aria-pressed') === 'true')
+      .map(text);
   }
 
   function copyButton(element: HTMLElement): HTMLButtonElement {
     return queryAs(element, '.docs-example-copy', HTMLButtonElement);
   }
 
-  async function openCode(example: Example): Promise<void> {
-    toggle(example.element).click();
+  function hideButton(element: HTMLElement): HTMLButtonElement | null {
+    return element.querySelector<HTMLButtonElement>('.docs-example-hide');
+  }
+
+  function status(element: HTMLElement): string {
+    const found = element.querySelector('.docs-example-status');
+
+    return found ? text(found) : '';
+  }
+
+  function icon(element: HTMLElement): string | null {
+    return copyButton(element).querySelector('svg')?.getAttribute('data-icon') ?? null;
+  }
+
+  async function show(example: Example, label = 'HTML'): Promise<void> {
+    option(example.element, label).click();
     await example.settle();
   }
 
-  async function press(example: Example, key: string): Promise<KeyboardEvent> {
-    const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+  async function hide(example: Example): Promise<void> {
+    const button = hideButton(example.element);
 
-    document.activeElement?.dispatchEvent(event);
+    if (!button) {
+      throw new Error('The code is not shown.');
+    }
+
+    button.focus();
+    button.click();
     await example.settle();
+  }
 
-    return event;
+  async function copy(example: Example): Promise<void> {
+    copyButton(example.element).click();
+    await example.settle();
+  }
+
+  async function highlighted(example: Example): Promise<void> {
+    await TestBed.inject(DocsHighlighterService).load();
+    await example.settle();
   }
 
   afterEach(() => {
+    vi.useRealTimers();
     resetDocument(document);
   });
 
-  describe('demo', () => {
-    it('runs the example', async () => {
+  describe('card', () => {
+    it('runs the example in the middle of the card', async () => {
       const example = setup();
+      const demo = query(example.element, '.docs-example-demo');
       const button = queryAs(example.element, 'docs-basic-example button', HTMLButtonElement);
+
+      expect(query(example.element, 'docs-example').firstElementChild).toBe(demo);
+      expect(getComputedStyle(demo).justifyItems).toBe('center');
 
       button.click();
       await example.settle();
 
       expect(text(button)).toBe('Clicked 1 times');
     });
+
+    it('labels the preview at the start of the bar under the demo, before the options', () => {
+      const { element } = setup();
+      const bar = query(element, '.docs-example-bar');
+      const label = query(element, '.docs-example-label');
+
+      expect(query(element, '.docs-example-demo').nextElementSibling).toBe(bar);
+      expect(bar.firstElementChild).toBe(label);
+      expect(text(label)).toBe('Preview');
+      expect(getComputedStyle(label).textTransform).toBe('uppercase');
+      expect(label.getBoundingClientRect().right).toBeLessThan(
+        query(element, '.docs-example-actions').getBoundingClientRect().left,
+      );
+    });
   });
 
-  describe('show code', () => {
-    it('hides the code at first, behind a button that controls it', () => {
+  describe('options', () => {
+    it('offers HTML and TS as plain buttons, none pressed while the code is hidden', () => {
       const { element } = setup();
-      const button = toggle(element);
       const region = query(element, '.docs-example-code');
 
-      expect(text(button)).toBe('Show code');
-      expect(button.getAttribute('aria-expanded')).toBe('false');
-      expect(button.getAttribute('aria-controls')).toBe(region.id);
+      expect(options(element).map(text)).toEqual(['HTML', 'TS']);
+
+      for (const button of options(element)) {
+        expect(button.type).toBe('button');
+        expect(button.getAttribute('aria-pressed')).toBe('false');
+        expect(button.getAttribute('aria-controls')).toBe(region.id);
+      }
+
       expect(region.hidden).toBe(true);
-      expect(element.querySelector('[role="tablist"]')).toBeNull();
+      expect(hideButton(element)).toBeNull();
+      expect(element.querySelector('[role="tablist"], [role="tab"], [role="tabpanel"]')).toBeNull();
     });
 
-    it('shows and hides the code', async () => {
+    it('shows a file when its option is pressed, and presses only that option', async () => {
       const example = setup();
-      const button = toggle(example.element);
-      const region = query(example.element, '.docs-example-code');
 
-      await openCode(example);
+      await show(example, 'TS');
 
-      expect(text(button)).toBe('Hide code');
-      expect(button.getAttribute('aria-expanded')).toBe('true');
-      expect(region.hidden).toBe(false);
-      expect(example.element.querySelector('[role="tablist"]')).not.toBeNull();
+      expect(query(example.element, '.docs-example-code').hidden).toBe(false);
+      expect(pressed(example.element)).toEqual(['TS']);
+      expect(query(example.element, 'pre').getAttribute('aria-label')).toBe('TS code');
+      expect(hideButton(example.element)).not.toBeNull();
 
-      button.click();
-      await example.settle();
+      await show(example, 'HTML');
 
-      expect(button.getAttribute('aria-expanded')).toBe('false');
-      expect(region.hidden).toBe(true);
+      expect(pressed(example.element)).toEqual(['HTML']);
+      expect(query(example.element, 'pre').getAttribute('aria-label')).toBe('HTML code');
+    });
+
+    it('keeps the code shown when the pressed option is pressed again', async () => {
+      const example = setup();
+
+      await show(example, 'TS');
+      await show(example, 'TS');
+
+      expect(query(example.element, '.docs-example-code').hidden).toBe(false);
+      expect(pressed(example.element)).toEqual(['TS']);
+    });
+
+    it('hides the code with the hide button; no option stays pressed and the button goes away', async () => {
+      const example = setup();
+
+      await show(example);
+      await hide(example);
+
+      expect(query(example.element, '.docs-example-code').hidden).toBe(true);
+      expect(pressed(example.element)).toEqual([]);
+      expect(hideButton(example.element)).toBeNull();
+    });
+
+    it('returns focus to the last chosen option when the code is hidden', async () => {
+      const example = setup();
+
+      await show(example, 'HTML');
+      await show(example, 'TS');
+      await hide(example);
+
+      expect(document.activeElement).toBe(option(example.element, 'TS'));
+
+      await show(example, 'HTML');
+      await hide(example);
+
+      expect(document.activeElement).toBe(option(example.element, 'HTML'));
+    });
+
+    it('names the icon buttons and hides their icons from assistive technology', async () => {
+      const example = setup();
+
+      await show(example);
+
+      for (const [button, name] of [
+        [copyButton(example.element), 'Copy code'],
+        [hideButton(example.element), 'Hide code'],
+      ] as const) {
+        const svg = button?.querySelector('svg');
+
+        expect(button?.type).toBe('button');
+        expect(button?.getAttribute('aria-label')).toBe(name);
+        expect(text(button ?? document.createTextNode(''))).toBe('');
+        expect(svg?.getAttribute('aria-hidden')).toBe('true');
+        expect(svg?.getAttribute('focusable')).toBe('false');
+      }
+    });
+
+    it('leaves the arrow keys, Home and End alone', async () => {
+      const example = setup();
+
+      await show(example);
+      option(example.element, 'HTML').focus();
+
+      for (const key of ['ArrowRight', 'ArrowLeft', 'Home', 'End']) {
+        const event = new KeyboardEvent('keydown', { key, bubbles: true, cancelable: true });
+
+        document.activeElement?.dispatchEvent(event);
+        await example.settle();
+
+        expect(event.defaultPrevented).toBe(false);
+        expect(pressed(example.element)).toEqual(['HTML']);
+        expect(document.activeElement).toBe(option(example.element, 'HTML'));
+      }
     });
   });
 
@@ -155,12 +289,11 @@ describe('ExampleComponent', () => {
     it('shows the template file, then the component file, exactly as they are compiled', async () => {
       const example = setup();
 
-      await openCode(example);
+      await show(example);
 
       expect(query(example.element, 'pre').textContent).toBe(BASIC_EXAMPLE_HTML);
 
-      tab(example.element, 'TS').click();
-      await example.settle();
+      await show(example, 'TS');
 
       expect(query(example.element, 'pre').textContent).toBe(BASIC_EXAMPLE_TS);
     });
@@ -175,185 +308,246 @@ describe('ExampleComponent', () => {
     it('keeps the same text once it is highlighted', async () => {
       const example = setup();
 
-      await openCode(example);
-      await TestBed.inject(DocsHighlighterService).load();
-      await example.settle();
+      await show(example);
+      await highlighted(example);
 
       const pre = query(example.element, 'pre');
 
       expect(pre.querySelectorAll('span').length).toBeGreaterThan(3);
       expect(pre.textContent).toBe(BASIC_EXAMPLE_HTML);
     });
-  });
 
-  describe('tabs', () => {
-    it('follows the tabs pattern: roles, selection, relations and a roving tabindex', async () => {
+    it('numbers the lines of the code panel', async () => {
       const example = setup();
 
-      await openCode(example);
+      await show(example, 'TS');
 
-      const list = query(example.element, '[role="tablist"]');
-      const panel = query(example.element, '[role="tabpanel"]');
-      const html = tab(example.element, 'HTML');
-      const ts = tab(example.element, 'TS');
-
-      expect(list.getAttribute('aria-label')).toBe('Example code');
-      expect(tabs(example.element).map(text)).toEqual(['HTML', 'TS']);
-      expect(html.getAttribute('aria-selected')).toBe('true');
-      expect(ts.getAttribute('aria-selected')).toBe('false');
-      expect(html.tabIndex).toBe(0);
-      expect(ts.tabIndex).toBe(-1);
-      expect(html.getAttribute('aria-controls')).toBe(panel.id);
-      expect(ts.getAttribute('aria-controls')).toBe(panel.id);
-      expect(panel.getAttribute('aria-labelledby')).toBe(html.id);
-
-      ts.click();
-      await example.settle();
-
-      expect(ts.getAttribute('aria-selected')).toBe('true');
-      expect(html.getAttribute('aria-selected')).toBe('false');
-      expect(ts.tabIndex).toBe(0);
-      expect(html.tabIndex).toBe(-1);
-      expect(panel.getAttribute('aria-labelledby')).toBe(ts.id);
-      expect(query(example.element, 'pre').getAttribute('aria-label')).toBe('TS code');
-    });
-
-    it('moves with the arrow keys, wrapping at the ends, and selects the focused tab', async () => {
-      const example = setup();
-
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-
-      const event = await press(example, 'ArrowRight');
-
-      expect(event.defaultPrevented).toBe(true);
-      expect(selected(example.element)).toBe('TS');
-      expect(document.activeElement).toBe(tab(example.element, 'TS'));
-
-      await press(example, 'ArrowRight');
-
-      expect(selected(example.element)).toBe('HTML');
-      expect(document.activeElement).toBe(tab(example.element, 'HTML'));
-
-      await press(example, 'ArrowLeft');
-
-      expect(selected(example.element)).toBe('TS');
-      expect(document.activeElement).toBe(tab(example.element, 'TS'));
-    });
-
-    it('jumps to the first and last tab with Home and End', async () => {
-      const example = setup();
-
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-      await press(example, 'End');
-
-      expect(selected(example.element)).toBe('TS');
-      expect(document.activeElement).toBe(tab(example.element, 'TS'));
-
-      await press(example, 'Home');
-
-      expect(selected(example.element)).toBe('HTML');
-      expect(document.activeElement).toBe(tab(example.element, 'HTML'));
-    });
-
-    it('leaves other keys alone', async () => {
-      const example = setup();
-
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-
-      const event = await press(example, 'a');
-
-      expect(event.defaultPrevented).toBe(false);
-      expect(selected(example.element)).toBe('HTML');
-    });
-
-    it('reverses the arrow keys in a right-to-left page', async () => {
-      const example = setup();
-
-      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-      await press(example, 'ArrowLeft');
-
-      expect(selected(example.element)).toBe('TS');
-
-      await press(example, 'ArrowRight');
-
-      expect(selected(example.element)).toBe('HTML');
+      expect(example.element.querySelectorAll('.docs-code-block-line').length).toBe(
+        BASIC_EXAMPLE_TS.replace(/\n$/, '').split('\n').length,
+      );
     });
   });
 
   describe('copy', () => {
-    it('copies the code of the selected tab, says so and announces it', async () => {
+    it('copies the template while the code is hidden', async () => {
       const copied: string[] = [];
-      const example = setup({
-        writeText: (value) => {
-          copied.push(value);
+      const example = setup(recording(copied));
 
-          return Promise.resolve();
-        },
-      });
-
-      await openCode(example);
-
-      const button = copyButton(example.element);
-
-      expect(text(button)).toBe('Copy code');
-
-      button.click();
-      await example.settle();
+      await copy(example);
 
       expect(copied).toEqual([BASIC_EXAMPLE_HTML]);
-      expect(text(button)).toBe('Copied');
-      expect(example.announced).toEqual(['Code copied to clipboard']);
+      expect(query(example.element, '.docs-example-code').hidden).toBe(true);
+    });
 
-      tab(example.element, 'TS').click();
-      await example.settle();
+    it('copies the shown file, shows a check mark and announces it politely', async () => {
+      const copied: string[] = [];
+      const example = setup(recording(copied));
 
-      expect(text(button)).toBe('Copy code');
+      await show(example, 'TS');
 
-      button.click();
-      await example.settle();
+      expect(icon(example.element)).toBe('copy');
 
-      expect(copied).toEqual([BASIC_EXAMPLE_HTML, BASIC_EXAMPLE_TS]);
+      await copy(example);
+
+      expect(copied).toEqual([BASIC_EXAMPLE_TS]);
+      expect(icon(example.element)).toBe('check');
+      expect(copyButton(example.element).getAttribute('aria-label')).toBe('Copy code');
+      expect(status(example.element)).toBe('');
+      expect(example.announced).toEqual(['Copied (polite)']);
     });
 
     it('shows and announces a failure when the browser refuses', async () => {
       const example = setup({ writeText: () => Promise.reject(new Error('denied')) });
 
-      await openCode(example);
-      copyButton(example.element).click();
-      await example.settle();
+      await show(example);
+      await copy(example);
 
-      expect(text(copyButton(example.element))).toBe('Copy failed');
-      expect(example.announced).toEqual(['Could not copy the code']);
+      expect(status(example.element)).toBe('Copy failed');
+      expect(icon(example.element)).toBe('copy');
+      expect(example.announced).toEqual(['Copy failed (polite)']);
     });
 
     it('shows and announces a failure when there is no clipboard', async () => {
       const example = setup(null);
 
-      await openCode(example);
-      copyButton(example.element).click();
-      await example.settle();
+      await copy(example);
 
-      expect(text(copyButton(example.element))).toBe('Copy failed');
-      expect(example.announced).toEqual(['Could not copy the code']);
+      expect(status(example.element)).toBe('Copy failed');
+      expect(example.announced).toEqual(['Copy failed (polite)']);
+    });
+
+    // Only the timeouts are faked; changes are rendered by hand, since whenStable() would wait for a
+    // faked timeout.
+    it(`turns the check mark back after ${String(COPIED_RESET_MS)} ms`, async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+
+      const example = setup();
+      const wait = async (ms: number): Promise<void> => {
+        await vi.advanceTimersByTimeAsync(ms);
+        example.fixture.detectChanges();
+      };
+
+      copyButton(example.element).click();
+      await wait(0);
+
+      expect(icon(example.element)).toBe('check');
+
+      await wait(COPIED_RESET_MS - 1);
+
+      expect(icon(example.element)).toBe('check');
+
+      await wait(1);
+
+      expect(icon(example.element)).toBe('copy');
+    });
+
+    it('keeps a failure past that time, until the next option, hide or copy', async () => {
+      vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout'] });
+
+      let calls = 0;
+      const example = setup({
+        writeText: () =>
+          ++calls % 2 === 1 ? Promise.reject(new Error('denied')) : Promise.resolve(),
+      });
+      const step = async (action: () => void): Promise<void> => {
+        action();
+        await vi.advanceTimersByTimeAsync(0);
+        example.fixture.detectChanges();
+      };
+      const fail = (): Promise<void> =>
+        step(() => {
+          copyButton(example.element).click();
+        });
+
+      // Wait well past the success time: the failure stays.
+      await fail();
+      await vi.advanceTimersByTimeAsync(COPIED_RESET_MS * 3);
+      example.fixture.detectChanges();
+
+      expect(status(example.element)).toBe('Copy failed');
+
+      // An option clears it.
+      await step(() => {
+        option(example.element, 'TS').click();
+      });
+
+      expect(status(example.element)).toBe('');
+
+      // Hiding clears it.
+      await step(() => {
+        copyButton(example.element).click();
+      });
+      await fail();
+
+      expect(status(example.element)).toBe('Copy failed');
+
+      await step(() => {
+        hideButton(example.element)?.click();
+      });
+
+      expect(status(example.element)).toBe('');
+
+      // A new copy clears it.
+      await step(() => {
+        copyButton(example.element).click();
+      });
+      await fail();
+
+      expect(status(example.element)).toBe('Copy failed');
+
+      await step(() => {
+        copyButton(example.element).click();
+      });
+
+      expect(status(example.element)).toBe('');
+      expect(icon(example.element)).toBe('check');
+    });
+
+    it('clears the check mark when another option is pressed or the code is hidden', async () => {
+      const example = setup();
+
+      await show(example);
+      await copy(example);
+      await show(example, 'TS');
+
+      expect(icon(example.element)).toBe('copy');
+
+      await copy(example);
+      await hide(example);
+
+      expect(icon(example.element)).toBe('copy');
+    });
+
+    for (const scheme of ['light', 'dark'] as const) {
+      it(`keeps the icons at 3:1 and the failure text at 4.5:1 in the ${scheme} scheme`, async () => {
+        const example = setup(null);
+
+        TestBed.inject(ArnConfigService).update({ colorScheme: scheme });
+        await show(example);
+        await copy(example);
+
+        for (const button of [copyButton(example.element), hideButton(example.element)]) {
+          const svg = button?.querySelector('svg');
+          const backdrop = getComputedStyle(button ?? example.element).backgroundColor;
+
+          expect(svg ? getComputedStyle(svg).stroke : '').toBe(
+            getComputedStyle(svg ?? example.element).color,
+          );
+          expect(
+            contrastRatio(getComputedStyle(svg ?? example.element).color, backdrop),
+          ).toBeGreaterThanOrEqual(3);
+        }
+
+        // The bar has no background of its own: the failure text sits on the page background,
+        // which the buttons share.
+        expect(
+          contrastRatio(
+            getComputedStyle(query(example.element, '.docs-example-status')).color,
+            getComputedStyle(copyButton(example.element)).backgroundColor,
+          ),
+        ).toBeGreaterThanOrEqual(4.5);
+      });
+    }
+
+    it('swaps the icon and shows the failure without any motion', async () => {
+      const example = setup(null);
+
+      await show(example);
+      await copy(example);
+
+      for (const element of [
+        copyButton(example.element),
+        copyButton(example.element).querySelector('svg') ?? example.element,
+        query(example.element, '.docs-example-status'),
+      ]) {
+        const style = getComputedStyle(element);
+
+        expect(style.transitionDuration).toBe('0s');
+        expect(style.animationName).toBe('none');
+      }
     });
   });
 
   describe('layout', () => {
-    it('does not make a 320px page scroll sideways; the code scrolls inside', async () => {
+    it('does not make a 320px page scroll sideways, with the code and a failure shown', async () => {
+      const example = setup(null);
+
+      await show(example, 'TS');
+      await copy(example);
+
+      expect(status(example.element)).toBe('Copy failed');
+
+      await expectNoPageOverflow(example.element, example.settle);
+    });
+
+    it('scrolls long code inside the panel at 320px', async () => {
       const example = setup();
       const page = document.createElement('div');
 
       page.style.inlineSize = '320px';
       example.element.before(page);
       page.append(example.element);
-      await openCode(example);
-      tab(example.element, 'TS').click();
-      await example.settle();
+      await show(example, 'TS');
 
       const pre = query(example.element, 'pre');
 
@@ -364,43 +558,42 @@ describe('ExampleComponent', () => {
       page.remove();
     });
 
-    it('keeps code left-to-right in a right-to-left page', async () => {
+    it('mirrors the bar in a right-to-left page and keeps the code left-to-right', async () => {
       const example = setup();
 
       TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
-      await openCode(example);
+      await show(example);
 
       expect(getComputedStyle(example.element).direction).toBe('rtl');
+      expect(
+        query(example.element, '.docs-example-label').getBoundingClientRect().left,
+      ).toBeGreaterThan(
+        query(example.element, '.docs-example-actions').getBoundingClientRect().right,
+      );
       expect(getComputedStyle(query(example.element, 'pre')).direction).toBe('ltr');
     });
 
-    it('gives every button a target of at least 24px, in compact mode too', async () => {
+    it('gives every button a target of at least 24 by 24px, in compact mode too', async () => {
       const example = setup();
 
       TestBed.inject(ArnConfigService).update({ density: 'compact' });
-      await openCode(example);
+      await show(example);
 
-      expect(
-        example.element.querySelectorAll('.docs-example-button, .docs-example-tab').length,
-      ).toBe(4);
+      const buttons = Array.from(example.element.querySelectorAll('.docs-example-button'));
 
-      for (const button of Array.from(
-        example.element.querySelectorAll('.docs-example-button, .docs-example-tab'),
-      )) {
-        expect(button.getBoundingClientRect().height).toBeGreaterThanOrEqual(24);
+      expect(buttons.length).toBe(4);
+
+      for (const button of buttons) {
+        const box = button.getBoundingClientRect();
+
+        expect(box.height).toBeGreaterThanOrEqual(24);
+        expect(box.width).toBeGreaterThanOrEqual(24);
       }
     });
   });
 
   describe('accessibility', () => {
-    const modes: readonly { name: string; config: ArnConfig }[] = [
-      { name: 'light', config: { colorScheme: 'light' } },
-      { name: 'dark', config: { colorScheme: 'dark' } },
-      { name: 'RTL', config: { direction: 'rtl' } },
-      { name: 'compact', config: { density: 'compact' } },
-    ];
-
-    for (const mode of modes) {
+    for (const mode of A11Y_MODES) {
       it(`has no violations in ${mode.name} mode with the code hidden`, async () => {
         const example = setup();
 
@@ -414,17 +607,14 @@ describe('ExampleComponent', () => {
         const example = setup();
 
         TestBed.inject(ArnConfigService).update(mode.config);
-        await openCode(example);
-        await TestBed.inject(DocsHighlighterService).load();
-        await example.settle();
+        await show(example);
+        await highlighted(example);
 
         expect(example.element.querySelectorAll('pre span').length).toBeGreaterThan(3);
         await expectNoA11yViolations(example.element);
 
-        tab(example.element, 'TS').click();
-        await example.settle();
-        await TestBed.inject(DocsHighlighterService).load();
-        await example.settle();
+        await show(example, 'TS');
+        await highlighted(example);
 
         await expectNoA11yViolations(example.element);
       });
@@ -432,47 +622,36 @@ describe('ExampleComponent', () => {
   });
 
   describe('with a CSS file', () => {
-    function setupStyled(): Example {
-      return setup(undefined, StyledExampleHostComponent);
+    function setupStyled(clipboard?: DocsClipboard): Example {
+      return setup(clipboard, StyledExampleHostComponent);
     }
 
-    it('adds a third tab after HTML and TS, with the same relations', async () => {
+    it('adds a third option after HTML and TS, controlling the same code', async () => {
       const example = setupStyled();
+      const region = query(example.element, '.docs-example-code');
 
-      await openCode(example);
+      expect(options(example.element).map(text)).toEqual(['HTML', 'TS', 'CSS']);
+      expect(option(example.element, 'CSS').getAttribute('aria-controls')).toBe(region.id);
 
-      const panel = query(example.element, '[role="tabpanel"]');
-      const css = tab(example.element, 'CSS');
+      await show(example, 'CSS');
 
-      expect(tabs(example.element).map(text)).toEqual(['HTML', 'TS', 'CSS']);
-      expect(css.getAttribute('aria-selected')).toBe('false');
-      expect(css.tabIndex).toBe(-1);
-      expect(css.getAttribute('aria-controls')).toBe(panel.id);
-
-      css.click();
-      await example.settle();
-
-      expect(selected(example.element)).toBe('CSS');
-      expect(css.tabIndex).toBe(0);
-      expect(panel.getAttribute('aria-labelledby')).toBe(css.id);
+      expect(pressed(example.element)).toEqual(['CSS']);
       expect(query(example.element, 'pre').getAttribute('aria-label')).toBe('CSS code');
     });
 
     it('shows each file exactly as it is compiled; the class points to the stylesheet', async () => {
       const example = setupStyled();
 
-      await openCode(example);
+      await show(example);
 
       expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_HTML);
 
-      tab(example.element, 'TS').click();
-      await example.settle();
+      await show(example, 'TS');
 
       expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_TS);
       expect(STYLED_EXAMPLE_TS).toContain("styleUrl: './styled.example.css'");
 
-      tab(example.element, 'CSS').click();
-      await example.settle();
+      await show(example, 'CSS');
 
       expect(query(example.element, 'pre').textContent).toBe(STYLED_EXAMPLE_CSS);
     });
@@ -484,109 +663,40 @@ describe('ExampleComponent', () => {
       expect(getComputedStyle(badge).borderTopLeftRadius).not.toBe('0px');
     });
 
-    it('moves through all three tabs with the arrow keys and wraps at both ends', async () => {
-      const example = setupStyled();
-
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-
-      const visited: string[] = [];
-
-      for (let step = 0; step < 3; step++) {
-        await press(example, 'ArrowRight');
-        visited.push(selected(example.element));
-      }
-
-      expect(visited).toEqual(['TS', 'CSS', 'HTML']);
-
-      await press(example, 'ArrowLeft');
-
-      expect(selected(example.element)).toBe('CSS');
-      expect(document.activeElement).toBe(tab(example.element, 'CSS'));
-    });
-
-    it('jumps to HTML and CSS with Home and End', async () => {
-      const example = setupStyled();
-
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-      await press(example, 'End');
-
-      expect(selected(example.element)).toBe('CSS');
-      expect(document.activeElement).toBe(tab(example.element, 'CSS'));
-
-      await press(example, 'Home');
-
-      expect(selected(example.element)).toBe('HTML');
-      expect(document.activeElement).toBe(tab(example.element, 'HTML'));
-    });
-
-    it('reverses the arrow keys in a right-to-left page', async () => {
-      const example = setupStyled();
-
-      TestBed.inject(ArnConfigService).update({ direction: 'rtl' });
-      await openCode(example);
-      tab(example.element, 'HTML').focus();
-      await press(example, 'ArrowLeft');
-
-      expect(selected(example.element)).toBe('TS');
-
-      await press(example, 'ArrowRight');
-      await press(example, 'ArrowRight');
-
-      expect(selected(example.element)).toBe('CSS');
-    });
-
-    it('copies the stylesheet when the CSS tab is selected', async () => {
+    it('copies the stylesheet when the CSS option is pressed, and focus returns to it', async () => {
       const copied: string[] = [];
-      const example = setup(
-        {
-          writeText: (value) => {
-            copied.push(value);
+      const example = setupStyled(recording(copied));
 
-            return Promise.resolve();
-          },
-        },
-        StyledExampleHostComponent,
-      );
-
-      await openCode(example);
-      tab(example.element, 'CSS').click();
-      await example.settle();
-      copyButton(example.element).click();
-      await example.settle();
+      await show(example, 'CSS');
+      await copy(example);
 
       expect(copied).toEqual([STYLED_EXAMPLE_CSS]);
+
+      await hide(example);
+
+      expect(document.activeElement).toBe(option(example.element, 'CSS'));
     });
 
-    it('keeps every tab at least 24px tall in compact mode', async () => {
+    it('keeps every option at least 24px tall in compact mode', async () => {
       const example = setupStyled();
 
       TestBed.inject(ArnConfigService).update({ density: 'compact' });
-      await openCode(example);
+      await show(example);
 
-      expect(tabs(example.element).length).toBe(3);
+      expect(options(example.element).length).toBe(3);
 
-      for (const button of tabs(example.element)) {
+      for (const button of options(example.element)) {
         expect(button.getBoundingClientRect().height).toBeGreaterThanOrEqual(24);
       }
     });
 
-    for (const mode of [
-      { name: 'light', config: { colorScheme: 'light' } },
-      { name: 'dark', config: { colorScheme: 'dark' } },
-      { name: 'RTL', config: { direction: 'rtl' } },
-      { name: 'compact', config: { density: 'compact' } },
-    ] as const satisfies readonly { name: string; config: ArnConfig }[]) {
+    for (const mode of A11Y_MODES) {
       it(`has no violations in ${mode.name} mode with highlighted CSS`, async () => {
         const example = setupStyled();
 
         TestBed.inject(ArnConfigService).update(mode.config);
-        await openCode(example);
-        tab(example.element, 'CSS').click();
-        await example.settle();
-        await TestBed.inject(DocsHighlighterService).load();
-        await example.settle();
+        await show(example, 'CSS');
+        await highlighted(example);
 
         expect(example.element.querySelectorAll('pre span').length).toBeGreaterThan(3);
         await expectNoA11yViolations(example.element);
