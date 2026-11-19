@@ -72,7 +72,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 - [ ] Vitest çıktısında 7 "Pre-transform error" (`@arn-ng/ui` `./core` exports) uyarısı: kaynağını bul. Değişiklikten bağımsız, geri alınca da çıkıyor
   - Bulgu (`ci/playwright-no-deps` dalı): uyarılar `./core` ve `./locales/tr` export'larının çözümlenememesi; `node_modules/@arn-ng/ui` `projects/ui`'ya junction. `test:ci` çıkış kodu 0, testler geçiyor. Main'de ayrıca ölçülmedi, yalnız bu dalda gözlendi
 - [ ] check-md betiğini repoya al (`tools/check-md.mjs`, bağımlılıksız: bağlantı + 150 satır limiti), npm script + CI adımı
-- [ ] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir (docs `contrast.ts` alfa desteksiz, ui `testing/theme.spec.ts` helper'ı alfa destekli). İkisi de yalnız akromatik `oklch(L 0 0)` okuyor; kromatik oklch desteği şart (button destructive `--arn-red-*`, renkli kod paleti). Dal `test/shared-contrast-helper`, örnek kartı PR'ından önce
+- [x] Yinelenen kontrast helper'larını tek paylaşımlı helper'da birleştir. Bitti (dal `test/shared-contrast-helper`): `projects/ui/testing/contrast.ts`, kromatik ve alfalı oklch, gamut dışı kanal kırpılır; docs `testing/contrast.ts` kaldırıldı (decisions 2026-11 "Paylaşımlı kontrast helper'ı")
 - [ ] button bileşeninde `-webkit-tap-highlight-color` + `:active` geri bildirimi kararı (ripple direktifi bunu kendisi yapmaz)
 
 ## Doğrulama bekleyenler

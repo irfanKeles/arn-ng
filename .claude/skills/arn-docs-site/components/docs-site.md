@@ -113,7 +113,7 @@ Yok.
 
 ## 8. Testler
 
-`projects/docs/src/app/**/*.spec.ts` (Vitest browser mode, zoneless). axe yardımcısı kütüphaneninkidir (`projects/ui/testing/a11y.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`, `nextTask`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
+`projects/docs/src/app/**/*.spec.ts` (Vitest browser mode, zoneless). axe ve kontrast yardımcıları kütüphanenindir (`projects/ui/testing/a11y.ts`, `projects/ui/testing/contrast.ts`, göreli import). Yardımcılar: `testing/dom.ts` (`query`, `queryAs`, `text`, `resetDocument`, `nextTask`), `testing/fake-storage.ts`. Her spec `afterEach`'te `<html>` sınıflarını, `dir`, `data-density` ve depo anahtarını temizler.
 
 | Spec | Kapsam |
 |---|---|
