@@ -8,7 +8,8 @@
 - Hata, kontrol `invalid` iken `forms.showErrorsOn`'un (`ArnConfig`'ten) seçtiği durum gerçekleşince görünür; `invalid` input'u elle (formsuz) verilerek de tetiklenebilir.
 - `disabled` doğru uygulanır: FVC'de `setDisabledState` yok, formdan gelen disabled `disabled` input'una bağlanır; formdan ve input'tan gelen iki yol da test edilir.
 - `forms.showErrorsOn` değerleri: `touched` (varsayılan) ve `dirty`. `submitted` kaldırıldı (Signal Forms'ta karşılıksız, `FieldState`'te `submitted` yok): tipte derleme hatası, runtime'da `sanitizeConfig` `forms`'u atar ve dev modda uyarır.
-- Bilinen boşluklar (Angular tarafı; input'ta testle kilitlenir, giderildiğinde test kırılır): `ngModel` yolunda `required` bağlanmaz; reactive yolda `readonly`, `name`, `min`, `max` bağlanmaz; `touch` blur'da emit edilir; `touched` 22.0'dan beri `touched` input + `touch` output.
+- Bilinen boşluklar (Angular tarafı; input'ta testle kilitlenir, giderildiğinde test kırılır): `ngModel` yolunda `required` bağlanmaz; reactive yolda `readonly`, `name`, `min`, `max` bağlanmaz.
+- Sözleşme (boşluk değil): kontrol blur'da `touch` output'unu emit eder; form kontrolü `touched` durumunu buradan alır. `touched` 22.0'dan beri `touched` input + `touch` output çiftidir.
 - Minimum `@angular/forms` / `@angular/core`: `^22.2.5` (öncesinde `FormValueControl` + reactive `updateOn: 'blur'` / `'submit'` bozuk).
 
 ## Erişilebilirlik (a11y) — her bileşende zorunlu (eski §8)

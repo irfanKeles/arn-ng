@@ -35,7 +35,7 @@ Tablo asgari okuma listesidir; yeni bileşen birkaç satırı birleştirir (ilk 
 - Headless katman: **Angular CDK**. Başka bir headless kütüphane (Spartan brain, ng-primitives vb.) EKLENMEZ. Eksik bileşenler CDK primitifleri (overlay, a11y, listbox, menu, dialog, bidi, scrolling) üzerine yazılır.
 - Görsel ve bileşen dili referansı: **shadcn/ui** (Spartan UI gibi: headless taban CDK, üstüne stil). Yalnızca renk değil; bileşen kataloğu, varyant adları (button: `default`, `secondary`, `destructive`, `outline`, `ghost`, `link`), boyut adları ve ölçüler (radius, boşluk, focus ring) shadcn'i izler. Kod kopyalanmaz, referans alınır; kendi token'larımızla Angular'a çevrilir. Her sapma bileşenin referans dosyasına ([rules/component-files.md](rules/component-files.md)) gerekçesiyle yazılır. Bizim eklerimiz: `xl` boyutu (xs-lg shadcn'de var), density, ileride mask vb.
 - Hedef: PrimeNG kadar profesyonel, kararlı, tutarlı; kullanıcıya ve geliştiriciye sorun çıkarmayan bir kütüphane. Hız değil sağlamlık önceliklidir.
-- Hedef tarayıcı: Angular'ın desteklediği güncel (evergreen) tarayıcılar, yaklaşık son 1 yıllık sürümler. `oklch` fallback'siz kullanılabilir.
+- Hedef tarayıcı (minimum): Chrome 123, Edge 123, Firefox 120, Safari 17.5 (macOS ve iOS). Tabanı `light-dark()` belirler; `oklch`, `color-mix` ve kullanılan diğer özellikler bunun altında. Fallback yazılmaz; tabanı yükselten yeni bir CSS özelliği karar maddesi ister ([decisions/2026-11.md](decisions/2026-11.md) "Tarayıcı tabanı").
 
 ## Bileşen "Bitti" tanımı (Definition of Done) (eski §12)
 
