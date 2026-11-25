@@ -21,6 +21,36 @@ class ProbeLink {
   }
 }
 
+/**
+ * Adds its own click listener on the link BEFORE the helper runs, as a directive created earlier
+ * (or a RouterLink-like listener) would. Only a capture listener of the helper still runs first.
+ */
+@Directive({ selector: 'a[arnEarlyProbeLink]' })
+class EarlyProbeLink {
+  readonly disabled = input(false, { transform: booleanAttribute });
+  readonly early = vi.fn();
+
+  constructor() {
+    const host = inject<ElementRef<HTMLElement>>(ElementRef).nativeElement;
+
+    host.addEventListener('click', this.early);
+    disabledLink(host, this.disabled);
+  }
+}
+
+@Component({
+  selector: 'arn-disabled-link-early-host',
+  imports: [EarlyProbeLink, ProbeLink],
+  template: `
+    <a class="early" arnEarlyProbeLink href="#x" [disabled]="disabled()">Early</a>
+    <a class="bare" arnProbeLink href="#y" [disabled]="disabled()">No tabindex</a>
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class EarlyHost {
+  readonly disabled = signal(false);
+}
+
 // The ancestor listener is added on the fixture root in render()
 @Component({
   selector: 'arn-disabled-link-host',
@@ -131,5 +161,68 @@ describe('disabledLink (internal)', () => {
     await stable();
 
     expect(removed).toHaveBeenCalledWith('click', expect.any(Function), { capture: true });
+  });
+
+  describe('order and missing tabindex', () => {
+    async function renderEarly(): Promise<{
+      host: EarlyHost;
+      early: EarlyProbeLink;
+      link: (selector: string) => HTMLElement;
+      stable: () => Promise<void>;
+    }> {
+      const fixture = TestBed.createComponent(EarlyHost);
+
+      await fixture.whenStable();
+
+      const root = fixture.nativeElement as HTMLElement;
+      const link = (selector: string): HTMLElement => {
+        const found = root.querySelector<HTMLElement>(selector);
+
+        if (!found) {
+          throw new Error(`Expected ${selector}`);
+        }
+
+        return found;
+      };
+      const early = fixture.debugElement.query((node) => node.nativeElement === link('a.early'));
+
+      return {
+        host: fixture.componentInstance,
+        early: early.injector.get(EarlyProbeLink),
+        link,
+        stable: () => fixture.whenStable(),
+      };
+    }
+
+    it('stops a click listener added to the link before the helper (capture phase)', async () => {
+      const { host, early, link, stable } = await renderEarly();
+
+      click(link('a.early'));
+      expect(early.early).toHaveBeenCalledTimes(1);
+
+      host.disabled.set(true);
+      await stable();
+
+      const event = click(link('a.early'));
+
+      expect(event.defaultPrevented).toBe(true);
+      expect(early.early).toHaveBeenCalledTimes(1);
+    });
+
+    it('removes the -1 it added when the link had no tabindex', async () => {
+      const { host, link, stable } = await renderEarly();
+
+      expect(link('a.bare').hasAttribute('tabindex')).toBe(false);
+
+      host.disabled.set(true);
+      await stable();
+
+      expect(link('a.bare').getAttribute('tabindex')).toBe('-1');
+
+      host.disabled.set(false);
+      await stable();
+
+      expect(link('a.bare').hasAttribute('tabindex')).toBe(false);
+    });
   });
 });
