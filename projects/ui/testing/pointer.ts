@@ -1,8 +1,11 @@
 import type { CDPSession } from '@vitest/browser-playwright';
-import { cdp } from 'vitest/browser';
+import { cdp, commands } from 'vitest/browser';
+import { isChromium } from './browser';
 
-// Used in tests only; not exported from any entry point. Real (trusted) mouse input through the
-// Chrome DevTools Protocol, for states a synthetic event cannot reach (:active, a disabled button).
+// Used in tests only; not exported from any entry point. Real (trusted) mouse input, for states a
+// synthetic event cannot reach (:active, a disabled button): through the Chrome DevTools Protocol
+// in Chromium, through Playwright's page.mouse (the arnMouse browser command) in Firefox and
+// WebKit (Playwright).
 
 /** The center of the element in the coordinates of the top-level page (the test runs in a frame). */
 function pagePoint(element: Element): { x: number; y: number } {
@@ -26,17 +29,31 @@ function pagePoint(element: Element): { x: number; y: number } {
 // The Playwright provider's session (Chromium): `send` speaks the DevTools Protocol
 const session = (): CDPSession => cdp();
 
-async function mouse(
-  type: 'mouseMoved' | 'mousePressed' | 'mouseReleased',
-  element: Element,
-): Promise<void> {
+type MouseType = 'mouseMoved' | 'mousePressed' | 'mouseReleased';
+
+const COMMAND_TYPE = { mouseMoved: 'move', mousePressed: 'down', mouseReleased: 'up' } as const;
+
+async function mouseAt(type: MouseType, x: number, y: number): Promise<void> {
+  if (!isChromium) {
+    await commands.arnMouse(COMMAND_TYPE[type], x, y);
+
+    return;
+  }
+
   await session().send('Input.dispatchMouseEvent', {
     type,
-    ...pagePoint(element),
+    x,
+    y,
     button: type === 'mouseMoved' ? 'none' : 'left',
     buttons: type === 'mousePressed' ? 1 : 0,
     clickCount: type === 'mouseMoved' ? 0 : 1,
   });
+}
+
+async function mouse(type: MouseType, element: Element): Promise<void> {
+  const { x, y } = pagePoint(element);
+
+  await mouseAt(type, x, y);
 }
 
 /** Moves the mouse onto the element and presses the primary button; resolves the release. */
@@ -59,5 +76,5 @@ export async function moveOff(element: Element): Promise<void> {
   const { x, y } = pagePoint(element);
   const { height } = element.getBoundingClientRect();
 
-  await session().send('Input.dispatchMouseEvent', { type: 'mouseMoved', x, y: y + height * 4 });
+  await mouseAt('mouseMoved', x, y + height * 4);
 }

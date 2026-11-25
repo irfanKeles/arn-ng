@@ -932,13 +932,13 @@ describe('ArnButton', () => {
   });
 
   describe('tap highlight', () => {
-    it('turns off the browser tap highlight (feedback is the :active color)', async () => {
+    it('turns off the browser tap highlight (feedback is the :active color)', async ({ skip }) => {
       const { root } = await render('<button arnButton type="button">Save</button>');
-      const style = getComputedStyle(el(root)) as CSSStyleDeclaration & {
-        webkitTapHighlightColor?: string;
-      };
+      const value = getComputedStyle(el(root)).getPropertyValue('-webkit-tap-highlight-color');
 
-      expect(style.webkitTapHighlightColor).toBe('rgba(0, 0, 0, 0)');
+      // Firefox and WebKit (Playwright) on desktop do not expose the property: nothing to read
+      skip(!value, 'engine does not expose -webkit-tap-highlight-color');
+      expect(value).toBe('rgba(0, 0, 0, 0)');
     });
   });
 

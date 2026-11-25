@@ -41,6 +41,7 @@
             "buildTarget": "ui:test-build",
             "tsConfig": "projects/ui/tsconfig.spec.json",
             "setupFiles": ["projects/ui/testing/test-setup.ts"],
+            "runnerConfig": "projects/ui/vitest-base.config.mts",
             "browsers": ["chromium"],
             "browserViewport": "800x600",
             "coverageInclude": ["projects/ui/**/*.ts"],
