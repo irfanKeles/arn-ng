@@ -9,8 +9,9 @@ import {
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterLink } from '@angular/router';
 import { ArnConfigDirective, type ArnDirection } from '@arn-ng/ui/core';
-import { cdp, userEvent } from 'vitest/browser';
+import { cdp, commands, page, userEvent } from 'vitest/browser';
 import { a11yViolations, expectNoA11yViolations } from '../../testing/a11y';
+import { emulateReducedMotion, isChromium, tabFocusesLinks } from '../../testing/browser';
 import { moveOff, moveOnto } from '../../testing/pointer';
 import { ArnBadge } from './badge';
 import type { ArnBadgeVariant } from './badge.types';
@@ -433,6 +434,16 @@ describe('ArnBadge', () => {
       expect(style.visibility).toBe('visible');
       expect(style.contentVisibility).not.toBe('hidden');
 
+      if (!isChromium) {
+        // Firefox and WebKit (Playwright) have no CDP: Playwright's ARIA snapshot, computed by
+        // Playwright itself (not the browser's tree), must still contain the label
+        expect(await commands.arnAriaSnapshot(page.elementLocator(label).selector)).toContain(
+          'Online',
+        );
+
+        return;
+      }
+
       // What Chromium gives to a screen reader: an exposed (not ignored) text node "Online". The
       // test runs in a child frame of the runner page, so every frame's tree is read.
       const { frameTree } = await cdp().send('Page.getFrameTree');
@@ -573,16 +584,14 @@ describe('ArnBadge', () => {
       expect(getComputedStyle(spinner).animationName).toBe('arn-badge-spin');
       expect(getComputedStyle(spinner).animationDuration).toBe('1s');
 
-      await cdp().send('Emulation.setEmulatedMedia', {
-        features: [{ name: 'prefers-reduced-motion', value: 'reduce' }],
-      });
+      await emulateReducedMotion(true);
 
       try {
         expect(matchMedia('(prefers-reduced-motion: reduce)').matches).toBe(true);
         expect(getComputedStyle(spinner).animationDuration).toBe('3s');
         expect(getComputedStyle(spinner).animationName).toBe('arn-badge-spin');
       } finally {
-        await cdp().send('Emulation.setEmulatedMedia', { features: [] });
+        await emulateReducedMotion(false);
       }
     });
 
@@ -637,7 +646,11 @@ describe('ArnBadge', () => {
       }
     });
 
-    it('draws a 3px ring in --arn-ring on keyboard focus, the border in the ring color', async () => {
+    it('draws a 3px ring in --arn-ring on keyboard focus, the border in the ring color', async ({
+      skip,
+    }) => {
+      skip(!(await tabFocusesLinks(document)), 'engine does not Tab-focus links');
+
       const { root } = await render('<a arnBadge href="/x" variant="outline">Link</a>');
       const link = el(root);
 
@@ -660,7 +673,9 @@ describe('ArnBadge', () => {
       ]);
     });
 
-    it('uses --arn-destructive for the destructive ring', async () => {
+    it('uses --arn-destructive for the destructive ring', async ({ skip }) => {
+      skip(!(await tabFocusesLinks(document)), 'engine does not Tab-focus links');
+
       const { root } = await render('<a arnBadge href="/x" variant="destructive">Link</a>');
 
       window.focus(); // the test frame, so Tab moves inside it
@@ -672,7 +687,9 @@ describe('ArnBadge', () => {
       );
     });
 
-    it('Tab skips <arn-badge>', async () => {
+    it('Tab skips <arn-badge>', async ({ skip }) => {
+      skip(!(await tabFocusesLinks(document)), 'engine does not Tab-focus links');
+
       const { root } = await render(
         '<arn-badge>Static</arn-badge><a arnBadge href="/x" class="next">Link</a>',
       );
@@ -682,6 +699,21 @@ describe('ArnBadge', () => {
       await userEvent.tab();
 
       expect(document.activeElement).toBe(el(root, '.next'));
+    });
+
+    it('draws the ring for focus() too, where the engine matches :focus-visible', async ({
+      skip,
+    }) => {
+      const { root } = await render('<a arnBadge href="/x" variant="outline">Link</a>');
+      const link = el(root);
+
+      link.focus();
+
+      expect(document.activeElement).toBe(link);
+      skip(!link.matches(':focus-visible'), 'engine does not match :focus-visible after focus()');
+      expect(getComputedStyle(link).boxShadow).toContain(
+        `${resolved(root, 'var(--arn-ring)')} 0px 0px 0px 3px`,
+      );
     });
   });
 

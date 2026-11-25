@@ -124,9 +124,12 @@
 
 /*
  * Loading: the spinner takes the place of the start icon (the <svg> right after it). It keeps
- * turning under reduced motion, three times slower.
+ * turning under reduced motion, three times slower. The spinner exists only while loading, so
+ * the rule keys on it, not on [data-loading]: WebKit (Playwright) does not restyle a `+` sibling
+ * when the host attribute is set before the spinner is inserted (Angular sets host bindings
+ * first).
  */
-:where(.arn-badge[data-loading]) > :where(.arn-badge-spinner + svg) {
+:where(.arn-badge) > :where(.arn-badge-spinner + svg) {
   display: none;
 }
 

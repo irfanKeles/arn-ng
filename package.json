@@ -9,6 +9,8 @@
     "test": "ng test ui",
     "test:docs": "ng test docs",
     "test:ci": "ng test --watch=false --headless --coverage",
+    "test:firefox": "ng test ui --watch=false --headless --browsers=firefox",
+    "test:webkit": "ng test ui --watch=false --headless --browsers=webkit",
     "build:ui": "ng build ui",
     "build:ui:watch": "ng build ui --watch --configuration development",
     "build:docs": "ng build docs",
