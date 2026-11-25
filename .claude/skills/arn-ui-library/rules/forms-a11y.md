@@ -40,6 +40,28 @@
 - Sözleşme (boşluk değil): kontrol blur'da `touch` output'unu emit eder; form kontrolü `touched` durumunu buradan alır. `touched` 22.0'dan beri `touched` input + `touch` output çiftidir.
 - Minimum `@angular/forms` / `@angular/core`: `^22.2.5` (öncesinde `FormValueControl` + reactive `updateOn: 'blur'` / `'submit'` bozuk).
 
+## Yerel input/textarea direktifi (`arnInput`)
+
+Ölçüm: arnInput spike'ı (dal `docs/input-spike`, geçici probe, Angular 22.2.x; Chromium, Firefox, WebKit (Playwright)). Karar: [decisions/2026-11.md](../decisions/2026-11.md) "arnInput ölçüm spike'ı". Aşağıdaki her hücre üç motorda ve `<input>` / `<textarea>`'da aynı.
+
+- Yukarıdaki doğrulama tablosunun satır 3 ve 5'i FVC (özel kontrol) içindir; arnInput için geçerli değil. Yerel elemanda klasik yollar `DefaultValueAccessor` üzerinden çalışır, statik doğrulayıcı öznitelikleri devreye girer.
+
+| Hücre | `[formField]` | `[formControl]` | `formControlName` | `[(ngModel)]` |
+|---|---|---|---|---|
+| Değer gidiş-dönüş (model→DOM, yazma→model) | Çalışır | Çalışır | Çalışır | Çalışır |
+| disabled (native `disabled` yazılır) | Şemada `disabled()` | `disable()` | `disable()` | `[disabled]` |
+| blur'da touched | Evet | Evet | Evet | Evet |
+| Host'ta `ng-*` sınıfları | Yok | Var | Var | Var |
+| Host'ta `aria-invalid` | Yazılmaz | Yazılmaz | Yazılmaz | Yazılmaz |
+| Statik `required` | Derlenmez (`NG8022`); şemadaki `required(s)` native `required`'ı yazar | Doğrulama üretir | Doğrulama üretir | Doğrulama üretir |
+| `[required]` binding | Derlenmez (`NG8022`) | Doğrulama üretir (M3-A: `required` input'lu probe ile ölçüldü; boş direktifle ÖLÇÜLMEDİ) | ÖLÇÜLMEDİ | ÖLÇÜLMEDİ |
+
+- Durum okuma (M3): direktif `required` input'u tanımlarsa `[required]` bağlamasını yutar, native `required` yazılmaz (`el.required` false); bu yüzden tanımlanmaz. `required` ve `aria-invalid` DOM'dan (MutationObserver) okunur: statik öznitelik, `[required]` ve `RequiredValidator`'ın yazdığı öznitelik görünür. TS'teki `Validators.required` DOM'a yazmaz (öznitelik yok, `el.required` false).
+- "Boş mu" `input` olayıyla izlenemez: programatik yazımı (`setValue`, `[formField]` modeli, `ngModel`) kaçırır. `:placeholder-shown` (`placeholder=" "`) programatik yazımda da doğru sonuç verir.
+- `aria-invalid` çakışması: direktif host'ta `[attr.aria-invalid]` bağlarsa ilk render'da tüketicinin statik değerini ve `[attr.aria-invalid]` bağlamasını ezer; sonra son yazan kazanır; direktif `null` verirse tüketicinin statik özniteliği silinir. arnInput `aria-invalid` yazmaz.
+- `:user-invalid` (M5, `required` + boş): yalnız focus+blur eşleşmez; yaz+sil, odak içerideyken eşleşmez; yaz+sil+blur eşleşir. `aria-invalid` (`true` / `false`) sonucu değiştirmez. `Validators.required` ile eşleşmez (çıkarım: native `required` yok). `[aria-invalid=true], :user-invalid:not([aria-invalid=false])` birleşimi ÖLÇÜLMEDİ.
+- NgControl (M6, yalnız ölçüm; "`NgControl` enjekte edilmez" geçerli): `inject(NgControl, {self, optional})` dört yolda gelir (`[formField]`'da `InteropNgControl`), `invalid` / `touched` / `errors` okunur. Import FESM'e `@angular/forms` import'u koyar; peer listesinde forms yokken ng-packagr uyarı vermez.
+
 ## Erişilebilirlik (a11y) — her bileşende zorunlu (eski §8)
 
 - Tam klavye kullanımı: Tab/Shift+Tab, ok tuşları, Enter, Space, Escape, Home/End (bileşen türüne göre WAI-ARIA Authoring Practices kalıbına uy).
