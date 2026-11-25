@@ -9,6 +9,8 @@ export type { ArnConfigRef } from './config/config.scope';
  * release). The `ɵ` prefix marks it, as in Angular.
  */
 export { devWarn as ɵdevWarn } from './config/dev-mode';
+/** Internal, like ɵdevWarn: the disabled-link behavior shared by ArnButton and ArnBadge. */
+export { disabledLink as ɵdisabledLink } from './a11y/disabled-link';
 export { ArnConfigService } from './config/config.service';
 export type {
   ArnColorScheme,

@@ -8,6 +8,7 @@
 |---|---|
 | Basit, native elemanı olanlar (input) | Hem attribute (`<input arnInput>`) hem element (`<arn-input>`) |
 | button (0.1.0) | SADECE attribute (`button[arnButton]`, `a[arnButton]`); `<arn-button>` ertelendi (ROADMAP "Ertelenenler", [karar](../decisions/2026-11.md)) |
+| badge | Element (`<arn-badge>`, statik) ve attribute (`a[arnBadge]`, link) aynı `@Component`'te, tek sınıf `ArnBadge`; sarmalayıcı yok, iki yüz de host'u boyar ([karar](../decisions/2026-11.md) "ArnBadge uygulaması") |
 | Karmaşık (select, mask input, dialog, date picker, tooltip vb.) | SADECE element (`<arn-select>`) |
 
 - Attribute kullanımda gerçek native eleman kalır (`type`, `form`, `aria-*` vb. native davranış bedavaya çalışır).

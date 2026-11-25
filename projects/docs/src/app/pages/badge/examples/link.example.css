@@ -1,0 +1,7 @@
+/* Layout of the preview only; the badges need no CSS of their own */
+.badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--arn-spacing) * 3);
+  align-items: center;
+}

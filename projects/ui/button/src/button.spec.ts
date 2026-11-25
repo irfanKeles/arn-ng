@@ -18,6 +18,7 @@ import {
 import { userEvent } from 'vitest/browser';
 import { a11yViolations, expectNoA11yViolations } from '../../testing/a11y';
 import { pressAndHold } from '../../testing/pointer';
+import { ArnBadge } from '../../badge/src/badge';
 import { ArnButton } from './button';
 import type { ArnButtonVariant } from './button.types';
 
@@ -1000,5 +1001,114 @@ describe('ArnButton on the server', () => {
     expect(warn).not.toHaveBeenCalled();
     fixture.destroy();
     warn.mockRestore();
+  });
+});
+
+// With the real ArnBadge in the badge slot (the badge PR); the tests above stay as they were.
+@Component({
+  selector: 'arn-button-badge-host',
+  imports: [ArnButton, ArnBadge],
+  template:
+    '<button arnButton type="button">Inbox<arn-badge arnButtonBadge [count]="3" /></button>',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+class BadgeHost {}
+
+describe('ArnButton with an ArnBadge in the badge slot', () => {
+  let fixture: ComponentFixture<BadgeHost> | undefined;
+
+  async function render(template: string): Promise<HTMLElement> {
+    TestBed.overrideTemplate(BadgeHost, template);
+
+    const created = TestBed.createComponent(BadgeHost);
+
+    fixture = created;
+    await created.whenStable();
+
+    return created.nativeElement as HTMLElement;
+  }
+
+  function badgeOf(root: Element, selector = 'arn-badge'): HTMLElement {
+    const found = root.querySelector<HTMLElement>(selector);
+
+    if (!found) {
+      throw new Error(`Expected ${selector}`);
+    }
+
+    return found;
+  }
+
+  /** The <style> element of each component, by a selector its rules contain. */
+  function styleOf(selector: string): HTMLStyleElement {
+    const found = Array.from(document.head.querySelectorAll('style')).find((style) =>
+      style.textContent.includes(selector),
+    );
+
+    if (!found) {
+      throw new Error(`Expected the stylesheet with ${selector}`);
+    }
+
+    return found;
+  }
+
+  const TEMPLATE = `<button arnButton type="button" iconOnly aria-label="Notifications, 3 unread">${ICON}<arn-badge arnButtonBadge [count]="3" /></button>
+    <button arnButton type="button">Inbox<arn-badge class="zero" arnButtonBadge [count]="0" /></button>
+    <button arnButton type="button">Inbox<arn-badge class="dot" arnButtonBadge dot /></button>`;
+
+  afterEach(() => {
+    fixture?.destroy();
+    fixture = undefined;
+    vi.restoreAllMocks();
+  });
+
+  it('sits on the corner, hidden from assistive technology, the count in the button name', async () => {
+    const root = await render(TEMPLATE);
+    const button = badgeOf(root, 'button').getBoundingClientRect();
+    const badge = badgeOf(root);
+    const style = getComputedStyle(badge);
+
+    expect(style.position).toBe('absolute');
+    expect(style.translate).toBe('35% -35%');
+    expect(badge.getBoundingClientRect().top).toBeLessThan(button.top);
+    expect(badge.getAttribute('aria-hidden')).toBe('true');
+    expect(badge.textContent.trim()).toBe('3');
+    await expectNoA11yViolations(root);
+  });
+
+  it('a count of 0 is hidden and a dot is shown (not caught by the :empty rule), in either stylesheet order', async () => {
+    const root = await render(TEMPLATE);
+    const buttonStyle = styleOf('.arn-button');
+    const badgeStyle = styleOf('.arn-badge');
+
+    for (const last of [buttonStyle, badgeStyle, buttonStyle]) {
+      document.head.appendChild(last);
+
+      expect(getComputedStyle(badgeOf(root, '.zero')).display).toBe('none');
+      expect(getComputedStyle(badgeOf(root, '.dot')).display).toBe('flex'); // absolute: inline-flex computes to flex
+      expect(getComputedStyle(badgeOf(root)).display).toBe('flex'); // absolute: inline-flex computes to flex
+      expect(badgeOf(root, '.dot').getBoundingClientRect().width).toBe(8);
+    }
+  });
+
+  it('does not count the badge as the name of an icon-only button', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    await render(
+      `<button arnButton type="button" iconOnly>${ICON}<arn-badge arnButtonBadge [count]="3" /></button>`,
+    );
+
+    expect(warn.mock.calls.map((call) => String(call[0]))).toEqual([
+      '[@arn-ng/ui] ArnButton: an icon-only button has no accessible name. Give it an aria-label (or aria-labelledby).',
+    ]);
+  });
+
+  it('a dot on the corner needs no label of its own', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+    await render(
+      '<button arnButton type="button" aria-label="Messages, new">Messages<arn-badge arnButtonBadge dot /></button>',
+    );
+
+    expect(warn).not.toHaveBeenCalled();
   });
 });

@@ -113,11 +113,11 @@
 
 <docs-section sectionId="badge" heading="Badge">
   <p>
-    A count inside the label is plain content. An element with the
-    <code>arnButtonBadge</code> attribute is placed on the top inline-end corner instead, ringed
-    with the background, mirrored in right-to-left pages and hidden while it is empty. The button
-    only places it; its look is your CSS (an <code>arn-badge</code> component comes later). Put the
-    count in the button's name too, as the second example does.
+    A <a routerLink="/badge">badge</a> inside the label is plain content. With the
+    <code>arnButtonBadge</code> attribute it is placed on the top inline-end corner instead, ringed
+    with the background, mirrored in right-to-left pages and hidden while it is empty or its count
+    is 0. A corner badge is hidden from assistive technology: put the count in the button's name, as
+    the second example does.
   </p>
 
   <docs-example [html]="badge.html" [ts]="badge.ts" [css]="badge.css">

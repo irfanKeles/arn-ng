@@ -143,6 +143,26 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
         loadComponent: () =>
           import('../pages/button/button-page.component').then((m) => m.ButtonPageComponent),
       },
+      {
+        slug: 'badge',
+        title: 'Badge',
+        sections: [
+          { id: 'import', heading: 'Import' },
+          { id: 'variants', heading: 'Variants' },
+          { id: 'count', heading: 'Count' },
+          { id: 'dot', heading: 'Dot' },
+          { id: 'icons', heading: 'Icons' },
+          { id: 'loading', heading: 'Loading' },
+          { id: 'as-a-link', heading: 'As a link' },
+          { id: 'disabled-link', heading: 'Disabled link' },
+          { id: 'on-a-button', heading: 'On a button' },
+          { id: 'accessibility', heading: 'Accessibility' },
+          { id: 'api', heading: 'API' },
+          { id: 'styling', heading: 'Styling' },
+        ],
+        loadComponent: () =>
+          import('../pages/badge/badge-page.component').then((m) => m.BadgePageComponent),
+      },
     ],
   },
   {

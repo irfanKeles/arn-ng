@@ -66,7 +66,7 @@ export const BUTTON_SLOTS: readonly DocsApiSlot[] = [
   {
     name: '[arnButtonBadge]',
     description:
-      'An element placed on the top inline-end corner, ringed with the background and hidden while empty. Its look is yours.',
+      'An element placed on the top inline-end corner, ringed with the background and hidden while empty; usually <arn-badge arnButtonBadge>, which hides itself from assistive technology.',
   },
 ];
 

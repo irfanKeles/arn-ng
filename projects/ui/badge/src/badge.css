@@ -1,0 +1,203 @@
+/*
+ * ArnBadge (arn-badge, a[arnBadge]). Unencapsulated: every selector is wrapped in :where() so it has
+ * zero specificity and a consumer's single-class rule wins.
+ *
+ * Component tokens (--arn-badge-*) are NOT defined here: each property reads its token with the
+ * library value as the fallback (decisions 2026-11, "ArnButton uygulaması" (2)). One size: the
+ * badge is not a control, so no --arn-control-* tokens and no density (decisions 2026-11,
+ * "ArnBadge uygulaması").
+ */
+
+:where(.arn-badge) {
+  box-sizing: border-box;
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--arn-badge-gap, var(--arn-spacing));
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: var(--arn-border-width) solid var(--arn-badge-border-color, transparent);
+  border-radius: var(--arn-badge-radius, var(--arn-radius-full));
+  min-inline-size: var(
+    --arn-badge-height,
+    calc(var(--arn-spacing) * 5 + var(--arn-border-width) * 2)
+  );
+  block-size: var(--arn-badge-height, calc(var(--arn-spacing) * 5 + var(--arn-border-width) * 2));
+  padding-block: 0;
+  padding-inline: var(--arn-badge-padding-inline, calc(var(--arn-spacing) * 2));
+  background: var(--arn-badge-bg, var(--arn-primary));
+  color: var(--arn-badge-fg, var(--arn-primary-foreground));
+  font-family: inherit;
+  font-size: var(--arn-badge-font-size, var(--arn-text-xs));
+  font-weight: var(--arn-font-weight-medium);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/*
+ * Hidden: a count of 0 (without showZero), an invalid count, or nothing to show. Its own rule, so
+ * it does not depend on the order of the stylesheets (ArnButton's [arnButtonBadge]:empty rule has
+ * the same zero specificity as the display above). The [hidden] attribute would lose to it.
+ */
+:where(.arn-badge[data-hidden]),
+:where(.arn-badge:empty) {
+  display: none;
+}
+
+/* A count: narrower padding, so a single digit is a circle (shadcn has no count) */
+:where(.arn-badge[data-count]) {
+  padding-inline: var(--arn-badge-padding-inline, calc(var(--arn-spacing) * 1.5));
+}
+
+/* Icons: projected <svg> children (start, end or both) and the spinner */
+:where(.arn-badge) > :where(svg) {
+  flex-shrink: 0;
+  inline-size: var(--arn-badge-icon-size, calc(var(--arn-spacing) * 3));
+  block-size: var(--arn-badge-icon-size, calc(var(--arn-spacing) * 3));
+  pointer-events: none;
+}
+
+/* Variants */
+:where(.arn-badge[data-variant='secondary']) {
+  background: var(--arn-badge-bg, var(--arn-secondary));
+  color: var(--arn-badge-fg, var(--arn-secondary-foreground));
+}
+
+/*
+ * As ArnButton: in dark, red-400 under white is 2.89:1, so the fill is darkened toward the
+ * background (60%: 6.94:1). Light: red-600 under white is 4.76:1 (gamut-clipped).
+ */
+:where(.arn-badge[data-variant='destructive']) {
+  background: var(
+    --arn-badge-bg,
+    light-dark(
+      var(--arn-destructive),
+      color-mix(in oklch, var(--arn-destructive) 60%, var(--arn-background))
+    )
+  );
+  color: var(--arn-badge-fg, var(--arn-destructive-foreground));
+}
+
+:where(.arn-badge[data-variant='outline']) {
+  border-color: var(--arn-badge-border-color, var(--arn-border));
+  background: var(--arn-badge-bg, transparent);
+  color: var(--arn-badge-fg, var(--arn-foreground));
+}
+
+/*
+ * Dot: a small circle without text (WCAG 1.4.11: at least 3:1 against the background). The inner
+ * span keeps the element from being :empty. Secondary and outline would be too faint as a fill, so
+ * they use --arn-muted-foreground (outline as a ring); destructive uses the plain red, no text on it.
+ */
+:where(.arn-badge[data-dot]) {
+  min-inline-size: 0;
+  inline-size: var(--arn-badge-dot-size, calc(var(--arn-spacing) * 2));
+  block-size: var(--arn-badge-dot-size, calc(var(--arn-spacing) * 2));
+  padding: 0;
+  border-width: 0;
+}
+
+:where(.arn-badge[data-dot][data-variant='secondary']) {
+  background: var(--arn-badge-bg, var(--arn-muted-foreground));
+}
+
+:where(.arn-badge[data-dot][data-variant='destructive']) {
+  background: var(--arn-badge-bg, var(--arn-destructive));
+}
+
+:where(.arn-badge[data-dot][data-variant='outline']) {
+  border-width: var(--arn-border-width);
+  border-color: var(--arn-badge-border-color, var(--arn-muted-foreground));
+}
+
+/* The name of a dot: read by assistive technology, not shown */
+:where(.arn-badge) > :where(.arn-badge-label) {
+  position: absolute;
+  overflow: hidden;
+  clip-path: inset(50%);
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  white-space: nowrap;
+}
+
+/*
+ * Loading: the spinner takes the place of the start icon (the <svg> right after it). It keeps
+ * turning under reduced motion, three times slower.
+ */
+:where(.arn-badge[data-loading]) > :where(.arn-badge-spinner + svg) {
+  display: none;
+}
+
+:where(.arn-badge) > :where(.arn-badge-spinner) {
+  animation: arn-badge-spin var(--arn-badge-spinner-duration, 1s) linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.arn-badge) > :where(.arn-badge-spinner) {
+    animation-duration: calc(var(--arn-badge-spinner-duration, 1s) * 3);
+  }
+}
+
+@keyframes arn-badge-spin {
+  to {
+    rotate: 1turn;
+  }
+}
+
+/* Link (a[arnBadge]): the only interactive face. No :active state, so the tap highlight stays */
+:where(a.arn-badge) {
+  text-decoration-line: none;
+}
+
+@media (hover: hover) {
+  :where(a.arn-badge:not([aria-disabled='true']):hover) {
+    background: var(
+      --arn-badge-bg-hover,
+      color-mix(in oklch, var(--arn-primary) 85%, var(--arn-background))
+    );
+  }
+
+  :where(a.arn-badge[data-variant='secondary']:not([aria-disabled='true']):hover) {
+    background: var(
+      --arn-badge-bg-hover,
+      color-mix(in oklch, var(--arn-secondary) 85%, var(--arn-foreground))
+    );
+  }
+
+  :where(a.arn-badge[data-variant='destructive']:not([aria-disabled='true']):hover) {
+    background: var(
+      --arn-badge-bg-hover,
+      light-dark(
+        color-mix(in oklch, var(--arn-destructive) 92%, var(--arn-black)),
+        color-mix(in oklch, var(--arn-destructive) 50%, var(--arn-background))
+      )
+    );
+  }
+
+  :where(a.arn-badge[data-variant='outline']:not([aria-disabled='true']):hover) {
+    background: var(--arn-badge-bg-hover, var(--arn-muted));
+  }
+}
+
+/*
+ * Focus: a 3px ring in the full ring color, as ArnButton; the border takes the ring color too.
+ * The transparent outline shows in forced-colors mode, where box-shadow is not painted.
+ */
+:where(a.arn-badge:focus-visible) {
+  outline: var(--arn-ring-width) solid transparent;
+  border-color: var(--arn-badge-ring-color, var(--arn-ring));
+  box-shadow: 0 0 0 var(--arn-ring-width) var(--arn-badge-ring-color, var(--arn-ring));
+}
+
+:where(a.arn-badge[data-variant='destructive']:focus-visible) {
+  border-color: var(--arn-badge-ring-color, var(--arn-destructive));
+  box-shadow: 0 0 0 var(--arn-ring-width) var(--arn-badge-ring-color, var(--arn-destructive));
+}
+
+/* Disabled link: exempt from contrast (WCAG 1.4.3, inactive components) */
+:where(a.arn-badge[aria-disabled='true']) {
+  cursor: default;
+  opacity: 0.5;
+}
