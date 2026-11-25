@@ -14,6 +14,7 @@ Her bileşen, directive, servis veya ortak yapının "nasıl yapıldı ve neden"
 | ripple (`arnRipple`, `ArnRippleDirective`, ripple token'ları) | directive | `@arn-ng/ui/ripple`, `@arn-ng/ui/theme.css` | [ripple.md](ripple.md) |
 | button (`button[arnButton]`, `a[arnButton]`, `ArnButton`, `--arn-button-*`, rozet yuvası) | directive | `@arn-ng/ui/button` | [button.md](button.md) |
 | badge (`arn-badge`, `a[arnBadge]`, `ArnBadge`, `--arn-badge-*`, sayaç, dot, loading) | element + directive | `@arn-ng/ui/badge` | [badge.md](badge.md) |
+| input (`input[arnInput]`, `textarea[arnInput]`, `inputSize`, `--arn-input-*`; tasarım özeti, kod yok) | directive | `@arn-ng/ui/input` (öneri) | [input.md](input.md) |
 
 Tür: `element`, `directive`, `element + directive`, `servis`, `ortak yapı`.
 
