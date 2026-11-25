@@ -49,7 +49,8 @@ jobs:
   # baseline (Firefox 120, Safari 17.5).
   browsers:
     runs-on: ubuntu-24.04
-    timeout-minutes: 10
+    # 15, not 10: the WebKit row also installs apt packages, and the mirror can be slow
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -66,9 +67,14 @@ jobs:
 
       - run: npm ci
 
-      # No --with-deps, as for Chromium above. If WebKit fails to launch on a missing system
-      # library, the fallback is `npx playwright install-deps webkit` for that row only.
+      # No --with-deps, as for Chromium above. Firefox launches with the image's libraries.
       - name: Playwright ${{ matrix.browser }}
         run: npx playwright install ${{ matrix.browser }}
+
+      # WebKit's system libraries (gtk4, gstreamer, libavif...) are not on the image: install only
+      # WebKit's apt packages, still without --with-deps (measured in the PR's CI run)
+      - name: WebKit system libraries
+        if: matrix.browser == 'webkit'
+        run: npx playwright install-deps webkit
 
       - run: npm run test:${{ matrix.browser }}
