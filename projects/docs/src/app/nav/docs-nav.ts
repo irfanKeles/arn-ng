@@ -53,6 +53,7 @@ export const DOCS_NAV: readonly DocsNavCategory[] = [
         title: 'Installation',
         sections: [
           { id: 'requirements', heading: 'Requirements' },
+          { id: 'browsers', heading: 'Browser support' },
           { id: 'install', heading: 'Install' },
           { id: 'theme', heading: 'Add the theme' },
           { id: 'configuration', heading: 'Provide the configuration' },

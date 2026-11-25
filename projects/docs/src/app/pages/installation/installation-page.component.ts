@@ -3,6 +3,7 @@ import { RouterLink } from '@angular/router';
 import { CodeBlockComponent } from '../../code/code-block.component';
 import { DocsSectionComponent } from '../../toc/docs-section.component';
 import {
+  BROWSER_SUPPORT,
   CONFIG_CODE,
   IMPORT_CODE,
   INSTALL_COMMAND,
@@ -20,6 +21,7 @@ import {
 })
 export class InstallationPageComponent {
   protected readonly peers = LIBRARY_PEERS;
+  protected readonly browsers = BROWSER_SUPPORT;
   protected readonly installCommand = INSTALL_COMMAND;
   protected readonly themeCode = THEME_CODE;
   protected readonly configCode = CONFIG_CODE;
