@@ -32,13 +32,13 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 
 ### Bileşenler ve doğrulama
 - [x] button (yalnız attribute: `button[arnButton]`, `a[arnButton]`, sınıf `ArnButton`; element ertelendi, bkz. Ertelenenler). Bitti (dal `feat/button`): docs "Components > Button", bileşen token'ları yedekle okunur, `[ripple]` `hostDirectives` ile, `components/button.md`, decisions 2026-11 "ArnButton uygulaması"
-- [ ] badge (`arn-badge` + `a[arnBadge]`, `ArnBadge`). Kütüphane bitti (dal `feat/badge`: `@arn-ng/ui/badge`, sayaç / dot / ikon / loading / link / devre dışı link, devre dışı link mantığı core'da `ɵdisabledLink`, `components/badge.md`, decisions 2026-11 "ArnBadge uygulaması" ve "Devre dışı link yardımcısı"). Kalan: docs "Components > Badge", Button sayfasının gerçek rozete geçişi, Verdaccio onuncu çalıştırma
+- [x] badge (`arn-badge` + `a[arnBadge]`, `ArnBadge`). Bitti (dal `feat/badge`: `@arn-ng/ui/badge`, sayaç / dot / ikon / loading / link / devre dışı link, devre dışı link mantığı core'da `ɵdisabledLink`, `components/badge.md`, decisions 2026-11 "ArnBadge uygulaması" ve "Devre dışı link yardımcısı"). Docs "Components > Badge" ve Button sayfasının gerçek rozete geçişi bitti (decisions 2026-11 "Badge docs sayfası"); Verdaccio onuncu çalıştırma geçti (`local-package-test.md`)
 - [ ] input (directive + element). Not: host `box-sizing: border-box` yazar (tokens-sizes.md). Kenarlık `--arn-input` (≥3:1, karar verildi). Docs araması yerel `<input>`'tan `arnInput`'a geçer; geçerken kenarlığı `--arn-muted-foreground`'dan `--arn-input`'a geçer. Form test matrisi: `ngModel`, `formControl`, `formControlName`, `[formField]`; bilinen boşluklar (`ngModel`'de `required`; reactive'de `readonly` / `name` / `min` / `max`; blur'da `touch`) testle kilitlenir (decisions 2026-11 "Signal Forms stratejisi" (5))
 - [ ] checkbox
 - [ ] select
 - [ ] dialog. Not: modal backdrop renk token'ı bununla gelir (bugün CDK'nın `cdk-overlay-dark-backdrop` rengi)
 - [ ] tooltip. Not: Esc ile kapanma, üzerine gelince içerik hover'da kalabilmeli (WCAG 1.4.13), `role="tooltip"` ve tetikleyicide `aria-describedby`. Overlay katmanı bunları bilerek yapmaz, bileşenin işidir
-- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Not: ilk bileşenle Verdaccio dokuzuncu çalıştırma yapıldı (Angular 22, `@arn-ng/ui/button`); en güncel Angular ve peer aralığındaki diğer majörler kısmı açık. Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `@angular/core` / `@angular/common` `^22.2.5`, `@angular/cdk` `^22.0.0`; `rules/architecture.md`)
+- [ ] Tüketici uyumluluk testi: `npm pack` ile paketlenen kütüphaneyi Angular 22 (peer aralığındaki majörler) ve en güncel Angular uygulamasında kurup derle (ilk bileşenle birlikte; `local-package-test.md` akışı temel alınır). Not: ilk bileşenle Verdaccio dokuzuncu çalıştırma yapıldı (Angular 22, `@arn-ng/ui/button`), badge ile onuncu (Angular 22.3.0, `@arn-ng/ui/badge`); en güncel Angular ve peer aralığındaki diğer majörler kısmı açık. Geçen her Angular/CDK majörünü `projects/ui/package.json` peer aralığına ekle (şu an `@angular/core` / `@angular/common` `^22.2.5`, `@angular/cdk` `^22.0.0`; `rules/architecture.md`)
 - [ ] Playwright ile çoklu tarayıcı testi (Chromium, Firefox, WebKit). Not: altyapı hazır, Vitest `browsers`'a `firefox` / `webkit` eklemek (`angular.json`)
 
 ## Faz 5 — İlk yayın
@@ -91,6 +91,7 @@ Her karar, yanında yazan bileşenlere başlamadan ÖNCE verilir. button bu kara
 
 ## Ertelenenler
 - `<arn-button>` elemanı (0.1.0'da yok; yalnız `button[arnButton]`, `a[arnButton]`). Gerekçe: sarmalayıcı `type` / `form` / `name` / `value` / `aria-*` / `href` / `disabled`'ı iç elemana iletmek zorunda kalır, bu da erişilebilirlik ve form riski taşır (decisions 2026-11). Yeniden değerlendirme koşulu: somut tüketici ihtiyacı, ayrıca iletilen öznitelik listesinin testle kilitlenmesi. Gelirse sınıf adı ayrı karar (directive `ArnButton` adını aldı)
+- `ArnBadge` sonda spinner (`loading` yalnız başta spinner gösterir; sonda konum 0.1.0 sonrasına ertelendi). Yeniden değerlendirme koşulu: somut ihtiyaç; konum girdisi ve "başlangıç ikonu" sınırıyla birlikte ele alınır (decisions 2026-11 "ArnBadge uygulaması" (10))
 
 ## Açık kararlar
 - Angular Aria'ya geçiş değerlendirmesi (kararlı olunca, min. sürüm şartı 22'yi aşmıyorsa). `@angular/aria` repoda kurulu değil; 22'deki durumu doğrulanmadı.

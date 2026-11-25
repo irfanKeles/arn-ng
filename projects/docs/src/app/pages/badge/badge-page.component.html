@@ -1,0 +1,195 @@
+<h1>Badge</h1>
+
+<p class="docs-lead">
+  <code>&lt;arn-badge&gt;</code> is a small label, a count or a dot. Put <code>arnBadge</code> on an
+  <code>&lt;a&gt;</code> and the badge is a link.
+</p>
+
+<docs-section sectionId="import" heading="Import">
+  <docs-code-block [code]="importCode" language="typescript" label="Import" />
+
+  <p>
+    The styles come with the component; the tokens they read are part of the theme file, which the
+    application adds once. The badge has one size: it is not a control, so the size and density
+    settings do not change it.
+  </p>
+</docs-section>
+
+<docs-section sectionId="variants" heading="Variants">
+  <p>
+    Four variants, with the shadcn/ui names. Without <code>variant</code> the badge is
+    <code>default</code>. Use <code>destructive</code> for an error or a state that needs attention,
+    <code>secondary</code> and <code>outline</code> for quieter labels.
+  </p>
+
+  <docs-example [html]="variants.html" [ts]="variants.ts" [css]="variants.css">
+    <docs-badge-variants-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="count" heading="Count">
+  <p>
+    With <code>count</code> the badge shows the number instead of its content. A count of 0 hides
+    the badge; <code>showZero</code> shows it. Above <code>max</code> (99 by default) it shows as
+    <code>max</code> followed by "+". A single digit is a circle.
+  </p>
+
+  <docs-example [html]="count.html" [ts]="count.ts" [css]="count.css">
+    <docs-badge-count-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="dot" heading="Dot">
+  <p>
+    <code>dot</code> draws a small circle without text. It has no visible text, so give it a
+    <code>label</code>: the badge writes it as visually hidden text, for assistive technology. A dot
+    only says that something is there; when the reader needs to know what, say it in text.
+  </p>
+
+  <p>
+    A dot is a graphic, so it needs 3:1 against the background (WCAG 1.4.11): the secondary and
+    outline dots use <code>--arn-muted-foreground</code>, because <code>--arn-secondary</code> and
+    <code>--arn-border</code> are too faint for that.
+  </p>
+
+  <docs-example [html]="dot.html" [ts]="dot.ts" [css]="dot.css">
+    <docs-badge-dot-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="icons" heading="Icons">
+  <p>
+    There is no icon input: put an <code>&lt;svg&gt;</code> before the text, after it or on both
+    sides. It takes 12px, and the gap keeps it 4px from the text. Hide it from assistive technology
+    with <code>aria-hidden="true"</code> when the text says the same.
+  </p>
+
+  <p>
+    The badge does not mirror icons in right-to-left pages: a directional icon, like the arrow here,
+    needs the <code>arn-rtl-mirror</code> class of the theme.
+  </p>
+
+  <docs-example [html]="icons.html" [ts]="icons.ts" [css]="icons.css">
+    <docs-badge-icons-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="loading" heading="Loading">
+  <p>
+    <code>loading</code> shows a spinner at the start, in place of the start icon; the text stays
+    and the badge gets <code>aria-busy="true"</code>. With reduced motion the spinner keeps turning,
+    three times slower. The spinner is part of the badge; there is no end position.
+  </p>
+
+  <p>
+    The start icon is the <code>&lt;svg&gt;</code> right after the spinner. A badge with only an end
+    icon loses that icon while loading.
+  </p>
+
+  <docs-example [html]="loading.html" [ts]="loading.ts" [css]="loading.css">
+    <docs-badge-loading-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="as-a-link" heading="As a link">
+  <p>
+    On an <code>&lt;a&gt;</code> the badge is a real link: <code>href</code>,
+    <code>routerLink</code> and opening in a new tab work as they always do. Only a link badge has a
+    hover fill and a focus ring; <code>&lt;arn-badge&gt;</code> is not interactive. Do not put a
+    link badge inside a button.
+  </p>
+
+  <docs-example [html]="link.html" [ts]="link.ts" [css]="link.css">
+    <docs-badge-link-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="disabled-link" heading="Disabled link">
+  <p>
+    A link has no native disabled state, so <code>disabled</code> on an
+    <code>&lt;a arnBadge&gt;</code> sets <code>aria-disabled="true"</code>, takes the link out of
+    the tab order and cancels its clicks (<code>routerLink</code> included). The link keeps its
+    <code>href</code>. On <code>&lt;arn-badge&gt;</code> it has no effect.
+  </p>
+
+  <docs-example [html]="disabledLink.html" [ts]="disabledLink.ts" [css]="disabledLink.css">
+    <docs-badge-disabled-link-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="on-a-button" heading="On a button">
+  <p>
+    Inside the label of a <a routerLink="/button">button</a> a badge is plain content. With the
+    <code>arnButtonBadge</code> attribute it sits on the button's top inline-end corner and is
+    hidden from assistive technology: put the count in the button's name, as the second example
+    does. A count of 0 hides it there too.
+  </p>
+
+  <docs-example [html]="onAButton.html" [ts]="onAButton.ts" [css]="onAButton.css">
+    <docs-button-badge-example />
+  </docs-example>
+</docs-section>
+
+<docs-section sectionId="accessibility" heading="Accessibility">
+  <docs-table [view]="keys" />
+
+  <ul>
+    <li>
+      <strong>No role.</strong>&ngsp;<code>&lt;arn-badge&gt;</code> is text in reading order; a link
+      badge is a link.
+    </li>
+    <li>
+      <strong>Changes are not announced.</strong> The badge has no live region: it does not know
+      what its number means. When a change matters, announce a sentence yourself with the CDK
+      <code>LiveAnnouncer</code>.
+    </li>
+    <li>
+      <strong>On a button.</strong> A corner badge has <code>aria-hidden="true"</code>; the button's
+      name carries the count. A dot there needs no label of its own.
+    </li>
+    <li>
+      <strong>Focus ring.</strong> A link badge shows a 3px ring in <code>--arn-ring</code> (<code
+        >--arn-destructive</code
+      >
+      for destructive) for keyboard focus, and its border takes the ring color. In forced-colors
+      mode an outline in the system color takes its place.
+    </li>
+    <li>
+      <strong>Contrast.</strong> Text against fill is at least 4.5:1 in every variant, and on a link
+      under the pointer, in light and dark. A dot has at least 3:1 against the background. A
+      disabled link is exempt, as every inactive control is.
+    </li>
+  </ul>
+
+  <docs-code-block [code]="announceCode" language="typescript" label="Announcing a change" />
+
+  <p>
+    The rules every component must meet:
+    <a routerLink="/accessibility">Accessibility</a>.
+  </p>
+</docs-section>
+
+<docs-section sectionId="api" heading="API">
+  <docs-api-table [table]="inputs" />
+  <docs-api-table [table]="slots" />
+
+  <p>The component has no outputs and no public methods.</p>
+</docs-section>
+
+<docs-section sectionId="styling" heading="Styling">
+  <p>
+    The badge defines none of these tokens: it reads each with the library value as the fallback.
+    Set one on a container and every badge inside follows; set it on one badge and only that one
+    changes.
+  </p>
+
+  <docs-token-table [rows]="sizeTokens" caption="Size" />
+  <docs-token-table [rows]="colorTokens" caption="Color" />
+  <docs-token-table [rows]="motionTokens" caption="Motion" />
+
+  <p>
+    The library's rules have no specificity of their own, so a single class of yours wins over them.
+  </p>
+
+  <docs-code-block [code]="overrideCode" language="css" label="Overriding the tokens" />
+</docs-section>

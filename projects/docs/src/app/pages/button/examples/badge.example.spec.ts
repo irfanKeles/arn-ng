@@ -17,14 +17,29 @@ describe('ButtonBadgeExampleComponent', () => {
 
     const badge = query(element, '[arnButtonBadge]');
 
+    expect(badge.tagName).toBe('ARN-BADGE');
     expect(getComputedStyle(badge).position).toBe('absolute');
     expect(badge.getBoundingClientRect().top).toBeLessThan(bell?.getBoundingClientRect().top ?? 0);
   });
 
-  it('gives the corner count to the name of the icon-only button', async () => {
+  it('hides the corner badges from assistive technology and puts the count in the name', async () => {
     const { element } = await renderExample(ButtonBadgeExampleComponent);
+    const [, bell, messages] = buttons(element);
 
-    expect(buttons(element)[1]?.getAttribute('aria-label')).toContain('3 unread');
+    expect(bell?.getAttribute('aria-label')).toContain('3 unread');
+    expect(messages?.getAttribute('aria-label')).toContain('new messages');
+
+    for (const badge of Array.from(element.querySelectorAll('[arnButtonBadge]'))) {
+      expect(badge.getAttribute('aria-hidden')).toBe('true');
+    }
+  });
+
+  it('shows the dot on the corner (the empty-slot rule does not hide it)', async () => {
+    const { element } = await renderExample(ButtonBadgeExampleComponent);
+    const dot = query(element, 'arn-badge[dot]');
+
+    expect(getComputedStyle(dot).display).not.toBe('none');
+    expect(dot.getBoundingClientRect().width).toBe(8);
   });
 
   for (const mode of A11Y_MODES) {

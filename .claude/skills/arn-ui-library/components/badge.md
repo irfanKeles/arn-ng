@@ -9,13 +9,13 @@
 | Selector | `arn-badge` (statik), `a[arnBadge]` (link) |
 | Entry point | `@arn-ng/ui/badge` (`ArnBadge`, tip `ArnBadgeVariant`) |
 | Tür | element + attribute, tek `@Component` (iki seçici, tek sınıf; sarmalayıcı yok) |
-| Sınıf adları | `ArnBadge`; CSS `.arn-badge`, öznitelikler `data-variant`, `data-count`, `data-dot`, `data-hidden`, `data-loading`; iç sınıflar `.arn-badge-dot`, `.arn-badge-label`, `.arn-badge-spinner` |
+| Sınıf adları | `ArnBadge`; CSS `.arn-badge`, öznitelikler `data-variant`, `data-count`, `data-dot`, `data-hidden`, `data-loading`; iç sınıflar `.arn-badge-count`, `.arn-badge-dot`, `.arn-badge-label`, `.arn-badge-spinner` |
 | Dosya yolları | `projects/ui/badge/src/badge.ts`, `badge.html`, `badge.css`, `badge.types.ts`, `badge.spec.ts`, `badge.contrast.spec.ts` |
 
 ## 2. Mimari ve CDK
 
 - **Neden tek sınıf, iki seçici:** iki yüz de aynı host'u boyar; `<a>` gerçek link kalır (`href`, `routerLink`, orta tık native). `rules/architecture.md`'deki "directive `Arn<Ad>Directive` + element `Arn<Ad>`" adlandırması sarmalayıcılı iki yüz içindir; badge'de sarmalayıcı yok (karar).
-- **Şablon** (`badge.html`): `loading` ise spinner svg; sonra kipe göre biri: dot (`.arn-badge-dot` + `label` varsa gizli `.arn-badge-label`), count (`text()`), içerik (`<ng-content />`). Kip önceliği: `dot` > `count` > içerik.
+- **Şablon** (`badge.html`): `loading` ise spinner svg; sonra kipe göre biri: dot (`.arn-badge-dot` + `label` varsa gizli `.arn-badge-label`), count (`.arn-badge-count` span'inde `text()`: boşluksuz metin düğümü), içerik (`<ng-content />`). Kip önceliği: `dot` > `count` > içerik.
 - **Config:** yok (`size` / `density` yok, sabit metin yok). `messages` alt başlığı yok.
 - **Core iç export'ları:** `ɵdevWarn`, `ɵdisabledLink` (devre dışı link; ArnButton ile ortak, [config.md](config.md) §7).
 - **Köşe rozeti:** host `arnButtonBadge` özniteliğini taşıyorsa constructor'da `Renderer2` ile `aria-hidden="true"` yazılır (bağlama değil: bağlama tüketicinin kendi `aria-hidden`'ını da silerdi). Badge button'u import etmez; yerleşim ArnButton'ın `[arnButtonBadge]` CSS'idir.
@@ -71,6 +71,7 @@ Yok.
 - **"Bitti" tanımından sapma:** tek boyut, density yok. Badge kontrol değil (hedef alanı yok, 24px tabanı gerekmez); `--arn-control-*` kullanılmaz.
 - **shadcn sapmaları** (new-york-v4 `badge.tsx`, 2026-11-19): `ghost` / `link` varyantı yok (link = `a[arnBadge]`); hover formülleri (shadcn `/90` alfa ve outline `accent`); focus halkası tam renk (shadcn `ring/50`); sabit yükseklik 22px (shadcn yükseklik vermez, `py-0.5` + `text-xs` aynı 22px'i verir); count kipinde dar dolgu (6px; shadcn'de sayaç yok); dot, count, loading bizim eklerimiz; `aria-invalid` stili yok.
 - **Başlangıç ikonu sınırı:** CSS metin düğümünü görmez; yalnız sonda ikonu olan rozette loading o ikonu gizler (spec kilitli, docs notu).
+- **Sonda spinner yok:** `loading` yalnız başta spinner gösterir; sonda konum 0.1.0 sonrasına ertelendi (ROADMAP "Ertelenenler").
 - **Uyarılar yalnız ilk render'da** (`afterNextRender` + `isPlatformBrowser`); sonradan geçersizleşen değer sessizce gizlenir.
 - **İç içe etkileşim:** düğme içinde `a[arnBadge]` geçersiz HTML; yalnız docs notu.
 - **Yönlü ikon:** RTL aynalama tüketicinin işi (`.arn-rtl-mirror`).

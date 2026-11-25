@@ -1,0 +1,14 @@
+/* Layout of the preview only; the badges need no CSS of their own */
+.badge-list {
+  display: grid;
+  gap: calc(var(--arn-spacing) * 3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.badge-list li {
+  display: flex;
+  gap: calc(var(--arn-spacing) * 2);
+  align-items: center;
+}

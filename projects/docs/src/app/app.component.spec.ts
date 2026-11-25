@@ -117,6 +117,7 @@ describe('AppComponent', () => {
         'Theming',
         'Accessibility',
         'Button',
+        'Badge',
         'Ripple',
       ]);
     });
@@ -668,7 +669,7 @@ describe('AppComponent', () => {
         `header a, header button, header select, ${SIDEBAR_NAV} a`,
       );
 
-      expect(targets.length).toBe(13);
+      expect(targets.length).toBe(14);
 
       for (const target of Array.from(targets)) {
         expect(target.getBoundingClientRect().height).toBeGreaterThanOrEqual(minimum);

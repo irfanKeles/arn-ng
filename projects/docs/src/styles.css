@@ -34,8 +34,11 @@ summary {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* arnButton draws its own ring; its rules have no specificity, so the site's must leave it alone */
-:focus-visible:not(.arn-button) {
+/*
+ * arnButton and a link badge draw their own ring; their rules have no specificity, so the site's
+ * must leave them alone
+ */
+:focus-visible:not(.arn-button, .arn-badge) {
   outline: var(--arn-ring-width) solid var(--arn-ring);
   outline-offset: calc(var(--arn-spacing) / 2);
 }
@@ -99,8 +102,8 @@ summary {
   background: var(--arn-muted);
 }
 
-/* Text links only: a link styled as a button keeps the button's color and decoration */
-.docs-page a:not(.arn-button) {
+/* Text links only: a link styled as a button or a badge keeps its own color and decoration */
+.docs-page a:not(.arn-button, .arn-badge) {
   color: inherit;
   font-weight: var(--arn-font-weight-medium);
   text-decoration: underline;
