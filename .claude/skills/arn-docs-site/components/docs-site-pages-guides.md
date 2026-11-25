@@ -30,7 +30,7 @@ Bölümler: `import`, `basic`, `turning-it-on`, `color`, `centered`, `accessibil
 
 ### Installation (`/installation`)
 
-Bölümler: `requirements`, `install`, `theme`, `configuration`, `imports`. Örnek yok, beş kod bloğu (shell `shellscript`).
+Bölümler: `requirements`, `browsers`, `install`, `theme`, `configuration`, `imports`. Örnek yok, beş kod bloğu (shell `shellscript`). "Browser support" (`browsers`): `BROWSER_SUPPORT` (`installation.data.ts`) listesi, `light-dark()` gerekçesi ve "fallback yok" cümlesi; spec sürümleri karar maddesindekilere sabitler (arn-ui-library decisions 2026-11 "Tarayıcı tabanı").
 
 | Konu | Karar |
 |---|---|

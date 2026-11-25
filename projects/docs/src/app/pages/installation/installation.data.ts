@@ -31,7 +31,25 @@ export const LIBRARY_PACKAGE_JSON = libraryPackage;
 
 export const LIBRARY_PEERS = peerDependencies(LIBRARY_PACKAGE_JSON);
 
-// The steps below are the ones the local registry runs went through (Verdaccio, Angular 19.2).
+/** A browser and the first version the library supports. */
+export interface DocsBrowserSupport {
+  readonly name: string;
+  readonly version: string;
+}
+
+/**
+ * The browser baseline (decisions 2026-11, "Tarayıcı tabanı"). The CSS `light-dark()` function
+ * sets it; every other feature the stylesheets use is older. Below it there is no fallback.
+ */
+export const BROWSER_SUPPORT: readonly DocsBrowserSupport[] = [
+  { name: 'Chrome', version: '123' },
+  { name: 'Edge', version: '123' },
+  { name: 'Firefox', version: '120' },
+  { name: 'Safari (macOS and iOS)', version: '17.5' },
+];
+
+// The steps below are the ones the local registry runs went through (Verdaccio, Angular 22;
+// local-package-test.md).
 
 export const INSTALL_COMMAND = 'npm install @arn-ng/ui';
 

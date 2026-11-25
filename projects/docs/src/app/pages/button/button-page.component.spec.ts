@@ -6,6 +6,7 @@ import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import { ArnRippleDirective } from '@arn-ng/ui/ripple';
 import buttonCss from '../../../../../ui/button/src/button.css?source' with { loader: 'text' };
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
+import { cssFallbacks } from '../../api/testing/css-fallbacks';
 import { directiveTemplateNames, expectApiMatchesComponent } from '../../api/testing/expect-api';
 import { componentTokenMismatches } from '../../api/testing/token-mismatches';
 import { query, resetDocument, text } from '../../testing/dom';
@@ -191,6 +192,23 @@ describe('ButtonPageComponent', () => {
         componentTokenMismatches([...BUTTON_SIZE_TOKENS, ...BUTTON_COLOR_TOKENS], sheet, (name) =>
           name.startsWith('--arn-button-'),
         ),
+      ).toEqual([]);
+    });
+
+    it('gives each token, as its default, a fallback the stylesheet really writes (every size for <size>)', () => {
+      const SIZES = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+      expect(
+        [...BUTTON_SIZE_TOKENS, ...BUTTON_COLOR_TOKENS].flatMap((row) => {
+          const written = cssFallbacks(buttonCss, row.name);
+          const expected = row.default.includes('<size>')
+            ? SIZES.map((size) => row.default.replaceAll('<size>', size))
+            : [row.default];
+
+          return expected
+            .filter((value) => !written.includes(value))
+            .map((value) => `${row.name}: ${value} is not in [${written.join(' | ')}]`);
+        }),
       ).toEqual([]);
     });
 

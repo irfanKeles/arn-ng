@@ -25,13 +25,9 @@ export type {
   ArnSize,
 } from './config/config.types';
 export { injectArnConfig } from './config/inject-arn-config';
-export type {
-  ArnCommonMessages,
-  ArnDatePickerMessages,
-  ArnDialogMessages,
-  ArnMessages,
-  ArnToastMessages,
-} from './config/messages';
+// The per-component message types (dialog, toast, datePicker) stay internal until their
+// components exist; a consumer reaches them as ArnMessages['dialog'] (decisions 2026-11).
+export type { ArnCommonMessages, ArnMessages } from './config/messages';
 export { provideArn } from './config/provide-arn';
 export { ArnOverlayRef } from './overlay/overlay-ref';
 export { ArnOverlayService } from './overlay/overlay.service';

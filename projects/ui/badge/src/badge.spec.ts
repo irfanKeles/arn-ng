@@ -422,6 +422,38 @@ describe('ArnBadge', () => {
       expect(getComputedStyle(label).clipPath).toBe('inset(50%)');
     });
 
+    it('keeps the label in the accessibility tree: not hidden from screen readers', async () => {
+      const { root } = await render('<arn-badge dot label="Online" />');
+      const label = el(root, '.arn-badge-label');
+      const style = getComputedStyle(label);
+
+      // Visually hidden is fine; hidden from assistive technology is not
+      expect(label.closest('[aria-hidden="true"], [hidden], [inert]')).toBeNull();
+      expect(style.display).not.toBe('none');
+      expect(style.visibility).toBe('visible');
+      expect(style.contentVisibility).not.toBe('hidden');
+
+      // What Chromium gives to a screen reader: an exposed (not ignored) text node "Online". The
+      // test runs in a child frame of the runner page, so every frame's tree is read.
+      const { frameTree } = await cdp().send('Page.getFrameTree');
+      const frames: string[] = [];
+      const collect = (tree: typeof frameTree): void => {
+        frames.push(tree.frame.id);
+        tree.childFrames?.forEach(collect);
+      };
+
+      collect(frameTree);
+
+      const trees = await Promise.all(
+        frames.map((frameId) => cdp().send('Accessibility.getFullAXTree', { frameId })),
+      );
+      const exposed = trees
+        .flatMap((tree) => tree.nodes)
+        .filter((node) => !node.ignored && node.name?.value === 'Online');
+
+      expect(exposed.length).toBeGreaterThan(0);
+    });
+
     it('warns without a label, except on the corner of a button', async () => {
       await render(
         '<arn-badge dot /><arn-badge dot arnButtonBadge /><arn-badge dot label="Away" />',

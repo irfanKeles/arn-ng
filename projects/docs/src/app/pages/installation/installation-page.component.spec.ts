@@ -13,7 +13,12 @@ import { expectNoPageOverflow } from '../../testing/page-overflow';
 import { DocsTocService } from '../../toc/docs-toc.service';
 import { A11Y_MODES } from '../../testing/render-example';
 import { InstallationPageComponent } from './installation-page.component';
-import { LIBRARY_PACKAGE_JSON, LIBRARY_PEERS, peerDependencies } from './installation.data';
+import {
+  BROWSER_SUPPORT,
+  LIBRARY_PACKAGE_JSON,
+  LIBRARY_PEERS,
+  peerDependencies,
+} from './installation.data';
 
 describe('InstallationPageComponent', () => {
   interface Page {
@@ -68,7 +73,7 @@ describe('InstallationPageComponent', () => {
         TestBed.inject(DocsTocService)
           .sections()
           .map((section) => section.id()),
-      ).toEqual(['requirements', 'install', 'theme', 'configuration', 'imports']);
+      ).toEqual(['requirements', 'browsers', 'install', 'theme', 'configuration', 'imports']);
     });
 
     it('links only to pages that exist', async () => {
@@ -121,6 +126,36 @@ describe('InstallationPageComponent', () => {
       expect(peerDependencies('{"peerDependencies":{"a":"^1.0.0","b":1}}')).toEqual([
         { name: 'a', range: '^1.0.0' },
       ]);
+    });
+  });
+
+  describe('browser support', () => {
+    it('names the minimum versions the light-dark() baseline sets', () => {
+      expect(BROWSER_SUPPORT).toEqual([
+        { name: 'Chrome', version: '123' },
+        { name: 'Edge', version: '123' },
+        { name: 'Firefox', version: '120' },
+        { name: 'Safari (macOS and iOS)', version: '17.5' },
+      ]);
+    });
+
+    it('shows every browser with its version, and says light-dark() sets them', async () => {
+      const { element } = await render();
+      const section = query(element, 'docs-section:has(#browsers)');
+      const items = Array.from(section.querySelectorAll('.docs-browsers li')).map((item) =>
+        text(item),
+      );
+
+      expect(items).toEqual(
+        BROWSER_SUPPORT.map((browser) => `${browser.name} ${browser.version} and later`),
+      );
+      expect(text(section)).toContain('light-dark()');
+    });
+
+    it('says older browsers get no fallback', async () => {
+      const section = query((await render()).element, 'docs-section:has(#browsers)');
+
+      expect(text(section)).toContain('Older browsers get no fallback');
     });
   });
 

@@ -262,6 +262,28 @@ describe('ArnOverlayService: presets', () => {
       expect(ref.state()).toBe('open');
     });
 
+    it('cancels the Escape it handles, so it does not also act on the page; a modified one is left alone', async () => {
+      const ref = await open('popover');
+      const escape = (init: KeyboardEventInit = {}): KeyboardEvent => {
+        const event = new KeyboardEvent('keydown', {
+          key: 'Escape',
+          bubbles: true,
+          cancelable: true,
+          ...init,
+        });
+
+        document.body.dispatchEvent(event);
+
+        return event;
+      };
+
+      expect(escape({ shiftKey: true }).defaultPrevented).toBe(false);
+      expect(ref.state()).toBe('open');
+
+      expect(escape().defaultPrevented).toBe(true);
+      expect(ref.state()).toBe('closed');
+    });
+
     it('does not lock page scrolling', async () => {
       await open('popover');
 

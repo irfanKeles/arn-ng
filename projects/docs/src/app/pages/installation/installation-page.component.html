@@ -25,6 +25,24 @@
   </p>
 </docs-section>
 
+<docs-section sectionId="browsers" heading="Browser support">
+  <p>The library supports these browsers, from the version given on:</p>
+
+  <ul class="docs-browsers">
+    @for (browser of browsers; track browser.name) {
+      <li>
+        {{ browser.name }}&ngsp;<code>{{ browser.version }}</code
+        >&ngsp;and later
+      </li>
+    }
+  </ul>
+
+  <p>
+    The theme uses the CSS <code>light-dark()</code> function for its light and dark colors, which
+    sets these versions. Older browsers get no fallback: the colors do not resolve there.
+  </p>
+</docs-section>
+
 <docs-section sectionId="install" heading="Install">
   <docs-code-block [code]="installCommand" language="shellscript" label="Install" />
 

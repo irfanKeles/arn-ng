@@ -4,6 +4,7 @@ import { ArnBadge } from '@arn-ng/ui/badge';
 import { ArnConfigService, provideArn } from '@arn-ng/ui/core';
 import badgeCss from '../../../../../ui/badge/src/badge.css?source' with { loader: 'text' };
 import { expectNoA11yViolations } from '../../../../../ui/testing/a11y';
+import { cssFallbacks } from '../../api/testing/css-fallbacks';
 import { expectApiMatchesComponent } from '../../api/testing/expect-api';
 import { componentTokenMismatches } from '../../api/testing/token-mismatches';
 import { query, resetDocument, text } from '../../testing/dom';
@@ -22,35 +23,6 @@ import {
 import { BadgePageComponent } from './badge-page.component';
 
 const ALL_TOKENS = [...BADGE_SIZE_TOKENS, ...BADGE_COLOR_TOKENS, ...BADGE_MOTION_TOKENS];
-
-/** Whitespace-insensitive CSS text: line breaks inside var(…) do not matter. */
-const normalize = (css: string): string =>
-  css.replace(/\s+/g, ' ').replace(/\( /g, '(').replace(/ \)/g, ')').trim();
-
-/** Every fallback the stylesheet writes for the token: the text after `var(<name>,` up to its `)`. */
-function fallbacks(css: string, name: string): string[] {
-  const source = normalize(css);
-  const found: string[] = [];
-  const opening = `var(${name},`;
-  let from = source.indexOf(opening);
-
-  while (from !== -1) {
-    let depth = 1;
-    let index = from + opening.length;
-
-    while (index < source.length && depth > 0) {
-      const char = source[index];
-
-      depth += char === '(' ? 1 : char === ')' ? -1 : 0;
-      index++;
-    }
-
-    found.push(source.slice(from + opening.length, index - 1).trim());
-    from = source.indexOf(opening, index);
-  }
-
-  return found;
-}
 
 describe('BadgePageComponent', () => {
   interface Page {
@@ -200,16 +172,16 @@ describe('BadgePageComponent', () => {
 
     it('gives each token, as its default, a fallback the stylesheet really writes', () => {
       expect(
-        ALL_TOKENS.filter((row) => !fallbacks(badgeCss, row.name).includes(row.default)).map(
+        ALL_TOKENS.filter((row) => !cssFallbacks(badgeCss, row.name).includes(row.default)).map(
           (row) =>
-            `${row.name}: ${row.default} is not in [${fallbacks(badgeCss, row.name).join(' | ')}]`,
+            `${row.name}: ${row.default} is not in [${cssFallbacks(badgeCss, row.name).join(' | ')}]`,
         ),
       ).toEqual([]);
     });
 
     it('documents every size and motion fallback of the stylesheet, in the default or the description', () => {
       const missing = [...BADGE_SIZE_TOKENS, ...BADGE_MOTION_TOKENS].flatMap((row) =>
-        fallbacks(badgeCss, row.name)
+        cssFallbacks(badgeCss, row.name)
           .filter((value) => value !== row.default && !row.description.includes(value))
           .map((value) => `${row.name}: ${value}`),
       );

@@ -9,7 +9,7 @@
 | Selector | Yok |
 | Entry point | `@arn-ng/ui/core` |
 | Tür | ortak yapı |
-| Sınıf adları | Tipler: `ArnMessages`, `ArnCommonMessages`, `ArnDialogMessages`, `ArnToastMessages`, `ArnDatePickerMessages` |
+| Sınıf adları | Dışa açık tipler: `ArnMessages`, `ArnCommonMessages`. İç (export edilmez): `ArnDialogMessages`, `ArnToastMessages`, `ArnDatePickerMessages`; tüketici `ArnMessages['dialog']` ile erişir (decisions 2026-11 "Public API daraltma: bileşen mesaj tipleri") |
 | Dosya yolları | `projects/ui/core/src/config/messages.ts`, `date-names.ts` |
 
 Burada ŞEKİL ve varsayılanlar var. Çeviri paketleri: [locales.md](locales.md); yön/RTL: [config-direction.md](config-direction.md).
