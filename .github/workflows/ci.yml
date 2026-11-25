@@ -30,7 +30,7 @@ jobs:
 
       - run: npm ci
 
-      # Vitest browser mode Playwright'ın Chromium'unda koşar; imajdaki Chrome'a dayanmaz
+      # Vitest browser mode runs in Playwright's Chromium, not in the Chrome of the runner image.
       # No --with-deps: the runner image already has the browser libraries; --with-deps pulls
       # fonts and mesa updates through a mirror that was measured at 54 kB/s (up to 10 minutes).
       # If a library is missing, Chromium fails to launch with a clear error.

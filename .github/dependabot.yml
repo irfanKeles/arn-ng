@@ -13,7 +13,8 @@ updates:
     directory: /
     schedule:
       interval: weekly
-    # Geliştirme Angular 19'da tutuluyor: Angular ve ona bağlı araçlarda majör güncelleme yok
+    # Angular majors are moved by hand: the peer ranges (^22) change only after a tested upgrade,
+    # so Angular and the tools tied to it get no major updates here
     ignore:
       - dependency-name: '@angular/*'
         update-types: ['version-update:semver-major']
@@ -21,14 +22,13 @@ updates:
         update-types: ['version-update:semver-major']
       - dependency-name: ng-packagr
         update-types: ['version-update:semver-major']
-      # Angular 19 TypeScript'i <5.9 ile sınırlar; minor güncelleme de derlemeyi kırar
+      # The Angular compiler pins a TypeScript minor range (Angular 22.2: >=6.0 <6.1); a minor
+      # update breaks the build too
       - dependency-name: typescript
         update-types: ['version-update:semver-major', 'version-update:semver-minor']
-      - dependency-name: zone.js
-        update-types: ['version-update:semver-major']
       - dependency-name: rxjs
         update-types: ['version-update:semver-major']
-      # angular-eslint 19 yalnızca ESLint 8/9 destekler; @eslint/js eslint ile aynı majörde kalır
+      # angular-eslint supports a fixed set of ESLint majors; @eslint/js stays on eslint's major
       - dependency-name: eslint
         update-types: ['version-update:semver-major']
       - dependency-name: '@eslint/js'
